@@ -12,12 +12,14 @@
 
 ## 必读权威文档（缺一不可 — kevin-coder §0 自检会卡）
 
-> 三份权威文档是 ticket 实施的"蓝图"，缺引用 = AI 凭字面猜实现 = 翻车前兆（dongjiaoshan D6 教训）。
-> 任何 ticket 实施前 product/designer 已产出 v0.1，**没有引用就 STOP 让 Kevin 补**。
+> 业务流 + 字段表是 ticket 实施的"蓝图"，缺引用 = AI 凭字面猜实现 = 翻车前兆（dongjiaoshan D6 教训）。
+> UI 索引在 V1.0 设计冻结期降级为"视觉参考"（不卡硬约束，详 .claude/agents/kevin-coder.md "设计冻结期"段）。
 
-- **业务流**：doc/10-业务流权威图.md §<M-N>-<阶段>（必填）
-- **字段表**：doc/11-字段权威表.md §<表名>（涉及 DB 表的 ticket 必填）
-- **UI 索引**：doc/12-UI-权威索引.md §<page-slug>（涉及 UI 的 ticket 必填）
+- **业务流**：doc/10-业务流权威图.md §<M-N>-<阶段>（**必填**）
+- **字段表**：doc/11-字段权威表.md §<表名>（涉及 DB 表的 ticket **必填**）
+- **UI 参考**（V1.0 设计冻结期）：
+  - admin ticket：`N/A（设计冻结期 admin 走 ruoyi 默认）`
+  - mp ticket：`design/mockup/<page>.html（视觉参考，不强求逐像素还原）` 或 `N/A（无对应 mockup）`
 
 ## What
 
