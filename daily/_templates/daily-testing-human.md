@@ -1,68 +1,104 @@
-# D<N> — Testing-human（Kevin 一人跑）
+# D<N>（d<X>）— Testing-human（Kevin 真机 spot check）
 
-> 只做 AI 干不了的活：浏览器 UI / 微信开发者工具 / DB 客户端 / 代码 review / 产品 sense 主观判断。
-> 命令式 / 可断言为真假的事（mvn / curl / mysql count）→ AI 在 reports/<T>.md 里贴 raw output，不在这跑。
-
----
-
-## 0. 环境
-
-- 后端跑起来：`mvn spring-boot:run -pl ruoyi-admin`
-- Admin 跑起来：`cd code/main/plus-ui && pnpm dev` → 浏览器 http://localhost:80
-- 小程序跑起来：`cd code/main/miniapp && pnpm dev:mp-weixin` → 微信开发者工具打开 `dist/dev/mp-weixin`
+> **B 方案 2026-05-28**：admin + 后端 + 单测全部 AI 接管（Tier 1A coder + Tier 1B kevin-qa）。本文件只列 **Kevin 要点的具体动作** — mp 端真机 + 微信原生能力 + 产品 sense。
+>
+> **本日 Tier 2 范围**：<列 mp ticket，纯 admin/be ticket 跳过>。
+>
+> **预计时间**：5-10 min（如纯 admin/be 日 → 全跳，直接 closing）
 
 ---
 
-## 1. 今日 ticket 验收清单
+## 0. 启动前 check
 
-### GZ-XXX-001 — <标题>
-
-**关联 mockup**：design/mockup/<page>.html
-
-**关联 AC**（从 tickets/GZ-XXX-001.md 复制）：
-- [ ] AC 1：...
-- [ ] AC 2：...
-- [ ] AC 3：...
-
-**测试动作**：
-1. 浏览器打开 `<URL>` / 微信开发者工具 → 小程序首页
-2. 操作：点击 X → 检查 Y
-3. DB 验证：mysql 客户端 `SELECT * FROM gz_xxx WHERE ...`
-4. 视觉对照 mockup：颜色 / 间距 / 文案
-
-**判定**：
-- ✅ OK → 在 progress.md 标 ✅
-- ❌ NOT OK → 在 `tickets/GZ-XXX-001.md` 的 `§revision` 段写"问题 N: 现象 / 期望"
+| # | 检查项 | 命令 / 操作 | 状态 |
+|---|---|---|---|
+| 0.1 | docker 三容器 | `docker ps \| grep sensenran-dev` 看到 mysql/redis/minio 全 Up | ⬜ |
+| 0.2 | 后端 8080 | `lsof -i:8080 -sTCP:LISTEN` 看到 java 进程 | ⬜ |
+| 0.3 | mp dev 编译 | `cd code/main/miniapp && pnpm dev:mp-weixin` 后等 "DONE Build complete" | ⬜ |
+| 0.4 | 微信开发者工具 | 已导入 `code/main/miniapp/dist/dev/mp-weixin` | ⬜ |
 
 ---
 
-### GZ-XXX-002 — <标题>
+## 1. 测试清单（表格驱动，逐行勾选）
 
-（同上格式）
+### 1.1 GZ-XXX-NNN — <标题> ⭐（如是主流程标⭐）
 
----
+**入口路径**（必填，CLAUDE.md §8.3 可达性约束）：从 `<已有页 / 临时入口>` 点 N 次 → 本新页
+- 如 ticket 任务卡 AC N "Tier 2 入口可达" 描述了临时入口（`<!-- TODO(Tier2-entry-temp) -->`）→ 在此列入口位置
+- 如 ticket 未列入口路径 → **STOP，回 §revision 段写「问题：入口不可达，请 coder 加临时入口」**，不要自己切编译模式 / console 跳
 
-## 2. 跨 ticket 联调（如有）
+| # | 测试动作 | 期望 | 判定 |
+|---|---|---|---|
+| A1 | 打开 X 页 / 点 Y 按钮 | 看到 Z UI 元素 | ⬜ |
+| A2 | 输入 / 操作 ... | API 返 200 / DB 落库 / toast 显示 ... | ⬜ |
+| A3 | 微信原生能力（wx.login / 支付 / 客服 / 扫码 / getPhoneNumber） | 弹原生授权 / 调起原生接口 | ⬜ |
+| A4 | 边界 / 异常路径（拒授权 / 网络断 / 已登录态重进）| 友好降级 / 不报 500 | ⬜ |
+| A5 | DB 验证（如需要）| `docker exec sensenran-dev-mysql mysql -uroot -proot ry-vue -e "SELECT ..."` 输出符合 | ⬜ |
 
-如果今日 ticket 之间有协作（如 GZ-SYS-001 微信登录 → GZ-USER-001 个人资料读取），单独跑一次：
+### 1.2 GZ-XXX-NNN — <第二个 mp ticket>
 
-1. 微信登录走通
-2. 进入个人资料页 → 数据显示
-3. 退出登录 → 再进入 → 应跳登录页
-
----
-
-## 3. 视觉 / 文案 review（mockup 对齐）
-
-- 主色用 `var(--brand-primary)` = #5BC85F ✅ / 偏色
-- emoji 没乱用 ✅ / 滥用
-- 中文文案没机翻味 ✅ / 像 GPT 风
-- 圆角 / 间距 / 阴影 与 mockup 一致 ✅ / 偏差
+（同 1.1 格式）
 
 ---
 
-## 4. 性能 sense（主观感受）
+## 2. 跨 ticket 联调（如有 — 当日 mp ticket 间有强协作时单独跑）
 
-- 小程序首页打开秒开？✅ / 卡
-- API 响应 < 1s？✅ / 慢（哪个接口）
-- DB 数据量级符合预期？✅ / 异常（如本该 10 条结果出来 1000 条）
+| # | 链路 | 期望 |
+|---|---|---|
+| C1 | <ticket A 入口> → <ticket B 流程> → <ticket C 收尾> | 全段 ✅ | ⬜ |
+
+---
+
+## 3. 不在此处测的（B 方案 — 已被 AI 覆盖）
+
+| 范围 | 谁覆盖 | 在哪看结果 |
+|---|---|---|
+| 后端单测 / 集成 / curl API | kevin-coder Tier 1A + kevin-qa Tier 1B | `reports/<T>.md` §AI 自测段 + §AI 测试段 |
+| admin Playwright E2E | kevin-qa Tier 1B | `reports/<T>.md` §AI 测试段 |
+| Flyway DDL / Redis / MinIO | kevin-coder Tier 1A | reports §AI 自测段 |
+| mp vitest unit | kevin-coder Tier 1A + kevin-qa 复测 | reports §AI 测试段 |
+| admin / mp 视觉评判（颜色 / 间距 / 圆角） | **不测**（设计冻结期，6/10-6/14 风格统一时 review） | — |
+
+---
+
+## 4. 判定
+
+- ✅ **全过** → 在底部「判定结果」段标 ✅ → 告诉主线程跑日终 closing
+- ❌ **有问题** → 在对应 ticket 任务卡 `D<N>/tickets/<T>.md §revision` 段写"问题 N: 现象 / 期望" → 喊 `@coder 修 D<N>/<T> revision 段`
+
+---
+
+## 跳过判定
+
+| 条件 | 动作 |
+|---|---|
+| 今日所有 ticket Tech 段都不含 `miniapp/` 路径 | **跳过本文件**，AI Tier 1A + 1B 全 ✅ 即 close |
+| 今日 ticket 涉及微信支付 / 登录 / 客服 / 扫码 / 手机号 | **必须**走 §1 mp 真机段 |
+| 客户演示前一天（如 6/04 / 6/14 / 7/30） | 走 §5 全栈回归段（30-45 min，例外） |
+
+---
+
+## 5. 客户演示前全栈回归（仅 V1.0 6/04 / V1.1 7/30 等节点性触发）
+
+> 平时不跑。仅客户演示前一天跑。预算 30-45 min。
+
+| # | 范围 | 内容 |
+|---|---|---|
+| R1 | mp 端全栈 happy path | 微信登录 → 个人资料 → 拼豆全流程 → 资讯阅读 → 客服浮层 → 退出（V1.1 加：预购下单 → 支付 → 订单详情 → 扭蛋抽奖 → 抽奖历史 → 图鉴）|
+| R2 | admin 端 spot check | 登录 → 用户列表 → 拼豆配置 → 操作日志（V1.1 加：商品 / 扭蛋池 / 订单 / 物流 / 对账 / 看板）|
+| R3 | 文案 / 视觉一致性 | 主色一致 / emoji / 中文文案 / tokens.md 主色应用 |
+| R4 | 数据 sense | admin 看板数字 / 用户列表分页 |
+
+---
+
+## 判定结果（Kevin 填）
+
+| Ticket | 进度 |
+|---|---|
+| GZ-XXX-NNN（A1-AN）| ⬜ 待测 |
+| GZ-YYY-NNN（B1-BN）| ⬜ 待测 |
+| 跨 ticket 联调（C1-CN）| ⬜ 待测 |
+
+**最终判定**：⬜ 全 ✅，可日终 closing ｜ ⬜ 有 ❌，待 revision
+
+**Kevin 时间花费**：____ min（B 方案目标 5-10 min）

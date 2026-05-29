@@ -30,6 +30,10 @@
 - [ ] AC 1：（可测试的具体描述，禁止"做得好""体验流畅"这种主观）
 - [ ] AC 2：...
 - [ ] AC 3：...
+- [ ] **AC N: Tier 2 入口可达**（**mp ticket 强制**，CLAUDE.md §8.3）— Kevin 从 `<已有入口页>` 点 N 次能到达本 ticket 新页 / 触发本流程。
+  - 如业务主线入口已建（如 5 tab / 会员中心首页 / 拼豆首页）→ 列出现成路径
+  - 如业务主线入口还没建（下游 ticket 才建）→ **本 ticket 加临时入口**到 `pages/index/index.vue` 或最近相关已上线页 + 注释 `<!-- TODO(Tier2-entry-temp): <本 ticket id>, remove when <清理者 ticket id> merged -->`
+  - 纯 admin / 纯后端 ticket 无需此 AC（跳过 Tier 2，CLAUDE.md §8.2）
 
 ## Tech（端 + 范围）
 

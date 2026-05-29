@@ -10,12 +10,15 @@
 
 ## 0. sensenran 单人模式硬约束（vs dongjiaoshan 多人模式）
 
-| 维度 | dongjiaoshan 多人版 | sensenran 单人版 |
+| 维度 | dongjiaoshan 多人版 | sensenran 单人版（B 方案 2026-05-28 升级）|
 |---|---|---|
-| 派单 | 复制 prompt 全文 → spawn AI | `@coder 做 D<N>/<TICKET>` 一行指令 |
+| 派单 | 复制 prompt 全文 → spawn AI | `开始 d<N>` 或 `@coder 做 D<N>/<TICKET>` |
 | prompt 模板 | 4 份（prompt-fe / be / fullstack / min） | **0 份**，流程纪律在 [.claude/agents/kevin-coder.md](../../.claude/agents/kevin-coder.md) |
 | ticket 描述 | prompts/<T>.md 自带流程段 | tickets/<T>.md 任务卡（只 What/AC，无流程） |
-| 测试人力 | ABC 三人各跑 testing-human | Kevin 一人跑 testing-human |
+| 测试人力 | ABC 三人各跑 testing-human | **Tier 1 全 AI 自动**（kevin-coder + kevin-qa Playwright）+ **Tier 2 Kevin 5-10 min/天**（仅 mp 真机） |
+| admin 测试 | 人测 | **kevin-qa Playwright MCP 全自动**（B 方案核心） |
+| 后端测试 | 人测 | kevin-coder 自测 + kevin-qa 集成测试双层 |
+| mp 测试 | 人测 | vitest unit 自动 + Kevin 真机微信原生能力 spot check |
 | 当 testing 不过 | append `_open-issues.md` → 日终多人决策 | 在 ticket 任务卡 `§revision` 段就地写 → AI 闭环修 |
 | 跨日 issue 跟踪 | `_open-issues.md` + 日终 closing 会 | **不存在**（问题不出 ticket） |
 | 日终 closing | 0-5 步（汇总 + 决策 + 批量改文档 + ADR）| `cat reports/*.md > summary.md` + `git commit` + 写明日 README |
@@ -39,39 +42,70 @@
    ```
    主线程读任务卡（`tickets/GZ-BEAN-002.md`）+ spawn `kevin-coder` subagent，自动带项目纪律。
 
-### 1.2 AI 跑（每个 ticket 自闭环 — 强制流程）
+### 1.2 AI Tier 1A — kevin-coder 实现 + 自测（每 ticket 10-40 min，自动）
 
-每个 ticket 由 `.claude/agents/kevin-coder.md` 强制 3 段：
+每个 ticket 由 [.claude/agents/kevin-coder.md](../../.claude/agents/kevin-coder.md) 强制 4 段：
 
-1. **§0 状态自检**（开干前必跑 6 步：git / 上游 / 关键类表 / 编译 / ADR / 合同范围）
+1. **§0 状态自检**（开干前必跑 7 步：git / 上游 / 关键类表 / 编译 / ADR / 合同范围 / 权威蓝图 doc/10/11/12 引用）
    - 任一项不通过 → STOP 报 Kevin
 
 2. **实现 ticket 主体**
    - 写代码 / 改 DB / 跑 Flyway
    - 复杂任务自行 spawn subagent
 
-3. **§N 完工总结 + AI 自测**
-   - 自测：编译 / 单测 / curl / DB count，**必须贴 ≥ 3 个代码 block 的 raw output**
-   - 写 `reports/<TICKET>.md`（含 §0 自检结果 + 自测 raw + 风险 + ADR 已读 + 对下游提示）
+3. **§N 完工总结 + AI Tier 1A 自测**（编译 / 单测 / curl / DB / Flyway / 并发压测）
+   - **必须贴 ≥ 3 个代码 block 的 raw output**
+
+4. **自动 spawn kevin-qa 跑 Tier 1B**（B 方案 ⭐）
+   - kevin-coder 完工时**不通知 Kevin**，先 spawn kevin-qa
+   - 等 kevin-qa 在 reports/<T>.md 追加 §AI 测试段
+   - 任一 ❌ → 闭环回 kevin-coder 修（Kevin 不介入）
+   - 全 ✅ → 通知 Kevin 进 Tier 2 spot check（仅 mp ticket）或直接 close（纯 admin / 纯后端）
 
 **强制约束**（来自 dongjiaoshan D02 翻车经验）：
 - ❌ 不允许"已通过 / ok / 全部跑通"五字了事 — verification gap 翻车前兆
 - ✅ 必须 ≥ 3 个代码 block 的 raw output
-- ✅ §0 自检 6 步任一失败 → STOP，不要"绕过去"
+- ✅ §0 自检任一失败 → STOP，不要"绕过去"
 - ✅ ADR 已读行强制写（找不到关联 ADR 写"无相关"也算）
+- ✅ **完工后 spawn kevin-qa 是不可绕过的**（除 4 种例外，见 kevin-coder.md §N.1）
 
-### 1.3 Kevin testing-human（5-15 分钟）
+### 1.3 AI Tier 1B — kevin-qa 自动接管（每 ticket 5-15 min，自动）
 
-1. 打开 `testing-human.md` — 今日 ticket 的测试清单（你自己维护，按 mockup + AC 写）
-2. 浏览器 / 微信开发者工具 / DB 客户端 跑一遍
-3. 判断：
-   - ✅ OK → ticket close（写 `progress.md` 标 ✅）
-   - ❌ NOT OK → 在 ticket 任务卡 `§revision` 段写"问题 1: 现象 / 期望"
+详见 [.claude/agents/kevin-qa.md](../../.claude/agents/kevin-qa.md) §Tier 1B 自动执行流程。
 
-### 1.4 §revision 闭环（AI 自闭环修）
+按 ticket Tech 段端分发：
+- **admin 端**：Playwright MCP E2E（登录 / CRUD / perm / 列表筛选）
+- **后端**：mvn 集成测试（如 coder Tier 1A 已跑则不重复）+ API 契约 curl
+- **mp 端**：vitest unit（store / composables / utils），**wx API 真机能力跳过**给 Tier 2
+
+结果追加到 `reports/<T>.md` §AI 测试段。
+
+### 1.4 Kevin Tier 2 真机 spot check（5-10 min/天，仅 mp ticket）
+
+详见 [_templates/daily-testing-human.md](_templates/daily-testing-human.md)。
+
+**跳过条件**（多数情况）：今日所有 ticket Tech 段都不含 `miniapp/` 路径 → 跳过整个 Tier 2，AI 全 ✅ 即 close。
+
+**必走条件**：
+- 当日有新 mp 页（行数 > 50）
+- 当日 ticket 涉及微信原生能力（wx.login / 支付 / 客服 / 扫码 / 手机号）
+
+判断：
+- ✅ OK → ticket close（写 `progress.md` 标 ✅）
+- ❌ NOT OK → 在 ticket 任务卡 `§revision` 段写"问题 1: 现象 / 期望"
+
+### 1.5 §revision 闭环（AI 自闭环修）
+
+两类触发：
+
+**A. Tier 1B 失败 → kevin-qa 自动回派 kevin-coder**（Kevin 不介入）
+- kevin-qa 在 reports/<T>.md §AI 测试段写失败清单 → spawn kevin-coder → 改完再 spawn kevin-qa 复测 → 直到 ✅
+- 整个过程不需要 Kevin 派单
+
+**B. Tier 2 失败 → Kevin 手动派**
 
 ```
-"@coder 修 D<N>/GZ-BEAN-002 revision 段"
+@coder 修 D<N>/GZ-BEAN-002 revision 段
 ```
 
 AI 动作：
@@ -79,11 +113,12 @@ AI 动作：
 2. 定位 + 修
 3. 自测：贴新 raw output 到 `reports/<T>.md` 末尾追加
 4. 在任务卡 `§revision` 每条后追加"已修 / 改了 <文件>"
-5. 通知 Kevin 重测
+5. **自动 spawn kevin-qa 复测**（如改动 admin / 后端 / mp unit 部分）
+6. 通知 Kevin 重做 Tier 2 spot check
 
 循环到 OK。**不出 ticket 边界**，不写 `_open-issues.md`。
 
-### 1.5 日终 closing（3-5 分钟）
+### 1.6 日终 closing（3-5 分钟）
 
 ```bash
 cd doc/daily/D<N>

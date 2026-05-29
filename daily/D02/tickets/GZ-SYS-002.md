@@ -81,6 +81,12 @@ mp 端首次进入触发微信原生授权弹窗（头像 + 昵称），调 `wx.
 
 ## §revision（Kevin testing-human 后填，初始空）
 
-<!--
-- 问题 1：<现象> / 期望：<期望>
--->
+### kevin-qa Tier 1B（2026-05-28 14:30）
+
+- **问题 1（BUG-SYS-002-01）**：mp 端拿 token 后调任何后续 mp API 均返 500（NPE） / 期望：200
+  - **根因**：`WxLoginServiceImpl.issueToken()` 构造 `SaLoginParameter` 时未调用 `model.setExtra(LoginHelper.CLIENT_KEY, ...)`；`ruoyi-common-security` 的 `SecurityConfig.check` 第 68 行 `StpUtil.getExtra("clientid").toString()` 对 null 调 `.toString()` 抛 NPE
+  - **已修 / 改了 `WxLoginServiceImpl.java`**（2026-05-28 15:51）：
+    - 加 `resolveClientId()` 方法：优先从 `ServletUtils.getRequest()` 读 header `clientid`，缺省 fallback `"mp-applet-sensenran-guzi"`（与 mp 端 `VITE_APP_CLIENT_ID` 对齐）
+    - `issueToken()` 在 `LoginHelper.login()` 前调 `model.setExtra(LoginHelper.CLIENT_KEY, clientId)`
+    - 同款写法参考 `ruoyi-admin` 的 `XcxAuthStrategy.java:85` / `PasswordAuthStrategy.java:79`
+  - **修复后验证**：Chain A/B/C/D 4 条端到端链路全 ✅（详 reports/GZ-SYS-002.md §revision-1）
