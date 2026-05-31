@@ -50,7 +50,7 @@
 
 ---
 
-## §revision（Kevin testing-human 后填，初始空）
+## §revision（Kevin 批量人验后填，初始空 —— ticket 已 close 也可回填）
 
 <!--
 当 Kevin 测试不过时，在这里写问题清单，然后 `@coder 修 D<N>/<TICKET-ID> revision 段`：

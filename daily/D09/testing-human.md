@@ -52,12 +52,13 @@
 
 ---
 
-## 3. 视觉 / 文案 review（mockup 对齐）
+## 3. 视觉 / 文案 review
 
-- 主色用 `var(--brand-primary)` = #5BC85F ✅ / 偏色
+- mp 视觉遵循 C 设计系统（粗墨边 / 硬投影 / 朱红 / 网点 / 集中线），以 doc/tokens.md + doc/13 为准；admin 不评判视觉 ✅ / 偏离
+- 主 CTA / 价格 / 选中用 `var(--c-red)` 朱红 ✅ / 偏色
 - emoji 没乱用 ✅ / 滥用
 - 中文文案没机翻味 ✅ / 像 GPT 风
-- 圆角 / 间距 / 阴影 与 mockup 一致 ✅ / 偏差
+- Biz* 组件 + var(--c-*)，旧 mockup 仅布局参考，不逐像素 ✅ / 偏差
 
 ---
 

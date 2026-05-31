@@ -4,7 +4,7 @@
 **复杂度**: S
 **关联 PRD**: doc/02-prd.md M2 §关键页面 §抽奖历史页
 **关联拆解**: doc/02-需求拆解.md §3.3 第 818 行
-**关联 mockup**: design/mockup/gacha-history.html（视觉参考）
+**关联 mockup**: design/mockup/gacha-history.html（仅布局参考；视觉以 C 系统为准，doc/13）
 **关联 ADR**: —
 **依赖**: GZ-GACHA-104
 
@@ -30,7 +30,7 @@
   - 返回字段：drawId / machine_name_snapshot / prize_snapshot(name+rarity+cover_url) / drawn_at / delivery_status
 - [ ] **AC 2**：page `pages/gacha/history.vue`：
   - 顶部筛选条（wd-tabs 或自定义 chip 组）：「全部机器」/ 历史出现过的机器列表
-  - 列表项：左侧奖品封面（圆角 8 + 稀有度边框）/ 中间机器名 + 奖品名 + 稀有度 chip / 右侧时间（相对时间"3 天前"+ 完整时间小字）+ 待发货标签（如 delivery_status='pending_delivery'）
+  - 列表项：左侧奖品封面（直角 var(--c-radius)=0 + 稀有度边框走 var(--c-r-ssr/-sr/-r/-n)）/ 中间机器名 + 奖品名 + 稀有度徽章（doc/13 §3.2 待建 Biz 组件）/ 右侧时间（相对时间"3 天前"+ 完整时间小字）+ 待发货标签（如 delivery_status='pending_delivery'）
   - 点击列表项 → 如 pending_delivery 则跳订单详情（会员中心订单 tab）；如 delivered 则展示获得详情 popup
 - [ ] **AC 3**：空数据 friendly：「还没开过扭蛋呢 — 去看看」+ CTA 跳列表
 - [ ] **AC 4**：盲盒语义（tokens.md §9）：页面标题用「我开过的」/「我的获得」，不用「我的中奖」

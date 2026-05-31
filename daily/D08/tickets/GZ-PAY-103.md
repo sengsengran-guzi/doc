@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M2 §扭蛋 §异常分支 + M3 §预购 §异常分支 + §业务规则 4.2 退款
 **关联拆解**: doc/02-需求拆解.md §3.1 第 656-668 行
-**关联 mockup**: design/mockup/admin-orders.html（订单详情内"申请退款"按钮）
+**关联 mockup**: design/mockup/admin-orders.html（订单详情内"申请退款"按钮；仅布局参考，admin 走 ruoyi 默认）
 **关联 ADR**: —
 **依赖**: GZ-PAY-101 + GZ-ADMIN-103 ✅（V1.0 已完工 admin 订单详情骨架）
 
@@ -85,7 +85,7 @@
 - **Admin 前端**：`code/main/plus-ui/src/views/gz-pay/`（可能需新建该目录 — V1.0 暂无）
   - 复用 V1.0 已有 ADMIN-103 订单详情页（`gz-admin/order/detail.vue` 或类似路径），在底部 slot 加退款按钮 + 弹窗组件 `RefundApplyDialog.vue`
   - api 文件 `src/api/gz-pay/refund.ts`
-  - **走 ruoyi/Element Plus 默认审美**（V1.1 admin 视觉规范以 6/14 风格统一为准，今日如未确定 → 默认值）
+  - **走 ruoyi/Element Plus 默认审美**（不套用 C 系统）
 - **小程序**：N/A（本 ticket 严格禁止 mp 加退款入口）
 - **测试**：mvn 单测 + Postman 模拟微信退款回调 XML
 

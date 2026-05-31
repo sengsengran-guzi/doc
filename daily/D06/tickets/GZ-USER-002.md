@@ -4,7 +4,7 @@
 **复杂度**: S
 **关联 PRD**: doc/02-prd.md M5 §关键页面 §个人资料展示
 **关联拆解**: doc/02-需求拆解.md §2.4 第 447 行
-**关联 mockup**: design/mockup/me-profile.html（视觉参考；doc/12 §5.1 排 3 标"待新画"是历史 — 当前文件已存在）
+**关联 mockup**: design/mockup/me-profile.html（仅布局参考；视觉以 C 设计系统为准，doc/13；doc/12 §5.1 排 3 标"待新画"是历史 — 当前文件已存在）
 **关联 ADR**: —
 **依赖**: GZ-SYS-002 ✅(D02) + GZ-SYS-005 ✅(D02)
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§4 会员中心占位流** §个人资料编辑分支（拉取微信资料 / 手机号解码 / 写 audit_log）
 - **字段表**：doc/11-字段权威表.md **§2.1 `gz_user`**（写：avatar_url / nick_name / phone_num） + **§2.3 `gz_user_audit_log`**（本 ticket 写操作日志的目标表）
-- **UI 参考**（设计冻结期降级为视觉参考）：doc/12-UI-权威索引.md **§MP-ME-PROFILE** + mockup `me-profile.html`
+- **UI 参考**（视觉走 C 日漫海报浓墨：页面用 Biz* 组件 + var(--c-*)，见 doc/tokens.md + doc/13；旧 mockup 仅作布局参考，以 c-tokens.scss 的 rpx 为准）：doc/12-UI-权威索引.md **§MP-ME-PROFILE** + mockup `me-profile.html`
 
 ## What
 

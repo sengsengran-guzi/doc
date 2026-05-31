@@ -4,7 +4,7 @@
 **复杂度**: L（V1.1 admin 域复杂 ticket — 批次定义 + 批量事务 + 强制录单号 + 操作日志）
 **关联 PRD**: doc/02-prd.md M5 §物流推进方式 + M7.4 物流管理
 **关联拆解**: doc/02-需求拆解.md §3.5 第 950 行
-**关联 mockup**: ⚠️ 缺口（admin-logistics.html 待补；设计冻结期改用 plus-ui BizTable + el-form 默认 + el-dialog 批量编辑表格）
+**关联 mockup**: ⚠️ 缺口（admin-logistics.html 待补；admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统），用 plus-ui BizTable + el-form 默认 + el-dialog 批量编辑表格）
 **关联 ADR**: —（如批量事务策略遇到分歧可新建 ADR）
 **依赖**: GZ-ADMIN-103（订单聚合管理）+ GZ-USER-103（物流节点订阅消息；如未完工本 ticket 留 hook 不阻塞）
 
@@ -21,7 +21,7 @@
   - §5.x `gz_ord_order` 表 `logistics_node` 字段 enum 定义（7 节点）
   - §5.x `gz_ord_order` 表 `express_company` + `express_no` 字段
   - §5.x `gz_logistics_log` 物流推进日志表（如已建）/ 否则本 ticket 不新建（走 sys_oper_log）
-- **UI 参考**（设计冻结期）：admin ticket — **N/A**（plus-ui BizTable + el-table-column type="selection" + el-dialog 批量录单号表单 + el-button-group 节点推进按钮）
+- **UI 参考**（admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统）：admin ticket — **N/A**（plus-ui BizTable + el-table-column type="selection" + el-dialog 批量录单号表单 + el-button-group 节点推进按钮）
 
 ## What
 

@@ -4,7 +4,7 @@
 **复杂度**: S
 **关联 PRD**: doc/02-prd.md M6 §用户操作流程 步骤 4
 **关联拆解**: doc/02-需求拆解.md §2.5 第 505 行
-**关联 mockup**: design/mockup/news-detail.html（顶部分享按钮 — 视觉参考）
+**关联 mockup**: design/mockup/news-detail.html（顶部分享按钮 — 仅布局参考；视觉以 C 设计系统为准，doc/13）
 **关联 ADR**: —
 **依赖**: GZ-NEWS-001
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§5 资讯发布流** §分享分支（分享卡片字段 / 朋友圈限制 / 分享计数埋点）
 - **字段表**：doc/11-字段权威表.md **§5.1 `gz_news_article`**（增量字段 `share_count` 本 ticket 写，如 NEWS-001 已落则复用）
-- **UI 参考**（设计冻结期降级为视觉参考）：doc/12-UI-权威索引.md **§MP-NEWS-DETAIL** + mockup `news-detail.html` 顶部分享按钮
+- **UI 参考**（视觉走 C 日漫海报浓墨：页面用 Biz* 组件 + var(--c-*)，见 doc/tokens.md + doc/13；旧 mockup 仅作布局参考，以 c-tokens.scss 的 rpx 为准）：doc/12-UI-权威索引.md **§MP-NEWS-DETAIL** + mockup `news-detail.html` 顶部分享按钮
 
 ## What
 

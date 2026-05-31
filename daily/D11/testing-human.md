@@ -28,7 +28,7 @@
 1. 浏览器打开 `<URL>` / 微信开发者工具 → 小程序首页
 2. 操作：点击 X → 检查 Y
 3. DB 验证：mysql 客户端 `SELECT * FROM gz_xxx WHERE ...`
-4. 视觉对照 mockup：颜色 / 间距 / 文案
+4. admin 不评判视觉，只评判功能（admin mockup 仅概念参考）；如为 mp 页则视觉遵循 C 设计系统（以 doc/tokens.md + doc/13 为准）
 
 **判定**：
 - ✅ OK → 在 progress.md 标 ✅
@@ -52,12 +52,15 @@
 
 ---
 
-## 3. 视觉 / 文案 review（mockup 对齐）
+## 3. 视觉 / 文案 review
 
-- 主色用 `var(--brand-primary)` = #5BC85F ✅ / 偏色
+> **admin**：不评判视觉（颜色 / 位置 / 间距），只评判功能（admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统）。
+> **mp**：视觉遵循 C 设计系统（粗墨边 / 硬投影 / 朱红主色 / 网点 / 报头风），以 doc/tokens.md + doc/13 为准；不纠结逐像素。
+
+- mp 视觉走 C 设计系统 token（`var(--c-*)`），不硬编码 hex（doc/tokens.md）✅ / 偏色
 - emoji 没乱用 ✅ / 滥用
 - 中文文案没机翻味 ✅ / 像 GPT 风
-- 圆角 / 间距 / 阴影 与 mockup 一致 ✅ / 偏差
+- mp 粗墨边 / 硬投影 / 报头风遵循 C 系统 ✅ / 偏差
 
 ---
 

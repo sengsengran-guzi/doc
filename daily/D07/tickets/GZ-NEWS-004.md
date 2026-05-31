@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§5 资讯发布流 §定时发布分支**（§N4 publish_time / §N5 schedule_publish_time 字段口径 + 每分钟 cron 扫描的状态流转 scheduled → published）
 - **字段表**：doc/11-字段权威表.md §5.1 `gz_news_article`（`status='scheduled'` / `schedule_publish_time` / `publish_time` 字段 + IDX `(tenant_id, schedule_publish_time) WHERE status='scheduled'` 索引利用）+ 附录 A.4 状态枚举
-- **UI 参考**（设计冻结期）：本 ticket 无 UI 改动；admin 端 NEWS-003 已有"定时发布"切换 + 时间选择器表单
+- **UI 参考**：本 ticket 无 UI 改动；admin 端 NEWS-003 已有"定时发布"切换 + 时间选择器表单（admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统）
 
 ## What
 

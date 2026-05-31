@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md tokens.md §9 收集驱动
 **关联拆解**: doc/02-需求拆解.md §3.3 第 832 行（**V1.1 简版，深化推 v2**）
-**关联 mockup**: design/mockup/me-collection.html（视觉参考）
+**关联 mockup**: design/mockup/me-collection.html（仅布局参考；视觉以 C 系统为准，doc/13；概率条/进度条为 doc/13 §3.2 待建 Biz 组件 BizProbBar）
 **关联 ADR**: —
 **依赖**: GZ-GACHA-105
 
@@ -30,8 +30,8 @@
 - [ ] **AC 2**：page `pages/me/collection.vue`：
   - 顶部机器筛选条（wd-tabs，第一项「全部」）
   - 按机器分组卡片（折叠头 + 展开内容）：
-    - 头：机器封面 + 名称 + 进度「已收集 X/Y」+ 进度条（.stock-bar-track + .stock-bar-fill 走 tokens.md 共享 class）+ 集齐时显示徽章 🏆
-    - 内容：奖品网格（3 列）— 已得高亮（彩色 + 稀有度边框）/ 未得灰显（grayscale + 半透明 + 锁标）
+    - 头：机器封面 + 名称 + 进度「已收集 X/Y」+ 进度条（走 C 设计系统：var(--c-red) 填充 + 粗墨边 var(--c-bw)；概率条/进度条为 doc/13 §3.2 待建 Biz 组件 BizProbBar）+ 集齐时显示徽章 🏆
+    - 内容：奖品网格（3 列）— 已得高亮（彩色 + 稀有度边框走 var(--c-r-ssr/-sr/-r/-n)）/ 未得灰显（grayscale + 半透明 + 锁标）
   - 已得奖品点击 → 弹 popup 展示获得时间 + 跳对应 draw 记录（GACHA-106 详情）
   - 未得奖品点击 → 弹 popup「还差 X 件集齐」+ CTA「去开盒」跳详情页
 - [ ] **AC 3** ⭐ **与会员中心订单 tab 数据互通**（doc/02 §3.3 行 823 + 行 838 V1.1 简版）：
@@ -90,7 +90,7 @@
 | D2 | 不做"按 IP 系列" / "跨机器套装" | V1.1 简版（doc/02 行 838）；deepen 在 v2 |
 | D3 | 集齐徽章仅显示不发奖 | 避免 V1.1 内引入实物奖励发放链路；徽章本身是社交价值激励 |
 | D4 | 灰显未得奖品 + grayscale CSS filter | 视觉上"未拥有"清晰；激发收集欲（tokens.md §9 收集驱动）|
-| D5 | 进度条 / 徽章动效复用 tokens.md §6 共享 class | 视觉一致性 + 不引新样式 |
+| D5 | 进度条 / 徽章走 C 设计系统 Biz 组件（doc/13 §3.2 待建 BizProbBar）+ var(--c-*) | 视觉一致性 + 不硬编码 hex + 不引新样式 |
 
 ### 风险提示
 

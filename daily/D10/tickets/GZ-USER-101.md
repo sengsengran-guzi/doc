@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M5 §用户操作流程 §进入会员中心 步骤 4-5
 **关联拆解**: doc/02-需求拆解.md §3.4 第 848-858 行
-**关联 mockup**: design/mockup/order-list.html ⚠️ V1.0/V1.1 设计冻结期：本 ticket 为纯后端接口，无 UI 实现（mp UI 由 USER-102 接入消费）
+**关联 mockup**: design/mockup/order-list.html ⚠️ 本 ticket 为纯后端接口，无 UI 实现（mp UI 由 USER-102 接入消费）
 **关联 ADR**: —（C1 跨业务订单聚合裁定见 doc/11 Changelog v0.2 / doc/10 §9）
 **依赖**: GZ-ORD-104 ✅(D09) + GZ-GACHA-104 ✅(D09)
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§9 跨业务订单聚合 + 跨境物流流** §跨业务订单聚合（V1.1 GZ-USER-101/102）+ §统一订单字段（跨业务）+ §状态机 + §4 会员中心占位流 §V1.0 → V1.1 演进契约
 - **字段表**：doc/11-字段权威表.md **§8.1 `gz_unified_order_view` 统一订单视图**（统一字段口径权威定义）+ §8.2 business_status → UI 统一状态映射 + §6.3 `gz_ord_order`（预购订单 schema）+ §7.4 `gz_gacha_order`（扭蛋衍生订单 schema）+ §A.7 物流字段口径（C1 简化 2 态 + 终态）
-- **UI 参考**（设计冻结期）：doc/12 §MP-ORD-LIST（消费方页面，本 ticket 不实装 UI，但接口字段需对齐其消费需求）
+- **UI 参考**：doc/12 §MP-ORD-LIST（消费方页面，本 ticket 不实装 UI，但接口字段需对齐其消费需求）
 
 ## What
 

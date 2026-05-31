@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M7.3 订单管理
 **关联拆解**: doc/02-需求拆解.md §3.5 第 936-946 行
-**关联 mockup**: design/mockup/admin-orders.html ⚠️ V1.0/V1.1 设计冻结期：admin 走 ruoyi 默认 + plus-ui BizTable / Element Plus 默认组件，**不参考 mockup 视觉**；mockup 仅作页面结构 / 功能项参考。**底部物流推进面板 7 节点 UI 已作废**（C1 简化），本 ticket 仅做订单列表 + 详情，**物流推进 admin 侧由 ADMIN-104 在 D11 实施**
+**关联 mockup**: design/mockup/admin-orders.html ⚠️ admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）+ plus-ui BizTable / Element Plus 默认组件，**不参考 mockup 视觉**；mockup 仅作页面结构 / 功能项参考。**底部物流推进面板 7 节点 UI 已作废**（C1 简化），本 ticket 仅做订单列表 + 详情，**物流推进 admin 侧由 ADMIN-104 在 D11 实施**
 **关联 ADR**: —
 **依赖**: GZ-ORD-104 ✅(D09) + GZ-GACHA-104 ✅(D09)
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§9 跨业务订单聚合 + 跨境物流流** §跨业务订单聚合（V1.1 GZ-USER-101/102 + GZ-ADMIN-103 通用接口）+ §状态机
 - **字段表**：doc/11-字段权威表.md **§8.1 `gz_unified_order_view` 统一订单视图**（admin 端复用同一 VO） + §8.2 business_status → UI 统一状态映射 + §6.3 `gz_ord_order` + §7.4 `gz_gacha_order` + §A.5/A.6/A.7 状态字典
-- **UI 参考**（设计冻结期）：doc/12 §AD-ORD-ORDERS §页面结构（toolbar / 表格列 / 详情抽屉）+ §关键约束（业务线分别核算 / 申请退款 owner 权限 / 物流回退仅 owner）
+- **UI 参考**：doc/12 §AD-ORD-ORDERS §页面结构（toolbar / 表格列 / 详情抽屉）+ §关键约束（业务线分别核算 / 申请退款 owner 权限 / 物流回退仅 owner）。admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）
 
 ## What
 

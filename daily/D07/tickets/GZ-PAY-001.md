@@ -4,7 +4,7 @@
 **复杂度**: M（V1.0 收尾日复杂 ticket — 涉及外部商户号资质 + 微信 V3 SDK + 回调验签幂等三套机制，禁止快速过 §0 自检）
 **关联 PRD**: doc/02-prd.md M1 §微信支付 + 合同 §2.1 第一期（一）+ §2.3 商户号主体强约束
 **关联拆解**: doc/02-需求拆解.md §2.2 第 262-277 行
-**关联 mockup**: design/mockup/pay-result.html（**三态并排**：成功 / 失败 / 超时 — V1.0 用于通道测试展示页；视觉参考，**设计冻结期不还原**）
+**关联 mockup**: design/mockup/pay-result.html（**三态并排**：成功 / 失败 / 超时 — V1.0 用于通道测试展示页；仅布局参考；视觉以 C 设计系统为准，doc/13）
 **关联 ADR**: —（如商户号未到位需降级走 mock 链路，可写 ADR-0003 决策真实通道补打时机）
 **依赖**: GZ-SYS-001 ✅（云服务到位）+ 甲方商户号资料 D03（5/29）已启动申请流程
 
@@ -23,7 +23,7 @@
   - **§4.3 `gz_pay_callback_log`**（微信回调原始流水 — 永不更新的审计表，保留 12 个月）
   - 附录 A.2 支付状态枚举（`created` / `pending` / `paid` / `timeout` / `closed` / `failed` / `refunding` / `refunded`，V1.0 只用前 5 个）
 - **合同**：doc/03-contract.md §2.1 V1.0 范围 + §2.3 商户号主体（**Kevin 收到商户号资料时必核对主体名**）
-- **UI 参考**（设计冻结期）：doc/12-UI-权威索引.md §MP-PAY-RESULT — 支付结果页（成功 / 失败 / 超时三态）；mp 端实装走 wot-design-uni 默认；admin 端测试工具页用 plus-ui BizTable 默认
+- **UI 参考**：doc/12-UI-权威索引.md §MP-PAY-RESULT — 支付结果页（成功 / 失败 / 超时三态）；mp 端走 C 设计系统：Biz* 原子组件（不直接撒 wd-*）+ var(--c-*)，doc/tokens.md + doc/13；admin 端测试工具页走 ruoyi/Element Plus 默认审美（不套用 C 系统），用 plus-ui BizTable 默认
 
 ## What
 

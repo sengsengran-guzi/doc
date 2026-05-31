@@ -4,7 +4,7 @@
 **复杂度**: S
 **关联 PRD**: doc/02-prd.md M4 §关键页面 §我的预约详情
 **关联拆解**: doc/02-需求拆解.md §2.3 第 342 行
-**关联 mockup**: design/mockup/booking-list.html（V1.0 设计冻结期：列表项点入详情；wot-design-uni 默认 + tokens.md brand-primary）
+**关联 mockup**: design/mockup/booking-list.html（仅布局参考；视觉以 C 设计系统为准，doc/13。列表项点入详情）
 **关联 ADR**: —
 **依赖**: GZ-BEAN-004 ✅(D04)
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§3 拼豆预约全流程** §状态机（4 状态 pending/used/cancelled/no_show） + §关键节点 N8 跳预约详情页 + §异常分支 E6/E7/E8（核销码被扫后的状态校验）
 - **字段表**：doc/11-字段权威表.md **§3.4 `gz_bean_booking`**（详情读取字段 — store_id/seat_id/date/slot_start/status/verify_code/verify_sign） + §3.6 拼豆状态字段详细口径 + §A.3 状态字典编码 `gz_bean_booking_status`
-- **UI 参考**（设计冻结期）：doc/12 §MP-BEAN-LIST 详情段（mockup `booking-list.html` 列表项点入）；详情页本身 doc/12 未单独立 page-id，**作为 LIST 的子视图实现**
+- **UI 参考**：doc/12 §MP-BEAN-LIST 详情段（mockup `booking-list.html` 仅作布局参考；视觉以 C 设计系统为准，doc/13）；详情页本身 doc/12 未单独立 page-id，**作为 LIST 的子视图实现**
 
 ## What
 
@@ -25,7 +25,7 @@ mp 端用户在「我的预约」列表点入某条预约 → 展示门店 / 日
 - [ ] **AC 1**：mp 端 `pages/bean/detail.vue` 路由 `?id=<bookingId>`，调 `GET /app/gz/bean/booking/{id}` 拉详情，未登录 / 非本人预约 → 拒绝（sa-token 权限校验 + 后端比对 user_id）
 - [ ] **AC 2**：详情页布局自上而下：门店名 + 地址 → 日期 + 时段（如「2026-06-15 14:00-16:00」）→ 座位编号 → **核销码 QR 大图**（约屏宽 70%）→ 状态 tag → 底部 CTA（pending 显示「取消预约」给 BEAN-007 用，其他状态不显示按钮）
 - [ ] **AC 3**：QR payload = D04 `BeanQrService.sign()` 返回的 `{bookingId}.{HMAC签名}` 字符串；前端用 `wx.createOffscreenCanvas` + qrcode-uni（或同类 wxapi 兼容库）渲染，**不依赖外部 CDN**（V1.0 合规：腾讯云全栈，合同附件二）
-- [ ] **AC 4**：4 状态视觉：pending = QR 彩色 + brand-primary tag；used = QR 灰度 + "已核销"绿 tag；cancelled = QR 灰度 + "已取消"灰 tag；no_show = QR 灰度 + "已过期"灰 tag
+- [ ] **AC 4**：4 状态视觉：pending = QR 彩色 + var(--c-red) tag；used = QR 灰度 + "已核销" var(--c-green) tag；cancelled = QR 灰度 + "已取消"灰 tag（var(--c-ink-3)）；no_show = QR 灰度 + "已过期"灰 tag（var(--c-ink-3)）
 - [ ] **AC 5**：i18n 全覆盖（`bean.detail.xxx`）；状态文案走 sys_dict_data `gz_bean_booking_status` 字典
 - [ ] **AC 6**：单测可选；联调验：D04 提交完一个预约 → 进详情 → QR 可被微信扫码识别（payload 内容正确）
 
@@ -50,7 +50,7 @@ mp 端用户在「我的预约」列表点入某条预约 → 展示门店 / 日
 2. **payload 不含敏感字段**（不放手机号 / openId / userId），仅 `bookingId + HMAC 签名`
 3. **签名密钥统一**：与 D04 BEAN-004 落的 `gz.bean.qr.signing-secret` 同源，不要在本 ticket 新生 secret
 4. **权限校验**：后端必须 `where user_id = ${current_user_id}`，前端 hide 链接不算防御
-5. **4 状态视觉走字典 + tokens.md**，不要硬编码颜色
+5. **4 状态视觉走字典 + C 设计系统 token（var(--c-*)，见 doc/tokens.md）**，不硬编码 hex；状态 tag 用 BizTag 渲染，不直接撒 wd-*
 
 ### 风险提示
 

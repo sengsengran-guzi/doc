@@ -4,7 +4,7 @@
 **复杂度**: S
 **关联 PRD**: doc/02-prd.md M3 §用户操作流程 步骤 7 + M5 §用户操作流程 §进入会员中心
 **关联拆解**: doc/02-需求拆解.md §3.2 第 729-738 行
-**关联 mockup**: design/mockup/order-list.html + order-detail.html
+**关联 mockup**: design/mockup/order-list.html + order-detail.html（仅布局参考；mp 视觉以 C 系统为准，doc/13；admin 走 ruoyi 默认）
 **关联 ADR**: —
 **依赖**: GZ-ORD-104 + GZ-USER-101 ✅（V1.0 已建会员中心骨架）
 
@@ -38,7 +38,7 @@
   - 「我的订单」cell 点击 → 跳 `/pages/user/order-list.vue`
   - 列表页顶部 5 个 status tab
 - [ ] **AC 4**：mp 端 `pages/user/order-list.vue` 列表页 + `pages/user/order-detail.vue` 详情页：
-  - 列表：商品卡 + 状态 chip（颜色：created 黄 / paid 蓝 / logistics 橙 / done 绿 / cancelled 灰）+ 时间 + 金额
+  - 列表：商品卡 + 状态 chip（C token 配色：created var(--c-yellow) / paid var(--c-blue) / logistics var(--c-yellow) 橙调 / done var(--c-green) / cancelled var(--c-ink-3) 灰）+ 时间 + 金额
   - 详情：商品 snapshot 区 + 数量 / 总价 / 地址 snapshot / **状态时间线**（业务组件 BizOrderTimeline，含 5 节点）/ 物流模块占位（USER-103 未实现 → 显示「跨境物流详情待完善」+ 国内单号字段如有展示）/ 「联系客服」CTA
   - **状态 created 时**：显示「继续支付」CTA → 调 PAY-101 重新拉支付参数（同 bizOrderId 幂等）+「取消订单」CTA
   - **严禁** 显示「申请退款」按钮（PAY-103 §AC 4 锚定）

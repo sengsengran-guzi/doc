@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M2 §用户操作流程 步骤 5-7 + §用户故事 2 + tokens.md §9 收集驱动
 **关联拆解**: doc/02-需求拆解.md §3.3 第 803 行
-**关联 mockup**: design/mockup/gacha-draw.html + design/mockup/me-collection.html（视觉参考）
+**关联 mockup**: design/mockup/gacha-draw.html + design/mockup/me-collection.html（仅布局参考；视觉以 C 系统为准，doc/13；出奖动画为 doc/13 §3.2 待建 Biz 组件 BizGachaDraw）
 **关联 ADR**: —
 **依赖**: GZ-GACHA-104
 
@@ -31,10 +31,10 @@
   - 拿到 drawn → 播放三段分镜（tokens.md §9）：
     - **段 1：转动**（0~1.5s）— 扭蛋机晃动 + 胶囊滚动动画（CSS transform rotate + 抖动）
     - **段 2：裂开光爆**（1.5s~2.5s）— 胶囊裂开光爆效果（CSS radial-gradient + scale + opacity 关键帧）
-    - **段 3：揭晓**（2.5s~）— 中奖物展示 + 对应稀有度光晕（SSR 金 / SR 紫 / R 蓝 / N 灰，光晕 box-shadow token）
+    - **段 3：揭晓**（2.5s~）— 中奖物展示 + 对应稀有度光晕（SSR 金 var(--c-r-ssr) / SR 紫 var(--c-r-sr) / R 蓝 var(--c-r-r) / N 灰 var(--c-r-n)，光晕走 C 稀有度 token，不硬编码 hex）
   - 拿到 stock_empty_refunded → 友好弹窗"很遗憾，奖品已被抢空，已自动退款"+ 跳列表页
 - [ ] **AC 3**：揭晓后 UI：
-  - 中奖物大图 + 稀有度角标（.rarity-chip）+ 名称 + 公示价值（如有）
+  - 中奖物大图 + 稀有度徽章（doc/13 §3.2 待建 Biz 组件，走 var(--c-r-ssr/-sr/-r/-n)）+ 名称 + 公示价值（如有）
   - **强提示图鉴进度伏笔**：底部条「⭐ 已收集 X/Y 件 — 查看图鉴」点击跳 `/pages/me/collection?machineId={machineId}`（GACHA-107）
   - **集齐特典明示徽章奖励**：如该机器已集齐 → 上方弹"集齐特典 🏆"徽章动画 + "恭喜集齐 XX 系列"
   - 双 CTA：「再抽一次」（跳回详情页保留 machineId）/「去历史看看」（跳 GACHA-106）
@@ -69,7 +69,7 @@
 ### 强约束
 
 1. **三段分镜节奏严格**（tokens.md §9）— 1.5s / 1s / 揭晓，不允许调快或省略
-2. **稀有度光晕色严格走 token**（tokens.md §5）— SSR 金 `0 1px 6px rgba(255,215,0,.25)` / SR 紫 / R 蓝 / N 灰
+2. **稀有度光晕色严格走 C 稀有度 token**（var(--c-r-ssr/-sr/-r/-n)，doc/tokens.md §1.4）— SSR 金 / SR 紫 / R 蓝 / N 灰，不硬编码 hex/rgba
 3. **图鉴入口伏笔强提示**（tokens.md §9 收集驱动）— 揭晓页底部条不可省略
 4. **盲盒语义严格**（tokens.md §9）
 5. **低端机 fallback** — 不让动画卡死老机型

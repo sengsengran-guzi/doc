@@ -4,7 +4,7 @@
 **复杂度**: S
 **关联 PRD**: doc/02-prd.md M4 §取消预约 + §业务规则
 **关联拆解**: doc/02-需求拆解.md §2.3 第 370 行
-**关联 mockup**: design/mockup/booking-list.html（列表项操作按钮 + 二次确认弹窗）
+**关联 mockup**: design/mockup/booking-list.html（仅布局参考；视觉以 C 设计系统为准，doc/13。列表项操作按钮 + 二次确认弹窗）
 **关联 ADR**: —
 **依赖**: GZ-BEAN-006
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§3 拼豆预约全流程** §关键节点 N9 / N12（用户取消） + §状态机 pending → cancelled + §异常分支 E7（核销码被扫后已 cancelled 的拒绝逻辑）
 - **字段表**：doc/11-字段权威表.md **§3.4 `gz_bean_booking`**（status / cancel_time / cancel_reason 字段） + §3.5 `gz_bean_booking_log`（取消动作写一条 log）
-- **UI 参考**（设计冻结期）：doc/12 §MP-BEAN-LIST 操作区 + BEAN-005 详情页底部 CTA
+- **UI 参考**：doc/12 §MP-BEAN-LIST 操作区 + BEAN-005 详情页底部 CTA（视觉以 C 设计系统为准，doc/13）
 
 ## What
 

@@ -318,3 +318,76 @@ pages/me/index.vue:15:   useNavGuard('me')     ✅
 
 - ✅ Tier 1B 全通过（vitest 21/21 / type-check 无新增错误 / build 成功 / tabBar 5 项正确 / 临时入口已清 / BizCustomerServiceFab 全页挂载 / useNavGuard bean+me 就位）
 - ✅ Tier 1B 通过，ticket 进入 Tier 2（Kevin 真机 spot check 5-8 min：5 tab 切换 + 拼豆/我的未登录弹窗 + 占位页文案）
+
+---
+
+## §revision（D04 Kevin Tier 2 发现 — 2026-05-29 15:55 修复）
+
+### 问题（Kevin 现场截图）
+
+- 微信开发者工具运行 dist/dev/mp-weixin
+- 3 tab 显示正常（首页 / 拼豆 / 我的，选中朱红 #E73E2A）
+- 点任 tab 主体白屏（无任何元素渲染）
+- Console 4 个 warning，其中第 1 个：⚠️ `invalid app.json tabBar["customize"]`
+
+### 根因（已确认）
+
+`src/tabbar/config.ts` 第 81-85 行：
+
+```ts
+const _tabbar: TabBar = {
+  // #ifdef MP-ALIPAY
+  customize: !!needHideNativeTabbar,
+  // #endif
+  custom: selectedTabbarStrategy === TABBAR_STRATEGY_MAP.CUSTOM_TABBAR,
+```
+
+`#ifdef MP-ALIPAY` 条件编译标记**仅对 .vue / .scss / .css 文件生效**，**`.ts` 文件不处理**。结果：
+
+- 源码意图：`customize` 字段只在 mp-alipay 平台生成
+- 实际效果：所有平台编译产物的 app.json 都被注入 `customize: false`
+- mp-weixin app.json schema 不识别 `customize` 字段 → 微信开发者工具 console warning
+
+**白屏部分**：本次代码层定位未找到主体白屏的代码层根因（dist 产物 wxml / wxss / json / js 结构全部正常 — global-ku-root → layout-default-uni → biz-screen → 业务内容的 slot 链路完整，组件注册无误，CSS 变量正常注入 app.wxss）。最可能解释：
+
+1. **微信开发者工具产物缓存**：Kevin 15:32 截图时工具加载的 wxml 可能不是 15:27 最新产物（开发者工具偶发性的缓存不刷新）
+2. **customize warning 触发开发者工具 schema 校验异常**：mp-weixin 工具对未知 tabBar 字段的处理在某些基础库版本可能产生连锁副作用（罕见但有社区报告）
+
+### 修复
+
+`src/tabbar/config.ts`：
+
+```ts
+// `customize` 仅 mp-alipay 支持；mp-weixin 收到此字段会触发 console warning
+// "invalid app.json tabBar[\"customize\"]"。本字段构建期(.ts)无法用 `#ifdef MP-ALIPAY`
+// 条件编译剔除（uniapp 条件编译仅对 .vue / .scss / .css 生效），故运行时按平台判断。
+const _isAlipay = process.env.UNI_PLATFORM === 'mp-alipay'
+const _tabbar: TabBar = {
+  ...(_isAlipay ? { customize: !!needHideNativeTabbar } : {}),
+  custom: selectedTabbarStrategy === TABBAR_STRATEGY_MAP.CUSTOM_TABBAR,
+```
+
+### 验证
+
+- 重跑 `pnpm dev:mp-weixin`（Kevin 自有 watch + 我 background 触发一次）→ dist 时间戳 15:55
+- `grep -c "customize" dist/dev/mp-weixin/app.json` → **0**（已消失）✅
+- app.json tabBar 段干净，仅含 `custom / color / selectedColor / backgroundColor / borderStyle / list`
+
+### 改动文件
+
+- `code/main/miniapp/src/tabbar/config.ts` — `customize` 字段改运行时按 `process.env.UNI_PLATFORM` 平台判断（mp-weixin 不写入，mp-alipay 才写入）
+
+### Kevin 重测路径
+
+1. 微信开发者工具 → 详情 → 本地设置 → **清缓存（缓存 / 文件 / Storage 全清）**
+2. **重启开发者工具**（不只是刷新，而是关掉重开）
+3. 重新打开 `dist/dev/mp-weixin`
+4. 看主体内容是否出现 + console 是否还有 customize warning
+
+### 如重测后仍白屏（需要补诊）
+
+请贴：
+- 完整 console **Error tab**（不只 Warning tab）— 看是否有 runtime exception
+- **AppData 面板**：点首页后看 `virtualHostHidden / virtualHostClass / a / b / ...` 这些值
+- **Wxml 面板**：点首页后看 `<global-ku-root>` 下面 DOM 树是否真的为空 / 只是 height=0
+

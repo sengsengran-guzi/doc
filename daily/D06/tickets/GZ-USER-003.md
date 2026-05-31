@@ -4,7 +4,7 @@
 **复杂度**: S
 **关联 PRD**: doc/02-prd.md M5 §关键字段 § Address + 关键页面 §地址簿
 **关联拆解**: doc/02-需求拆解.md §2.4 第 461 行
-**关联 mockup**: design/mockup/address-list.html + design/mockup/address-edit.html（视觉参考，V1.0 设计冻结期不强求逐像素）
+**关联 mockup**: design/mockup/address-list.html + design/mockup/address-edit.html（仅布局参考；视觉以 C 设计系统为准，doc/13）
 **关联 ADR**: —
 **依赖**: GZ-SYS-002 ✅(D02)
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§4 会员中心占位流** §地址簿分支（默认唯一规则 / 软删 / V1.1 下单时引用）
 - **字段表**：doc/11-字段权威表.md **§2.2 `gz_user_address`**（字段权威 — 完整 DDL 来源）+ §1 全局公共字段
-- **UI 参考**（设计冻结期降级为视觉参考）：doc/12-UI-权威索引.md **§MP-ME-ADDR-LIST** + **§MP-ME-ADDR-EDIT** + mockup `address-list.html` / `address-edit.html`
+- **UI 参考**（视觉走 C 日漫海报浓墨：页面用 Biz* 组件 + var(--c-*)，见 doc/tokens.md + doc/13；旧 mockup 仅作布局参考，以 c-tokens.scss 的 rpx 为准）：doc/12-UI-权威索引.md **§MP-ME-ADDR-LIST** + **§MP-ME-ADDR-EDIT** + mockup `address-list.html` / `address-edit.html`
 
 ## What
 

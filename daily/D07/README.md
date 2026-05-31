@@ -2,7 +2,7 @@
 
 > 日期：2026-06-04（周四）
 > 阶段：**V1.0 实施期 day 6 / 最后一天** ⭐
-> 上一日：[D06](../D06/README.md) ｜ 下一日：[D08](../D08/README.md)（V1.1 头一天，6/16 周二起；6/05-6/15 为 buffer + staging 部署 + 客户演示 + 风格统一调整窗口）
+> 上一日：[D06](../D06/README.md) ｜ 下一日：[D08](../D08/README.md)（V1.1 头一天，6/16 周二起；6/05-6/15 为 buffer + staging 部署 + 客户演示 + mp 视觉走查窗口）
 
 ---
 
@@ -15,7 +15,7 @@
 **本日 4 ticket 完工后 = V1.0 30 ticket 全闭环**。Kevin testing-human 阶段除了单 ticket 验收外，**必须跑一遍 V1.0 端到端**：
 微信登录 → 浏览资讯 → 拼豆预约（选店/选时段/选座/绑手机/提交）→ 核销码生成 → 后台核销 → 后台看板数据自增 → 后台资讯 CMS 发文 → mp 端能读到。
 
-完工后 D08 起进 V1.1 开发期（6/16 周二），6/05-6/15 共 11 天 buffer 用于：staging 部署 / 客户验收演示 / **风格统一调整窗口（6/10-6/14）** / V1.0 残留 bug 修复。
+完工后 D08 起进 V1.1 开发期（6/16 周二），6/05-6/15 共 11 天 buffer 用于：staging 部署 / 客户验收演示 / **mp 视觉走查（6/10-6/14，已切 C 日漫海报浓墨，视觉以 doc/tokens.md + doc/13 为准）** / V1.0 残留 bug 修复。
 
 ## Ticket 清单（4 个，2 串行 + 2 并行）
 
@@ -74,12 +74,12 @@ testing-human.md 增量章节 §V1.0 集成回归（Kevin 一遍 happy path 走�
 
 任一环节断 → 优先级 P0 raise，6/05-6/06 修复，不下挪到 V1.1。
 
-### C. 设计冻结期纪律（与 D02-D06 同款，最后一天提醒）
+### C. admin 视觉纪律（与 D02-D06 同款，最后一天提醒）
 
-- admin（NEWS-003 / ADMIN-003）走 ruoyi 默认 + plus-ui BizTable + Element Plus 默认组件；**不参考 mockup 视觉**，仅参考 mockup 的字段 / 卡片布局结构
+- admin（NEWS-003 / ADMIN-003）走 ruoyi/Element Plus 默认审美（不套用 C 系统）+ plus-ui BizTable + Element Plus 默认组件；**仅参考 mockup 的字段 / 卡片布局结构**
 - NEWS-003 富文本编辑器**优先复用 plus-ui 已集成的编辑器**（如有 wangEditor / tinymce / TipTap 任一即用，**不引新依赖**）；如 plus-ui 无现成编辑器 → 引 wangEditor v5（最轻 / 中文文档完备）
-- mp 端本日无新页面（NEWS-001/002 已在 D06 完工）
-- 视觉评判窗口在 6/10-6/14 风格统一阶段，本日 Kevin testing-human **不评判 admin 颜色 / 间距 / 圆角 / 字号**，只评判功能
+- mp 端本日无新页面（NEWS-001/002 已在 D06 完工）；PAY-001 的 mp 测试页走 C 设计系统（Biz* 组件 + var(--c-*)，doc/tokens.md + doc/13）
+- admin 走 ruoyi/Element Plus 默认审美，Kevin testing-human **不评判 admin 颜色 / 间距 / 圆角 / 字号**，只评判功能
 
 ### D. menu_id 段（CLAUDE.md §6 #6 锚定）
 
@@ -142,4 +142,4 @@ git add -A && git commit -m "D07 (d6): 资讯 CMS + 看板 + 支付通道 + V1.0
 # 然后写 D08/README.md（V1.1 头一天，6/16 周二起；6/05-6/15 buffer 不写 daily README）
 ```
 
-**V1.0 收官**：本日完工后 V1.0 30 ticket 全闭环。6/05-6/15 为 buffer 期（staging 部署 / 风格统一调整 / 客户演示），不按 daily 节奏跑 ticket；6/16 周二 D08 起进 V1.1 27 ticket。
+**V1.0 收官**：本日完工后 V1.0 30 ticket 全闭环。6/05-6/15 为 buffer 期（staging 部署 / mp 视觉走查（已切 C 系统，doc/tokens.md + doc/13）/ 客户演示），不按 daily 节奏跑 ticket；6/16 周二 D08 起进 V1.1 27 ticket。

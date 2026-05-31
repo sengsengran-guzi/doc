@@ -4,7 +4,7 @@
 **复杂度**: S
 **关联 PRD**: doc/02-prd.md M7 §异常分支 "甲方误删商品 → 软删除 30 天可恢复"
 **关联拆解**: doc/02-需求拆解.md §3.5 第 1013 行
-**关联 mockup**: ⚠️ 缺口（admin-recycle-bin.html 待补；设计冻结期改用 plus-ui BizTable + el-tabs（回收站 / 归档库）+ 默认操作列）
+**关联 mockup**: ⚠️ 缺口（admin-recycle-bin.html 待补；admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统），用 plus-ui BizTable + el-tabs（回收站 / 归档库）+ 默认操作列）
 **关联 ADR**: —
 **依赖**: GZ-ADMIN-101（V1.1 admin 域底座）+ GZ-NEWS-003（确认 V1.0 资讯表已用 del_flag）
 
@@ -15,7 +15,7 @@
 - **字段表**：doc/11-字段权威表.md — 所有业务表 `del_flag` 字段定义（ruoyi 范式 `0`=正常 / `1`=删除 / `2`=归档）
 - **业务流**：doc/10-业务流权威图.md M7 §异常分支（甲方误删商品 → 软删 30 天可恢复）
 - **CLAUDE.md §6 #1**：不动 ruoyi 自带模块（本 ticket 仅扫 gz_* 业务表，sys_* 表自带回收站逻辑不动）
-- **UI 参考**（设计冻结期）：admin ticket — **N/A**（plus-ui BizTable + el-tabs 默认）
+- **UI 参考**（admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统）：admin ticket — **N/A**（plus-ui BizTable + el-tabs 默认）
 
 ## What
 

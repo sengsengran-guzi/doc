@@ -511,3 +511,78 @@ GET /app/gz/bean/slot/list?storeId=1&date=2026/05/29
 | API 契约 3 error path | ✅ |
 | enabled=0 座位（B2）过滤 | ✅ |
 | 无 token 401 | ✅ |
+
+---
+
+## §revision（D04 Tier 2 §1.1 A4 — BizSeatList render ReferenceError）
+
+> **触发**：Kevin 真机走 A4「选完日期 + 时段后，第 ③ 步选座位区空白」。
+> Console 红错：`ReferenceError: m_a_String_a_a_a_seatId_a__a_ is not defined at BizSeatList-vendor.js:17`
+> Vue warn：`Unhandled error during render function <BizSeatList seats=[(4)[...]] availability=[(4)[...]] modelValue=''>`
+
+### 根因（精确）
+
+**uniapp weixin transformer 对 bracket member assignment 的 mangling bug**：
+
+- 源码 `BizSeatList.vue:34` 原写法：`m[String(a.seatId)] = a.available`（普通 record 索引赋值）
+- transformer 把整段左值 `m[String(a.seatId)]` mangling 成裸标识符 `m_a_String_a_a_a_seatId_a__a_`（`[` `(` `)` `.` 全替换成 `_a_`）→ 编译产物：`m_a_String_a_a_a_seatId_a__a_ = a.available;`
+- 该裸标识符**未声明** → 严格模式 ReferenceError → computed 抛错 → render 崩 → 第 ③ 步整区白屏
+- **二次确认**：把 `String(a.seatId)` 抽到中间变量 `const key = ...` 后再写 `m[key] = a.available` —— transformer **仍然** mangling 成 `m_a_key_a_ = a.available;`（bug 跟 key 表达式无关，根因是 `obj[k] = v` 整组语法）
+
+### 改了哪些文件
+
+| 文件 | 改动 |
+|---|---|
+| `code/main/miniapp/src/components/biz/BizSeatList.vue` | `availabilityMap` 从 `Record<string, boolean>` 改为 `Map<string, boolean>`；`m[key] = v` → `m.set(key, v)`；`isOccupied` 同步走 `map.has(key)` / `map.get(key)`（`Map.set/has/get` 是普通函数调用，transformer 不触碰，根本规避 mangling 路径） |
+| `code/main/miniapp/src/components/biz/BizSeatList.test.ts` | 新增 3 个用例：① availability 多座位混合状态 isOccupied 分流；② seatId 数字 / 字符串混合类型用 `String()` 桥接 lookup；③ availability 含 seats 中不存在的 seatId 不影响 seats 渲染 |
+
+### 单测覆盖
+
+```
+$ pnpm vitest run src/components/biz/BizSeatList.test.ts
+ ✓ src/components/biz/BizSeatList.test.ts (7 tests) 17ms
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+```
+
+7/7 通过（原 4 + 新增 3）。
+
+### dist 重编译时间戳 + 产物验证
+
+```
+$ ls -la dist/dev/mp-weixin/components/biz/BizSeatList-vendor.js
+-rw-r--r--  1 wkui  staff  1539 May 31 10:24 BizSeatList-vendor.js
+```
+
+修复后产物（关键行）：
+
+```js
+// dist/dev/mp-weixin/components/biz/BizSeatList-vendor.js:14-20
+const availabilityMap = common_vendor.computed(() => {
+  const m = /* @__PURE__ */ new Map();
+  for (const a of props.availability) {
+    m.set(String(a.seatId), a.available);   // ← 干净的函数调用，无 mangling
+  }
+  return m;
+});
+```
+
+修复前产物（已废弃）：
+
+```js
+// 旧版本：第 17 行 ReferenceError
+m_a_String_a_a_a_seatId_a__a_ = a.available;   // ← 裸标识符未声明
+```
+
+### 防回归
+
+- vitest 用例 #5「multi-seat mixed availability」是 isOccupied 走 availabilityMap 真实路径的最直观锁定。后续若有人把 Map 改回普通对象 + bracket assign，vitest 仍能跑过（因为 vite 不复现 uniapp transformer bug），所以**真正的护栏是源码注释**（BizSeatList.vue:30-39 JSDoc 明示「禁止 `obj[key] = v` bracket 赋值」）。
+- 抽 skill 候选（后续 curator 周巡评估）：mp 端 record/object bracket-assignment → Map 规避，命名「coder-mp-uniapp-bracket-assign-mangling-trap」。
+
+### Kevin 重测 A4 的步骤
+
+1. 微信开发者工具 → 工具栏「清缓存」→ 勾选「清除数据缓存」+「清除文件缓存」+「清除编译缓存」→ 确定
+2. 关闭微信开发者工具 → 重新打开（避免 webview 缓存）
+3. 重新走 D04 testing-human §1.1 A4：拼豆 tab → 选日期 → 选时段 → 验证 ③ 区出现 4 个座位卡片（A1 朱红粗描边可点 / A2-A4 同形可点；A2 因 enabled=0 应当根本不在列表里 — 这是 BEAN-002 service 过滤已生效行为）
+4. 点击任意座位 → 卡片变朱红底白字（is-active）+ 底部 CTA 从「请选择座位」变为「下一步：填写信息」
+5. Console 应无任何红错（vue warn / ReferenceError 全消）

@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M4 §关键页面（后台） + M7.5 预约管理
 **关联拆解**: doc/02-需求拆解.md §2.3 第 385 行
-**关联 mockup**: design/mockup/admin-bookings.html（V1.0 设计冻结期：admin 完全走 ruoyi/Element Plus 默认审美，**不引用 mockup 视觉**，仅参考列功能项）
+**关联 mockup**: design/mockup/admin-bookings.html（admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统，**不引用 mockup 视觉**，仅参考列功能项）
 **关联 ADR**: —
 **依赖**: GZ-BEAN-004 ✅(D04) + GZ-SYS-006 ✅(D02 操作日志规约)
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§3 拼豆预约全流程** §关键节点 N10 / N11（店员核销） + §异常分支 E6/E7/E8（重复扫码 / 已取消 / 已过期的拒绝逻辑）
 - **字段表**：doc/11-字段权威表.md **§3.4 `gz_bean_booking`**（admin 端读取 + UPDATE 字段：status / verify_time / verify_operator_id） + §3.5 `gz_bean_booking_log`（核销动作写一条 log） + §A.3 状态字典
-- **UI 参考**（设计冻结期）：admin 端**不依赖 mockup**，走 ruoyi/Element Plus 默认 BizTable + el-dialog + el-button 范式（CLAUDE.md §7.5）；复用 D03 ADMIN-002 列表模板结构
+- **UI 参考**：admin 端**不依赖 mockup**，走 ruoyi/Element Plus 默认审美（不套用 C 系统）BizTable + el-dialog + el-button 范式（CLAUDE.md §7.5）；复用 D03 ADMIN-002 列表模板结构
 
 ## What
 
@@ -60,7 +60,7 @@ admin 后台「预约管理」页：店员 / owner 角色登录后看到的预�
 | # | 风险 | 缓解 |
 |---|---|---|
 | R1 | qrcode-decoder 类库引入 → CLAUDE.md §6 #8 不引未澄清依赖 | 优先确认 plus-ui 已有的 QR 类库（如 vue-qrcode-reader 或类似）；如真需新引 → 任务卡 §0 自检阶段 raise Kevin 批 |
-| R2 | admin-bookings.html mockup 缺口 → 视觉无标准 | 设计冻结期约定 admin 走 ruoyi 默认，testing-human 不评判视觉；6/10 后甲方风格 review 时统一调 |
+| R2 | admin-bookings.html mockup 缺口 → 视觉无标准 | admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统），testing-human 不评判视觉 |
 | R3 | 上传 QR 截图解析失败率（截图模糊 / 含其他内容） | 前端解析失败 → 友好提示「无法识别核销码，请重新截图」+ 给 Tier 2「手动核销」 fallback 路径 |
 
 ---

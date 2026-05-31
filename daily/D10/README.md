@@ -64,7 +64,7 @@ USER-103 任务卡按 C1 实施（即 2 态卡 + 国内单号 + 复制按钮 + �
 - mp 详情态 1（`in_japan`）：仅显示文案"商品在日本备货中"，无操作元素
 - mp 详情态 2（`in_china_dispatching`）：显示快递公司 + 单号 + "📋 复制单号"按钮
 - mp 详情态 3（`delivered`）：终态"已签收"
-- **取消 tokens.md §1.5 物流时间线色的使用**（无时间线 UI，色板该段 V1.1 不用）
+- **不使用物流时间线色**（C 系统未单列该色段，无时间线 UI，V1.1 不用）
 - admin 端的录入/推进逻辑由 ADMIN-104 在 **D11** 实施；本日 USER-103 只完成 mp 端读取接口 + 渲染
 
 ### 1. 物流字段独立于业务状态
@@ -95,10 +95,10 @@ ADMIN-103 订单详情按业务类型展示差异块：
 
 差异块**复用 USER-102 的统一布局逻辑**（同一个统一 view-model），admin 端只是从 sa-token-staff 视角访问 + 多一个"申请退款"按钮。
 
-### 7. 设计冻结期约定
+### 7. 设计约定
 
-- **admin（ADMIN-101/102/103）**：走 ruoyi/Element Plus 默认审美 + plus-ui BizTable，**不引用 mockup 像素**。mockup 仅作页面结构参考。
-- **mp（USER-102/103/104）**：wot-design-uni 默认 + tokens.md 主色；mockup 仅作大致布局参考。不评判颜色 / 间距 / 圆角。
+- **admin（ADMIN-101/102/103）**：走 ruoyi/Element Plus 默认审美（不套用 C 系统）+ plus-ui BizTable，**不引用 mockup 像素**。mockup 仅作页面结构参考。
+- **mp（USER-102/103/104）**：视觉走 C 日漫海报浓墨：Biz* 组件 + var(--c-*)，doc/tokens.md + doc/13；旧 mockup 仅布局参考。不逐像素。
 
 ## 与昨日 reports 对账
 

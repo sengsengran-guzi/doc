@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M3 §用户操作流程 步骤 2 + §关键页面
 **关联拆解**: doc/02-需求拆解.md §3.2 第 687-697 行
-**关联 mockup**: design/mockup/preorder-list.html
+**关联 mockup**: design/mockup/preorder-list.html（仅布局参考；视觉以 C 系统为准，doc/13）
 **关联 ADR**: —
 **依赖**: GZ-ORD-101 + GZ-ADMIN-005 ✅
 
@@ -38,14 +38,14 @@ mp 端预购商品列表页：
   - 返回：商品 list + 起始价（取所有 SKU min price_fen）+ 主图 + ip_tag + series_tag + deadline_at + arrival_at + arrival_text
 - [ ] **AC 2**：商品详情访问时 view_count + 1（在 ORD-103 实施时接入；本 ticket 仅加字段 + 接口预留）
 - [ ] **AC 3**：mp 端 `pages/ord/preorder-list.vue` 页面：
-  - 顶部 tab 切换排序（wd-tabs 默认）
-  - 筛选抽屉 `<wd-action-sheet>` 或 `<wd-popup>`（IP / 系列多选）
-  - 商品卡片 `<components/biz/BizPreorderCard.vue>`（业务组件包装层，遵循 CLAUDE.md §7.5 组件库无关纪律）
+  - 顶部 tab 切换排序（Biz 组件包装，不直接撒 wd-*；视觉走 C 设计系统 var(--c-*)，选中态 var(--c-red)）
+  - 筛选抽屉用功能性 `<wd-action-sheet>` 或 `<wd-popup>`（IP / 系列多选），外观套 C token
+  - 商品卡片 `<components/biz/BizPreorderCard.vue>`（业务组件包装层，遵循 CLAUDE.md §7.5 组件库无关纪律 + C 设计系统，不直接撒 wd-*）
   - 下拉加载 + 上拉刷新（uni 原生 onReachBottom / onPullDownRefresh）
   - 截止倒计时 setInterval 每秒刷新（页面卸载 clearInterval）
 - [ ] **AC 4**：tabBar 加"预购"入口（与 V1.0 已有的拼豆 / 资讯 / 我的并列）
   - tabBar 配置 4 项 → 5 项（首页 / 拼豆 / 预购 / 资讯 / 我的）
-  - 如 wot 设计风格冻结期已解除有最终 tabBar 顺序 → 按最终顺序排
+  - tabBar 顺序按 doc/tokens.md §7.2 V1.1 扩展 5 tab 规范排（首页 / 扭蛋 / 预购 / 资讯 / 我的），选中态 var(--c-red)
 - [ ] **AC 5**：i18n：所有可见字符串走 `t('ord.preorderList.xxx')`
 - [ ] **AC 6**：单测（vitest）：
   - BizPreorderCard 倒计时计算（mock Date.now）
@@ -87,7 +87,7 @@ mp 端预购商品列表页：
 |---|---|---|
 | D1 | view_count 字段加在 product 表（非独立 stat 表） | V1.1 流量小，热度统计简单累加足够；高并发场景再考虑独立表 + 异步累加 |
 | D2 | 排序 3 选 1 而非多排序 | mockup 锚定 3 个 tab；多选排序 UX 复杂 |
-| D3 | 筛选用抽屉 + 多选 chip | wot 默认范式；mockup 锚定 |
+| D3 | 筛选用抽屉 + 多选 chip | 功能性 wd 抽屉外观套 C token；mockup 锚定布局 |
 | D4 | 倒计时前端实时算（不靠后端） | 减少接口调用；服务器 NOW() 与客户端时间偏差 < 1min 用户无感知 |
 | D5 | tabBar 4 → 5 项 | V1.1 预购入口最重要；首页 / 拼豆 / 预购 / 资讯 / 我的 |
 

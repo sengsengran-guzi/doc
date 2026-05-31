@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M3 §用户操作流程 步骤 3-5 + §异常分支
 **关联拆解**: doc/02-需求拆解.md §3.2 第 701-711 行
-**关联 mockup**: design/mockup/preorder-detail.html + order-confirm.html
+**关联 mockup**: design/mockup/preorder-detail.html + order-confirm.html（仅布局参考；视觉以 C 系统为准，doc/13）
 **关联 ADR**: —
 **依赖**: GZ-ORD-101 + GZ-USER-003 ✅（V1.0 已建用户收货地址 gz_user_address）
 

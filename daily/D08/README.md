@@ -90,7 +90,7 @@
 - **库存乐观锁**（ORD-101 锚定）：gz_ord_sku 表带 `version` 字段，扣减时 `UPDATE ... WHERE id=? AND version=?`；预购 SKU 库存可空（表示无限），可空时跳过乐观锁
 - **商品 + SKU snapshot**（ORD-101 + ORD-103 + ORD-104 锚定）：下单时把当时的商品名 / SKU 规格名 / 单价分 / 主图 url 完整 snapshot 进 gz_ord_order 表，防止商品下架 / 改名 / 调价后历史订单显示异常
 - **截止日逻辑**（ORD-103 锚定）：商品 `deadline_at` 已过 → 后台 cron 自动下架（status='off'）；用户已加购物车的需在提交时拦截 → 返回 errCode=`PRODUCT_OFF` + 前端提示「该商品已截止，请重选」
-- **mp 端组件库** = wot-design-uni 默认（V1.0 设计冻结期已解除，但 V1.1 视觉规范以 6/14 风格统一调整后的为准）；今日如果还未拿到甲方最终视觉，**功能优先**继续走 wot 默认审美
+- **mp 端视觉** = C 日漫海报浓墨设计系统：页面只用 `src/components/biz/Biz*` 原子组件 + `var(--c-*)` token（不直接撒 `<wd-*>`，功能性 wd 组件如 swiper/popup/action-sheet 外观套 C token），权威 doc/tokens.md + doc/13；旧 mockup 仅布局参考，不逐像素还原
 - **admin 端**（PAY-103 退款按钮 / ORD-101 商品管理 CRUD / ORD-102 间接依赖 ADMIN-005 商品管理）走 ruoyi/Element Plus 默认审美 + 复用 V1.0 已有的 BizTable / Form 组件
 - **DDL 文件命名**：本日 PAY-101 / ORD-101 落 DDL，严格按 `V<yyyyMMddHHmm>__<TICKET-ID>-<desc>.sql` 放 `ruoyi-admin/src/main/resources/db/migration/`，时间戳必须 > V1.0 已上线的最大时间戳
 - **i18n 强制**：mp 端 / admin 端可见字符串全走 `t('xxx.yyy')` + zh-CN 默认

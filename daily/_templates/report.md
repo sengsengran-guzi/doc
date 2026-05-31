@@ -80,7 +80,7 @@ mysql> SELECT COUNT(*) FROM gz_xxx WHERE ...;
 ## 风险提示 / 已知 issue
 
 - 风险 1：xxx（说明应对方案 / 推迟到哪个 ticket）
-- 待 Kevin testing-human 关注：（如视觉 / 文案 / 微信侧需要真机的部分）
+- 待 Kevin 批量人验关注（仅 mp 端）：（如视觉 / 文案 / 微信侧需要真机的部分；纯 admin/后端写 "N/A — 无人验"）
 
 ## 对下游 ticket 的提示
 
@@ -89,7 +89,7 @@ mysql> SELECT COUNT(*) FROM gz_xxx WHERE ...;
 
 ---
 
-<!-- 如果 Kevin testing-human 失败 + AI revision 修复，下面追加 §revision-1 / §revision-2 等段 -->
+<!-- 如果 Kevin 批量人验失败 + AI revision 修复，下面追加 §revision-1 / §revision-2 等段 -->
 
 ## §revision-N（每轮闭环修复后追加）
 

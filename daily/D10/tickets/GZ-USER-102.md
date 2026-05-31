@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§9 跨业务订单聚合 + 跨境物流流** §关键节点 N3（U 进订单详情）+ §状态机（logistics_status）+ §异常分支 E1/E2/E3
 - **字段表**：doc/11-字段权威表.md **§8.1 `gz_unified_order_view`**（详情字段口径完全复用列表字段）+ §6.3 `gz_ord_order`（预购订单 + 关联 SKU snapshot 字段）+ §7.3 `gz_gacha_draw`（抽奖记录 — 详情显示中奖物时消费）+ §7.4 `gz_gacha_order`（扭蛋衍生订单）+ §8.2 business_status → UI 统一状态映射 + §A.7 物流字段口径
-- **UI 参考**（设计冻结期）：doc/12 §MP-ORD-DETAIL §页面结构（统一布局五段：状态卡 / 商品信息 / 物流模块 / 订单信息 / 底部 CTA）+ §跳转关系
+- **UI 参考**：doc/12 §MP-ORD-DETAIL §页面结构（统一布局五段：状态卡 / 商品信息 / 物流模块 / 订单信息 / 底部 CTA）+ §跳转关系。视觉走 C 日漫海报浓墨：Biz* 组件 + var(--c-*)，doc/tokens.md + doc/13；旧 mockup 仅布局参考
 
 ## What
 
@@ -62,7 +62,7 @@ mp 端订单详情统一页：顶部商品信息 → 状态时间线 → 物流�
 1. **统一布局五段顺序不可变**：状态卡 → 商品 → 物流 → 订单 → CTA（doc/12 §MP-ORD-DETAIL 锚定）
 2. **业务差异块限定字段**：扭蛋 5 字段（prizeName/cover/rarity/machineName/drawnAt） / 预购 6 字段（productName/cover/skuSpec/deadline/arrivalAt/qty），不超出
 3. **snapshot 字段从订单表直读**（D09 已 snapshot），**不**实时 join 主数据表（主数据变了订单显示要保持下单时的状态）
-4. **wot-design-uni 默认 + tokens.md brand-primary**：状态 chip 用 tokens 色，不硬编码
+4. **Biz* 组件（不直接撒 wd-*）+ var(--c-*)**：视觉走 C 设计系统 token（var(--c-*)，主 CTA = var(--c-red)），状态 chip 用 c 变量（选中/价格 var(--c-red)、成功 var(--c-green)），不硬编码 hex（doc/tokens.md）
 5. **物流模块只留占位 prop**：本 ticket 不实装物流卡 UI（USER-103 才做）；BizLogisticsCard.vue 内部 USER-103 实施时再填充
 6. **i18n 状态文案走字典**：doc/11 §A.5 `gz_preorder_order_status` + §A.6 `gz_gacha_draw_status` / `gz_gacha_order_status` 字典 — 不在前端硬编码状态中文
 

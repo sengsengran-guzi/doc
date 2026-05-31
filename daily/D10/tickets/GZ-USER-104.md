@@ -4,7 +4,7 @@
 **复杂度**: S
 **关联 PRD**: doc/02-prd.md M5 §跨境物流 §节点 7 + §业务规则 4.4
 **关联拆解**: doc/02-需求拆解.md §3.4 第 891-901 行
-**关联 mockup**: design/mockup/order-detail.html（底部"确认收货"按钮 — 设计冻结期仅参考位置）
+**关联 mockup**: design/mockup/order-detail.html（底部"确认收货"按钮 — 旧 mockup 仅布局参考；视觉以 C 系统为准，doc/13）
 **关联 ADR**: —（C1 后签收作为 L3 终态见 doc/10 §9 N5/N6）
 **依赖**: GZ-USER-103 ✅(D10)
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§9** §状态机（in_china_dispatching → delivered 不可回退，除 owner）+ §关键节点 N5（自动签收 cron）+ N6（用户主动确认）+ N8（owner 回退带审计）+ §异常分支 E4（自动签收时用户尚未收到）
 - **字段表**：doc/11-字段权威表.md **§A.7 `gz_logistics_status`** §6.3 `gz_ord_order.logistics_status` / `delivered_at` 字段 + §7.4 `gz_gacha_order.logistics_status` / `delivered_at` 字段 + §8.3 `gz_logistics_audit` 审计表（owner 回退走此表）
-- **UI 参考**（设计冻结期）：doc/12 §MP-ORD-DETAIL §页面结构 第 6 项底部 fixed CTA：预购订单 → "确认收货"（仅 logistics_status=in_china_dispatching 显示）
+- **UI 参考**：doc/12 §MP-ORD-DETAIL §页面结构 第 6 项底部 fixed CTA：预购订单 → "确认收货"（仅 logistics_status=in_china_dispatching 显示）。视觉走 C 日漫海报浓墨：Biz* 组件 + var(--c-*)，doc/tokens.md + doc/13；旧 mockup 仅布局参考
 
 ## What
 

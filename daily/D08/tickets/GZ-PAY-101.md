@@ -4,7 +4,7 @@
 **复杂度**: M（V1.1 首日 ⭐ — 后续 ORD/GACHA 所有支付场景的通用底座，禁止快速过 §0 自检）
 **关联 PRD**: doc/02-prd.md M1 §微信支付 / §下单支付 / §异常分支
 **关联拆解**: doc/02-需求拆解.md §3.1 第 628-639 行
-**关联 mockup**: design/mockup/order-confirm.html + pay-result.html（视觉参考，V1.1 视觉规范以 6/14 风格统一后为准）
+**关联 mockup**: design/mockup/order-confirm.html + pay-result.html（仅布局参考；mp 视觉以 C 系统为准，doc/13；本 ticket 为后端底座不写 mp UI）
 **关联 ADR**: —（如本 ticket 需决策"统一支付服务抽象层是否独立成 gz-pay 模块 / 是否与 gz-common 合并"可新建 ADR）
 **依赖**: GZ-PAY-001 ✅（V1.0 已通道调通 HelloWorld）
 
@@ -20,7 +20,7 @@
   - §4.2 gz_pay_callback_log 回调日志表
   - **§4.5 支付状态字段口径**（pending / paid / failed / refunded / refunding 5 态完整定义）
   - **§4.6 4% 分成核心计算口径**（business_line 字段 / GMV / 退款扣除 / 通道费扣除）
-- **UI 参考**（设计冻结期解除，V1.1 视觉规范以 6/14 后为准）：mp `order-confirm.html` + `pay-result.html`
+- **UI 参考**（mp 视觉走 C 日漫海报浓墨：Biz* 组件 + var(--c-*)，doc/tokens.md + doc/13；旧 mockup 仅布局参考。本 ticket 不写 mp UI）：mp `order-confirm.html` + `pay-result.html`
 
 ## What
 

@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M7.1 商品管理
 **关联拆解**: doc/02-需求拆解.md §3.5 第 907-917 行
-**关联 mockup**: design/mockup/admin-products.html ⚠️ V1.0/V1.1 设计冻结期：admin 走 ruoyi 默认 + plus-ui BizTable / Element Plus 默认组件，**不参考 mockup 视觉**；mockup 仅作页面结构 / 功能项参考
+**关联 mockup**: design/mockup/admin-products.html ⚠️ admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）+ plus-ui BizTable / Element Plus 默认组件，**不参考 mockup 视觉**；mockup 仅作页面结构 / 功能项参考
 **关联 ADR**: —
 **依赖**: GZ-ORD-101 ✅(D08/D09 — 商品 + SKU schema 已落)
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§7 预定货品全流程** §业务规则 + §关键节点 N1（admin 新建商品）
 - **字段表**：doc/11-字段权威表.md **§6.1 `gz_ord_product` 预购商品**（完整字段 + DDL 已在 D08/D09 落地）+ **§6.2 `gz_ord_sku` 商品 SKU**（多 SKU 表结构）+ §10.2 sys_dict_data §IP 字典 / 状态字典
-- **UI 参考**（设计冻结期）：doc/12 §AD-ORD-PRODUCTS §页面结构（列表 toolbar / 表格列 / 新建编辑抽屉）+ §组件映射（el-table / el-drawer）
+- **UI 参考**：doc/12 §AD-ORD-PRODUCTS §页面结构（列表 toolbar / 表格列 / 新建编辑抽屉）+ §组件映射（el-table / el-drawer）。admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）
 
 ## What
 
@@ -58,7 +58,7 @@ admin 端预购商品 CRUD：列表（按 IP / 状态筛 + 搜索） / 新建 / 
 
 ### 强约束
 
-1. **设计冻结期：admin 走 ruoyi/Element Plus 默认审美 + plus-ui BizTable**，不调样式不引用 mockup 像素；可用 el-table / el-drawer / el-form 默认组件
+1. **admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）+ plus-ui BizTable**，不调样式不引用 mockup 像素；可用 el-table / el-drawer / el-form 默认组件
 2. **富文本编辑器复用 GZ-NEWS-003**（D07/D08 已建）：不重新引入新依赖（CLAUDE.md §6 #8）；编辑器渲染 + sanitize-html 走 NEWS-003 同一套
 3. **多 SKU 嵌套保存事务一致**：service 层 `@Transactional` 包裹 product UPDATE + sku 批量 INSERT/UPDATE/DELETE；防部分成功
 4. **menu_id 9100-9199 段**（CLAUDE.md §6 #6 GZ-ORD admin）：插入前 `SELECT MAX(menu_id) FROM sys_menu WHERE menu_id BETWEEN 9100 AND 9199` 确认

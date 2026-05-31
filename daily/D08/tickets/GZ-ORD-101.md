@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M3 §关键字段 § PreorderProduct / 预购 SKU
 **关联拆解**: doc/02-需求拆解.md §3.2 第 673-684 行
-**关联 mockup**: design/mockup/admin-products.html + preorder-detail.html
+**关联 mockup**: design/mockup/admin-products.html + preorder-detail.html（仅布局参考；mp 视觉以 C 系统为准，doc/13；admin 走 ruoyi 默认）
 **关联 ADR**: —
 **依赖**: GZ-SYS-001 ✅（V1.0 已建 ruoyi-gz-ord 模块壳）
 
@@ -46,7 +46,7 @@
 - [ ] **AC 3**：admin 端 UI（`code/main/plus-ui/src/views/gz-ord/product/`）：
   - `index.vue`（列表页，复用 ADMIN-005 骨架的 BizTable + 搜索栏 + 操作列）
   - `edit.vue` 或 `<el-dialog>` 表单（含 SKU 子表 `<el-table>` 可编辑行）
-  - **走 ruoyi/Element Plus 默认审美**（V1.1 视觉规范以 6/14 后为准，今日默认）
+  - **走 ruoyi/Element Plus 默认审美**（不套用 C 系统）
 - [ ] **AC 4**：SKU 库存乐观锁服务方法 `IGzOrdSkuService.tryDeductStock(skuId, quantity)`：
   - 读 SKU → 如 stock_init IS NULL（无限）→ 直接返回 true，不更新 version
   - stock_left < quantity → 返回 false

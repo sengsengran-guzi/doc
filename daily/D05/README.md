@@ -58,7 +58,7 @@
 - **核销码签名密钥统一**：BEAN-005 渲染 QR / BEAN-008 扫码校验 — 两端必须用同一个 `gz.bean.qr.signing-secret`（D04 BEAN-004 已落 yml 配置），不要在本日各自新生 secret
 - **状态枚举 4 个**（doc/10 §3 状态机 + doc/11 §A.3 速查表）：`pending` / `used` / `cancelled` / `no_show`；本日 BEAN-006 tab / BEAN-008 筛选 / BEAN-009 cron 三处必须用同一份字典编码（sys_dict_data `gz_bean_booking_status`，doc/11 §10.2 已定义）
 - **取消时机**（合同 §2.3）：V1.0 不限制取消时间（即便已到时段开始仍可取消）；BEAN-007 任务卡里写「v2 候选：取消截止 / 黑名单」TODO，不实现
-- **admin-bookings.html mockup 缺口**（doc/12 §1.2 列为缺口）：BEAN-008 admin 端直接走 ruoyi/Element Plus 默认 BizTable + 复用 D03 ADMIN-002 的列表模板，**不依赖 mockup**（CLAUDE.md §7.5 设计冻结期：admin 完全不评判视觉）
+- **admin-bookings.html mockup 缺口**（doc/12 §1.2 列为缺口）：BEAN-008 admin 端直接走 ruoyi/Element Plus 默认审美（不套用 C 系统）BizTable + 复用 D03 ADMIN-002 的列表模板，**不依赖 mockup**（CLAUDE.md §7.5：admin 完全不评判视觉）
 - **no_show cron 配置**（CLAUDE.md §6 + 复用 ruoyi 自带 SnailJob / Quartz）：BEAN-009 任务挂在 ruoyi `sys_job` 表，cron 表达式 `0 0 2 * * ?`，job 名 `GZ-BEAN-NO-SHOW-MARK`；任务幂等可重跑（doc/10 §3 §异常分支 E10 已约定）
 - **DDL 文件命名**：本日 BEAN-009 / BEAN-010 会写 DDL（注册 job / 默认 banner 配置），命名严格按 `V<yyyyMMddHHmm>__GZ-BEAN-00X-<desc>.sql`
 - **不要 commit**：6 个 ticket 全部 ✅ + Kevin testing-human 通过端到端闭环验证后再统一 commit
@@ -89,8 +89,8 @@ D04 完工后预期产物（本日依赖）：
 | R1 | 核销码 QR 在低端机扫描慢 / 失真 | BEAN-005 用微信原生 `wx.createOffscreenCanvas` + 控制 payload < 200 字符；testing-human 用真机扫一次 |
 | R2 | BEAN-008 扫码核销与 BEAN-007 用户取消的竞态（用户在店员扫码瞬间点取消） | doc/10 §3 §异常分支 E6/E7 已约定：核销时校验 `status = pending` 才允许标 used，否则返回「已取消 / 已核销」错误 |
 | R3 | BEAN-009 cron 任务失败被吞掉 → no_show 标漏 | doc/10 §3 §异常分支 E10：cron 必须幂等（重跑不重复标），失败 → ruoyi SnailJob 自带告警通道；不允许 catch 后静默 |
-| R4 | admin-bookings.html mockup 缺口 → BEAN-008 视觉与最终方向不一致 | 设计冻结期约定 admin 走 ruoyi 默认，6/10 后甲方风格 review 时统一调；本日 BEAN-008 testing-human 不评判视觉 |
-| R5 | BEAN-006 列表无 no_show 状态视觉（mockup booking-list.html 仅 3 状态）| doc/10 §3 §状态机已裁定"V1.0 实现 4 状态，mockup 缺口待 designer 补"；本日 BEAN-006 用 wd-tag 默认灰色渲染 no_show，6/10 风格 review 时统一 |
+| R4 | admin-bookings.html mockup 缺口 → BEAN-008 视觉与最终方向不一致 | admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）；本日 BEAN-008 testing-human 不评判视觉 |
+| R5 | BEAN-006 列表无 no_show 状态视觉（mockup booking-list.html 仅 3 状态）| doc/10 §3 §状态机已裁定"V1.0 实现 4 状态，mockup 缺口待 designer 补"；本日 BEAN-006 用 BizTag 灰款（var(--c-ink-3)）渲染 no_show；已切 C 系统，视觉以 doc/tokens.md + doc/13 为准 |
 | R6 | BEAN-010 banner / 跑马灯素材未到位（甲方运营素材未发） | 默认占位图 + 文案，BEAN-010 任务卡里写「素材到位后切换无需改代码 — 走 sys_config」 |
 
 ---

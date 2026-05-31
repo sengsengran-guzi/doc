@@ -4,7 +4,7 @@
 **复杂度**: S
 **关联 PRD**: doc/02-prd.md M7.1 数据看板 + 合同 §2.1 第一期（二）"基础数据看板（用户数、预约数、资讯阅读数等非交易指标）"
 **关联拆解**: doc/02-需求拆解.md §2.6 第 578-588 行
-**关联 mockup**: design/mockup/admin-dashboard.html（视觉参考；**设计冻结期不还原视觉**，仅参考 KPI 卡片字段 + 布局结构。**V1.0 仅显示非交易卡片**，mockup 中 GMV / 订单数 / 抽数等交易类卡片本 ticket 不实装）
+**关联 mockup**: design/mockup/admin-dashboard.html（仅布局参考；admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统；仅参考 KPI 卡片字段 + 布局结构。**V1.0 仅显示非交易卡片**，mockup 中 GMV / 订单数 / 抽数等交易类卡片本 ticket 不实装）
 **关联 ADR**: —
 **依赖**: GZ-ADMIN-001 / 004 ✅ + GZ-SYS-003 ✅ + GZ-BEAN-008 ✅ + GZ-NEWS-001 ✅（数据源齐）
 
@@ -18,7 +18,7 @@
   - §3.4 `gz_bean_booking`（累计预约 = `COUNT(*)` / 今日预约 = `WHERE DATE(create_time)=CURDATE()`；**所有 status 都计入**，包括 cancelled / no_show — 业务上"运营关心提交了多少人"而非"实际到店"）
   - §5.1 `gz_news_article.read_count`（资讯累计阅读 = `SUM(read_count)`；今日阅读 V1.0 无独立日表，**裁定 V1.0 不出"今日阅读"指标**或用近似 ≈ 累计差值，见强约束 #4）
   - **本 ticket 新增表 `gz_dashboard_snapshot`**（看板快照，cron 每 5 min 写一行；doc/11 §6/§7 缺口段，本 ticket DDL 落地后补 doc/11 — 见今日特殊约束）
-- **UI 参考**（设计冻结期）：doc/12-UI-权威索引.md §AD-SYS-DASHBOARD — KPI 卡片 + 图表 + 待办；**V1.0 仅 KPI 卡片**（5 张：累计用户 / 今日新增用户 / 累计预约 / 今日预约 / 资讯累计阅读），图表 + 待办推 V1.1
+- **UI 参考**：doc/12-UI-权威索引.md §AD-SYS-DASHBOARD — KPI 卡片 + 图表 + 待办（admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统）；**V1.0 仅 KPI 卡片**（5 张：累计用户 / 今日新增用户 / 累计预约 / 今日预约 / 资讯累计阅读），图表 + 待办推 V1.1
 
 ## What
 
@@ -95,7 +95,7 @@ admin 端首页数据看板：
 | D1 | snapshot 表设计为 wide-long 形式（每 metric 一行）而非 wide-wide（每时刻一行 5 列）| 灵活：V1.1 加 metric 不需要 ALTER 表加列；趋势查询 `WHERE metric_key=?` 简单 |
 | D2 | 看板模块代码放 gz-common 而非新建 gz-dashboard 模块 | 看板是跨域聚合（user + bean + news），不应反向依赖单个业务模块；放 common 最简洁，避免循环依赖 |
 | D3 | 累计预约用 booking_log 而非 booking 表 | doc/11 §3.4 booking 表 cancelled 物理删；log 表永不删，反映真实历史 |
-| D4 | trend API 留接口 V1.0 不展示 | 前端实装图表需选型（echarts / chart.js）+ 设计冻结期不调样式；V1.1 风格统一后实装 |
+| D4 | trend API 留接口 V1.0 不展示 | 前端实装图表需选型（echarts / chart.js）；V1.1 实装（admin 走 Element Plus 默认审美，不套用 C 系统）|
 | D5 | refresh 用同步触发 + 5s 限流 | 同步给用户即时反馈（不用轮询）；限流防误点 |
 
 ### 风险提示
@@ -106,7 +106,7 @@ admin 端首页数据看板：
 | R2 | booking_log 表查"累计预约"是否包含 admin 手动核销 / cron no_show 流转日志（操作类型 admin / cron）→ 数据膨胀 | mapper SQL 加 `AND operator_type='user' AND from_status IS NULL`（仅用户提交首条 pending 日志），过滤掉后续流转 |
 | R3 | cron 5 min 间隔与"最近更新 X 分钟前"提示偏差最多 5 min | 接受 — UI 提示「最近更新于 yyyy-MM-dd HH:mm」让用户自行判断；点「立即刷新」即时更新 |
 | R4 | doc/11 §6/§7 缺 dashboard_snapshot 章节 | 本 ticket completion 后由 Kevin 周末复盘补 doc/11（CLAUDE.md §9.5 第 1 优先级"改权威蓝图"）|
-| R5 | mockup admin-dashboard.html 含交易类卡片但 V1.0 不实装 → 客户演示时可能问 | 6/10 客户演示前预先说明「V1.0 仅非交易指标，符合合同 §2.1」；mockup 视觉 6/10-6/14 风格统一时一并处理 |
+| R5 | mockup admin-dashboard.html 含交易类卡片但 V1.0 不实装 → 客户演示时可能问 | 6/10 客户演示前预先说明「V1.0 仅非交易指标，符合合同 §2.1」；admin 走 ruoyi/Element Plus 默认审美，不评判视觉 |
 
 ---
 

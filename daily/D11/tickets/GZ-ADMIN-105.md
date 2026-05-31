@@ -4,7 +4,7 @@
 **复杂度**: L（V1.1 最高优先级 ticket — 合同核心；L 级思考密度，禁止快速过 §0 自检；reports 必须含微信沙箱比对 raw output）
 **关联 PRD**: doc/02-prd.md M7.8 对账中心 + 合同 §4.1 + §4.2
 **关联拆解**: doc/02-需求拆解.md §3.5 第 965 行
-**关联 mockup**: ⚠️ 缺口（admin-finance.html 待补；设计冻结期改用 plus-ui BizTable + el-statistic + el-tabs + el-date-picker 默认 + ruoyi EasyExcel）
+**关联 mockup**: ⚠️ 缺口（admin-finance.html 待补；admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统），用 plus-ui BizTable + el-statistic + el-tabs + el-date-picker 默认 + ruoyi EasyExcel）
 **关联 ADR**: —（如通道费率挂哪一层 / 跨业务线退款归属判定遇到分歧 → 新建 ADR）
 **依赖**: GZ-ADMIN-103（订单聚合管理）
 
@@ -23,7 +23,7 @@
 - **业务流**：doc/10-业务流权威图.md
   - §8 对账流（如有；本 ticket 实施时如发现 doc/10 缺 §8 → 优先回补 doc/10 §8 再写代码，9.5 复盘优先级 §1）
 - **合同**：[doc/03-contract.md](../../../03-contract.md) §4.1（4% 分成口径 + 业务线独立核算 + 季度结算）+ §4.2.1（Excel 导出必含字段）
-- **UI 参考**（设计冻结期）：admin ticket — **N/A**（plus-ui BizTable + el-statistic 四栏数字卡片 + el-tabs 业务线 A/B 切换 + el-date-picker-range 周期筛选）
+- **UI 参考**（admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统）：admin ticket — **N/A**（plus-ui BizTable + el-statistic 四栏数字卡片 + el-tabs 业务线 A/B 切换 + el-date-picker-range 周期筛选）
 
 ## What
 
@@ -132,7 +132,7 @@ admin 端「财务管理 → 对账中心」页 — 甲方按业务线 A（预�
 | D1 | 用 `v_gz_finance_daily` 视图实时聚合，不建物化表 | V1.1 数据量小（预计 < 1000 单/月），视图实时查询 < 500ms；预聚合引入同步成本 + delete/refund 时反聚合复杂度 |
 | D2 | 4% 分成在前端展示，不存 DB | 分成不是事务数据（只读，每次结算时算）；存 DB 引入"结算后是否锁定"复杂度，本 V1.1 不做 |
 | D3 | 通道费按"实际到账金额 × 费率"近似，不按真实笔费率 | 微信真实费率按笔扣，本 V1.1 颗粒度不够（每笔 paid_amount 已含税但未拆通道费）；合同 §4.1 注解未要求笔级颗粒度 → 6/22 staging 跑通如甲方反对可改 ADR-V1.1-XX |
-| D4 | Excel 导出用 ruoyi 自带 EasyExcel（不引新依赖） | 设计冻结期 + CLAUDE.md §6 #8 不引未澄清新依赖 |
+| D4 | Excel 导出用 ruoyi 自带 EasyExcel（不引新依赖） | CLAUDE.md §6 #8 不引未澄清新依赖 |
 | D5 | 跨业务线退款归属判定锚定 gz_order.biz_line 字段 | 该字段下单时即定 + 不可变；退款时按订单的 biz_line 归属，简洁无歧义 |
 | D6 | 季度锚点纯函数计算（不存 DB） | 锚点是日历常量（3/6/9/12 月 15 日），动态算更简单 |
 

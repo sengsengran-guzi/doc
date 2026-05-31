@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M2 §用户操作流程 步骤 1 + §关键页面
 **关联拆解**: doc/02-需求拆解.md §3.3 第 758 行
-**关联 mockup**: design/mockup/gacha-list.html（视觉参考 — 设计冻结期 mp 走 wot 默认 + tokens.md，不逐像素还原）
+**关联 mockup**: design/mockup/gacha-list.html（仅布局参考；视觉以 C 系统为准，doc/13；出奖动画/概率条为 doc/13 §3.2 待建 Biz 组件 — 视觉走 C 日漫海报浓墨：Biz* 组件 + var(--c-*)，doc/tokens.md + doc/13，不逐像素还原）
 **关联 ADR**: —
 **依赖**: GZ-GACHA-101 + GZ-ADMIN-005 ✅
 
@@ -16,7 +16,7 @@
 - **字段表**：doc/11-字段权威表.md §7.1 `gz_gacha_machine`
 - **UI 索引**：doc/12-UI-权威索引.md **§MP-GACHA-LIST**（页面字段 / 交互 / 跳转）
 - **tokens.md §9**：扭蛋机用立体迷你机器视觉（不是平面商品图）+ 盲盒语义纪律（"扭蛋" / "出现概率"）
-- **CLAUDE.md §7.5**：设计冻结期 mp 走 wot 默认 + tokens.md 主色
+- **CLAUDE.md §7.5**：mp 视觉走 C 日漫海报浓墨：Biz* 组件（不直接撒 wd-*）+ var(--c-*)，doc/tokens.md + doc/13
 
 ## What
 
@@ -28,14 +28,13 @@ mp 端展示在售扭蛋机卡片列表（按 sort_order 倒序），用户点�
 - [ ] **AC 2**：page `pages/gacha/list.vue`：
   - 顶部分类筛选条（V1.1 简版只显示「全部」一个 tab，预留扩展位）
   - 卡片网格（2 列）：机器封面 + 立体迷你机器视觉效果（tokens.md §9 + CSS 阴影/光泽模拟，不堆静态图）
-  - 卡片字段：机器名 / 单抽价格（红色 .price token）/ 剩余库存提示（"剩余 X" 或 "即将售罄" 当剩余 < 10）
+  - 卡片字段：机器名 / 单抽价格（var(--c-red) 朱红）/ 剩余库存提示（"剩余 X" 或 "即将售罄" 当剩余 < 10）
   - 触底加载分页（wd-loadmore）
   - 卡片点击 → 跳 `/pages/gacha/detail?id={machineId}`
-- [ ] **AC 3**：tokens.md 视觉对齐：
-  - 稀有度色 / brand-primary CTA token 应用
-  - 价格永远 `--price` 红
-  - 卡片圆角 `rounded-lg` (8px)
-  - 卡片阴影 `0 1px 3px rgba(0,0,0,.04)`
+- [ ] **AC 3**：C 设计系统视觉对齐（视觉走 var(--c-*)，不硬编码 hex，doc/tokens.md + doc/13）：
+  - 稀有度色走 var(--c-r-ssr/-sr/-r/-n)；主 CTA / 选中 = var(--c-red)
+  - 价格永远 var(--c-red) 朱红
+  - 卡片走 BizPanel 分镜框：直角（var(--c-radius)=0）+ 粗墨边 var(--c-bw) + 硬投影 var(--c-shadow-sm)
 - [ ] **AC 4**：i18n 走 `t('gacha.list.xxx')`（zh-CN + en-US 同步）；**所有可见字符串严格扭蛋语义**（无"抽奖"/"中奖"等词）
 - [ ] **AC 5**：业务组件包一层（CLAUDE.md §7.5 组件库无关纪律）：
   - `components/biz/BizGachaMachineCard.vue`（机器卡片）

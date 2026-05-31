@@ -77,3 +77,27 @@ mp 端用户选日期（默认今天，前 7 天） → 看时段（按门店时
 ---
 
 ## §revision（Kevin testing-human 后填，初始空）
+
+### 问题 1：A4 选座位 → 座位列表为空（BizSeatList 渲染失败）
+
+**Kevin 实测 2026-05-29 16:13**：选完日期 06-01 / 时段「上午 10:00-12:00」后，第 ③ 步「选择座位」区域空白，无任何座位卡片渲染。底部 CTA 卡在「请先选座位」。
+
+**Console 红错（关键）**：
+```
+ReferenceError: m_a_String_a_a_a_seatId_a__a_ is not defined
+  at BizSeatList-vendor.js?_[sm]:17
+  at ReactiveEffect.ComputedRefImpl.effect.computed [as fn]
+  at ReactiveEffect.run
+  at ComputedRefImpl.get
+  at isOccupied (BizSeatList-vendor.js?_[sm]:23)
+  at vFor (vendor.js?_[sm]:6531)
+  at Object.f (vendor.js?_[sm]:6577)
+  at Proxy.<anonymous> (BizSeatList-vendor.js?_[sm]:37)
+  at renderComponentRoot (vendor.js?_[sm]:5991)
+```
++ Vue warn: `Unhandled error during render function <BizSeatList seats=[...] availability=[...]>`
+
+**根因方向**：`BizSeatList.vue` 的 `isOccupied` computed 引用了 `seatId` 变量但未声明 / 命名不一致（被 Vue compiler 编译后变成 `m_a_String_a_a_a_seatId_a__a_` mangled 名字）。
+
+**期望**：选完时段后，座位列表渲染所有可选座位（A1/A2/A3/B1，B2 enabled=0 不出现），已被占用的灰显 disabled。
+

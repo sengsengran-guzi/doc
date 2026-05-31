@@ -4,7 +4,7 @@
 **复杂度**: M（V1.1 首日跨域事务 ⭐ — ORD ↔ PAY 协作，业务线 A 端到端打通核心，禁止快速过 §0 自检）
 **关联 PRD**: doc/02-prd.md M3 §关键字段 § PreorderOrder + §状态机
 **关联拆解**: doc/02-需求拆解.md §3.2 第 715-725 行
-**关联 mockup**: design/mockup/order-confirm.html + pay-result.html
+**关联 mockup**: design/mockup/order-confirm.html + pay-result.html（仅布局参考；视觉以 C 系统为准，doc/13）
 **关联 ADR**: —（如本 ticket 实施时需决策"业务回调 handler 内事务边界"等可新建 ADR-V1.1-0002）
 **依赖**: GZ-ORD-103 + GZ-PAY-101
 

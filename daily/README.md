@@ -10,15 +10,15 @@
 
 ## 0. sensenran 单人模式硬约束（vs dongjiaoshan 多人模式）
 
-| 维度 | dongjiaoshan 多人版 | sensenran 单人版（B 方案 2026-05-28 升级）|
+| 维度 | dongjiaoshan 多人版 | sensenran 单人版 |
 |---|---|---|
 | 派单 | 复制 prompt 全文 → spawn AI | `开始 d<N>` 或 `@coder 做 D<N>/<TICKET>` |
 | prompt 模板 | 4 份（prompt-fe / be / fullstack / min） | **0 份**，流程纪律在 [.claude/agents/kevin-coder.md](../../.claude/agents/kevin-coder.md) |
 | ticket 描述 | prompts/<T>.md 自带流程段 | tickets/<T>.md 任务卡（只 What/AC，无流程） |
-| 测试人力 | ABC 三人各跑 testing-human | **Tier 1 全 AI 自动**（kevin-coder + kevin-qa Playwright）+ **Tier 2 Kevin 5-10 min/天**（仅 mp 真机） |
-| admin 测试 | 人测 | **kevin-qa Playwright MCP 全自动**（B 方案核心） |
+| 测试人力 | ABC 三人各跑 testing-human | **AI 测试每日 gate**（kevin-coder Tier 1A + kevin-qa Tier 1B 全自动，全 ✅ 即 close 解锁下游）+ **Kevin 批量人验**（不强求每天，累计 3-4 天 mp ticket 集中跑） |
+| admin 测试 | 人测 | **kevin-qa Playwright MCP 全自动** |
 | 后端测试 | 人测 | kevin-coder 自测 + kevin-qa 集成测试双层 |
-| mp 测试 | 人测 | vitest unit 自动 + Kevin 真机微信原生能力 spot check |
+| mp 测试 | 人测 | vitest unit 自动（Tier 1B）+ Kevin 批量人验微信原生能力 + 真机 happy path |
 | 当 testing 不过 | append `_open-issues.md` → 日终多人决策 | 在 ticket 任务卡 `§revision` 段就地写 → AI 闭环修 |
 | 跨日 issue 跟踪 | `_open-issues.md` + 日终 closing 会 | **不存在**（问题不出 ticket） |
 | 日终 closing | 0-5 步（汇总 + 决策 + 批量改文档 + ADR）| `cat reports/*.md > summary.md` + `git commit` + 写明日 README |
@@ -56,11 +56,11 @@
 3. **§N 完工总结 + AI Tier 1A 自测**（编译 / 单测 / curl / DB / Flyway / 并发压测）
    - **必须贴 ≥ 3 个代码 block 的 raw output**
 
-4. **自动 spawn kevin-qa 跑 Tier 1B**（B 方案 ⭐）
+4. **自动 spawn kevin-qa 跑 Tier 1B** ⭐
    - kevin-coder 完工时**不通知 Kevin**，先 spawn kevin-qa
    - 等 kevin-qa 在 reports/<T>.md 追加 §AI 测试段
    - 任一 ❌ → 闭环回 kevin-coder 修（Kevin 不介入）
-   - 全 ✅ → 通知 Kevin 进 Tier 2 spot check（仅 mp ticket）或直接 close（纯 admin / 纯后端）
+   - 全 ✅ → ticket 即 close（解锁下游）；mp ticket 另进 progress.md「人验」列待 Kevin 批量人验，纯 admin / 纯后端 ticket 即终态
 
 **强制约束**（来自 dongjiaoshan D02 翻车经验）：
 - ❌ 不允许"已通过 / ok / 全部跑通"五字了事 — verification gap 翻车前兆
@@ -80,19 +80,20 @@
 
 结果追加到 `reports/<T>.md` §AI 测试段。
 
-### 1.4 Kevin Tier 2 真机 spot check（5-10 min/天，仅 mp ticket）
+### 1.4 Kevin Tier 2 批量人验（不强求每天，仅 mp ticket）
 
 详见 [_templates/daily-testing-human.md](_templates/daily-testing-human.md)。
 
-**跳过条件**（多数情况）：今日所有 ticket Tech 段都不含 `miniapp/` 路径 → 跳过整个 Tier 2，AI 全 ✅ 即 close。
+**关键**：ticket 在 AI 全 ✅ 时就已 close（不卡人验）。人验是**异步批量审计** —— Kevin 自定节奏，累计 3-4 天 mp ticket / 业务域收尾 / 客户演示前，集中跑一轮，扫掉 `progress.md`「人验」列里积压的 ⬜。
 
-**必走条件**：
+**进人验列的条件**（mp ticket）：
 - 当日有新 mp 页（行数 > 50）
 - 当日 ticket 涉及微信原生能力（wx.login / 支付 / 客服 / 扫码 / 手机号）
+- 纯 admin / 纯后端 ticket → 不进人验列（AI ✅ 即终态）
 
-判断：
-- ✅ OK → ticket close（写 `progress.md` 标 ✅）
-- ❌ NOT OK → 在 ticket 任务卡 `§revision` 段写"问题 1: 现象 / 期望"
+集中跑一轮时逐条判断：
+- ✅ OK → 在 `progress.md`「人验」列标 ✅
+- ❌ NOT OK → 在该 ticket 任务卡 `§revision` 段写"问题 1: 现象 / 期望"（ticket 已 close 也照样回填）→ `@coder 修` → 下轮再验
 
 ### 1.5 §revision 闭环（AI 自闭环修）
 
@@ -102,7 +103,7 @@
 - kevin-qa 在 reports/<T>.md §AI 测试段写失败清单 → spawn kevin-coder → 改完再 spawn kevin-qa 复测 → 直到 ✅
 - 整个过程不需要 Kevin 派单
 
-**B. Tier 2 失败 → Kevin 手动派**
+**B. Tier 2 批量人验失败 → Kevin 手动派**（ticket 可能已 close 数天，仍回填原任务卡 §revision）
 
 ```
 @coder 修 D<N>/GZ-BEAN-002 revision 段
@@ -114,7 +115,7 @@ AI 动作：
 3. 自测：贴新 raw output 到 `reports/<T>.md` 末尾追加
 4. 在任务卡 `§revision` 每条后追加"已修 / 改了 <文件>"
 5. **自动 spawn kevin-qa 复测**（如改动 admin / 后端 / mp unit 部分）
-6. 通知 Kevin 重做 Tier 2 spot check
+6. 该 ticket 人验列重置为 ⬜，等 Kevin 下轮批量人验再验
 
 循环到 OK。**不出 ticket 边界**，不写 `_open-issues.md`。
 
@@ -413,7 +414,7 @@ doc/daily/
 
 ---
 
-## §revision（Kevin testing-human 后填，初始空）
+## §revision（Kevin 批量人验后填，初始空）
 
 <!-- 例：
 - 问题 1：座位锁住了但 UI 没刷新 / 期望：选中态变灰

@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M6 §用户操作流程 §用户读文章 + §关键字段 § Article
 **关联拆解**: doc/02-需求拆解.md §2.5 第 491 行
-**关联 mockup**: design/mockup/news-list.html + design/mockup/news-detail.html（视觉参考，V1.0 设计冻结期不强求逐像素；mockup 含点赞 / 收藏 / 评论 toolbar — doc/12 §7 偏差 D7，实施时 V1.0 删评论入口）
+**关联 mockup**: design/mockup/news-list.html + design/mockup/news-detail.html（仅布局参考；视觉以 C 设计系统为准，doc/13；mockup 含点赞 / 收藏 / 评论 toolbar — doc/12 §7 偏差 D7，实施时 V1.0 删评论入口）
 **关联 ADR**: —
 **依赖**: GZ-SYS-005 ✅(D02)
 
@@ -14,11 +14,11 @@
 
 - **业务流**：doc/10-业务流权威图.md **§5 资讯发布流**（M6，V1.0）— admin 发布 / mp 拉列表 / 详情访问 / 浏览计数；本 ticket 仅实现 mp 端读路径，admin 发布 CMS 在 GZ-NEWS-003 (D07+)
 - **字段表**：doc/11-字段权威表.md **§5.1 `gz_news_article` 文章表** + **§5.2 `gz_news_category` 分类表**（字段权威 — 完整 DDL 来源）+ §1 全局公共字段
-- **UI 参考**（设计冻结期降级为视觉参考）：doc/12-UI-权威索引.md **§MP-NEWS-LIST** + **§MP-NEWS-DETAIL** + mockup `news-list.html` / `news-detail.html`
+- **UI 参考**（视觉走 C 日漫海报浓墨：页面用 Biz* 组件 + var(--c-*)，见 doc/tokens.md + doc/13；旧 mockup 仅作布局参考，以 c-tokens.scss 的 rpx 为准）：doc/12-UI-权威索引.md **§MP-NEWS-LIST** + **§MP-NEWS-DETAIL** + mockup `news-list.html` / `news-detail.html`
 
 ## What
 
-落地 `gz_news_category` + `gz_news_article` 两表；mp 端文章列表（4 分类 tab）+ 详情（富文本 + 视频）；视觉对齐 tokens.md（卡片样式 + 区块标题左侧绿条）。本 ticket 不做 admin 端 CMS（NEWS-003 推到 D07+），仅手工 INSERT 几条 demo 文章用于联调。
+落地 `gz_news_category` + `gz_news_article` 两表；mp 端文章列表（4 分类 tab）+ 详情（富文本 + 视频）；视觉走 C 设计系统 token（var(--c-*)，主 CTA = var(--c-red)），不硬编码 hex（doc/tokens.md）；卡片用 BizPanel、区块标题用 BizSectionTitle（黑色平行四边形签）。本 ticket 不做 admin 端 CMS（NEWS-003 推到 D07+），仅手工 INSERT 几条 demo 文章用于联调。
 
 ## AC（验收标准）
 

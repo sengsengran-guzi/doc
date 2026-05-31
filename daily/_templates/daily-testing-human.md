@@ -1,10 +1,10 @@
-# D<N>（d<X>）— Testing-human（Kevin 真机 spot check）
+# D<N>（d<X>）— Testing-human（Kevin mp 真机批量人验清单）
 
-> **B 方案 2026-05-28**：admin + 后端 + 单测全部 AI 接管（Tier 1A coder + Tier 1B kevin-qa）。本文件只列 **Kevin 要点的具体动作** — mp 端真机 + 微信原生能力 + 产品 sense。
+> admin + 后端 + 单测全部 AI 接管（Tier 1A coder + Tier 1B kevin-qa）。本文件只列 **Kevin 要点的具体动作** — mp 端真机 + 微信原生能力 + 产品 sense。
 >
-> **本日 Tier 2 范围**：<列 mp ticket，纯 admin/be ticket 跳过>。
+> **本日 mp 人验项**：<列当日 mp ticket，纯 admin/be ticket 跳过>。coder 每天预填，**Kevin 不必当天测** —— 累计 3-4 天 mp ticket 后集中跑一轮，跨多个 D<N>/testing-human.md。
 >
-> **预计时间**：5-10 min（如纯 admin/be 日 → 全跳，直接 closing）
+> **节奏**：不强求每天；纯 admin/be 日本文件全空，直接 closing。
 
 ---
 
@@ -49,7 +49,7 @@
 
 ---
 
-## 3. 不在此处测的（B 方案 — 已被 AI 覆盖）
+## 3. 不在此处测的（已被 AI 覆盖）
 
 | 范围 | 谁覆盖 | 在哪看结果 |
 |---|---|---|
@@ -63,8 +63,8 @@
 
 ## 4. 判定
 
-- ✅ **全过** → 在底部「判定结果」段标 ✅ → 告诉主线程跑日终 closing
-- ❌ **有问题** → 在对应 ticket 任务卡 `D<N>/tickets/<T>.md §revision` 段写"问题 N: 现象 / 期望" → 喊 `@coder 修 D<N>/<T> revision 段`
+- ✅ **该 ticket 过** → progress.md「人验」列标 ✅（**不 gate 日终 closing** —— closing 每天照常，ticket 在 AI ✅ 时已 close）
+- ❌ **有问题** → 在对应 ticket 任务卡 `D<N>/tickets/<T>.md §revision` 段写"问题 N: 现象 / 期望"（ticket 已 close 也照填）→ 喊 `@coder 修 D<N>/<T> revision 段`
 
 ---
 
@@ -99,6 +99,6 @@
 | GZ-YYY-NNN（B1-BN）| ⬜ 待测 |
 | 跨 ticket 联调（C1-CN）| ⬜ 待测 |
 
-**最终判定**：⬜ 全 ✅，可日终 closing ｜ ⬜ 有 ❌，待 revision
+**本轮批量人验结论**：⬜ 全 ✅ ｜ ⬜ 有 ❌，已回填对应 ticket §revision
 
-**Kevin 时间花费**：____ min（B 方案目标 5-10 min）
+**Kevin 时间花费**：____ min（一轮批量人验，扫掉累计的 mp ticket）

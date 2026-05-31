@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M2 §关键字段（GachaMachine / GachaPrize）
 **关联拆解**: doc/02-需求拆解.md §3.3 第 744 行
-**关联 mockup**: design/mockup/admin-gacha-pool.html ⚠️ 设计冻结期 admin 走 ruoyi 默认 + plus-ui BizTable，不参考 mockup 视觉
+**关联 mockup**: design/mockup/admin-gacha-pool.html ⚠️ admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）+ plus-ui BizTable，不参考 mockup 视觉
 **关联 ADR**: —
 **依赖**: GZ-SYS-001 ✅（ruoyi-modules/ruoyi-gz-gacha 空模块已就位）
 
@@ -17,7 +17,7 @@
   - **§7.1 `gz_gacha_machine`**（机器主表 — 完整 DDL 来源）
   - **§7.2 `gz_gacha_prize`**（奖品池 — 完整 DDL 来源 + 库存字段）
   - §1 全局公共字段（tenant_id / create_by / del_flag 等）
-- **UI 参考**（设计冻结期）：admin 走 ruoyi 默认 + plus-ui BizTable，**不**逐像素还原 admin-gacha-pool.html
+- **UI 参考**：admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）+ plus-ui BizTable，**不**逐像素还原 admin-gacha-pool.html
 - **CLAUDE.md §6 #6**：menu_id 段 GACHA 10000-10099
 
 ## What

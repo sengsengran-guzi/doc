@@ -52,7 +52,7 @@
 
 ## 今日特殊约束
 
-- **设计冻结期纪律**（CLAUDE.md §7.5）：mp 端 6 个 ticket 全部走 wot-design-uni 默认 + tokens.md brand-primary，**不强求 mockup 逐像素还原**。Kevin testing-human 阶段不评判颜色 / 间距 / 圆角 / 字号，只评判功能；视觉评判窗口推到 6/10-6/14 风格统一 review 时
+- **C 设计系统纪律**（CLAUDE.md §7.5）：mp 端 6 个 ticket 全部走 C 日漫海报浓墨 —— 页面用 Biz* 原子组件（标签→BizTag / 按钮→BizButton / 卡片→BizPanel / 列表项→BizPanel，不直接撒 wd-*）+ var(--c-*) token，主 CTA = var(--c-red)，不硬编码 hex（doc/tokens.md + doc/13），**不强求 mockup 逐像素还原**。已切 C 系统，视觉以 doc/tokens.md + doc/13 为准；Kevin testing-human 阶段 mp 视觉遵循 C 设计系统（粗墨边 / 硬投影 / 朱红主色 / 网点 / 报头风），不纠结逐像素
 - **mockup 缺口处理**（doc/12 §5.1 排 3 + §7 偏差）：
   - `me-profile.html` mockup 当前已存在于 design/mockup/（doc/12 §5.1 排 3 标"待新画"是历史记录），USER-002 直接参考该文件
   - me-home mockup 含 PRD 外内容（等级 LV3 / 签到 / 邀请好友 — doc/12 §7 偏差 D4）：实施时按 PRD 删，保留收藏 UI 占位（数字 0）

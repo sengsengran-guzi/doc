@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M2 §用户操作流程 步骤 2 + §概率算法 + §关键页面
 **关联拆解**: doc/02-需求拆解.md §3.3 第 772 行
-**关联 mockup**: design/mockup/gacha-detail.html（视觉参考）
+**关联 mockup**: design/mockup/gacha-detail.html（仅布局参考；视觉以 C 系统为准，doc/13；概率条为 doc/13 §3.2 待建 Biz 组件 BizProbBar）
 **关联 ADR**: —
 **依赖**: GZ-GACHA-102
 
@@ -25,13 +25,13 @@ mp 端单台扭蛋机详情页：拟物扭蛋机视觉 + 全部奖品网格（�
 
 - [ ] **AC 1**：mp 端 `GET /app/gz/gacha/machine/{id}/detail` 返回机器主体 + 奖品列表（全部含库存=0 灰显，前端区分；不在后端过滤）+ **归一化后的出现概率**（按当前在池有库存的奖品 weight 重算）
 - [ ] **AC 2**：page `pages/gacha/detail.vue`：
-  - **顶部 banner**：拟物扭蛋机（玻璃罩 + 胶囊 + 把手 + 出蛋口）— CSS 实现，参考 mockup gacha-detail.html 的 .gacha-machine 样式
-  - **中部"全部奖品"网格**（3 列）：每张奖品卡按 rarity 配色边框（SSR 金 / SR 紫 / R 蓝 / N 灰，tokens.md rarity 色）+ 稀有度 chip（左上 .rarity-chip）+ 库存=0 灰显「已抽完」遮罩
+  - **顶部 banner**：拟物扭蛋机（玻璃罩 + 胶囊 + 把手 + 出蛋口）— CSS 实现，mockup gacha-detail.html 仅作布局参考；视觉走 C 系统 var(--c-*)（粗墨边 + 硬投影），doc/13
+  - **中部"全部奖品"网格**（3 列）：每张奖品卡按 rarity 配色边框（SSR 金 var(--c-r-ssr) / SR 紫 var(--c-r-sr) / R 蓝 var(--c-r-r) / N 灰 var(--c-r-n)）+ 稀有度徽章（doc/13 §3.2 待建 Biz 组件）+ 库存=0 灰显「已抽完」遮罩
   - **底部"出现概率公示"折叠区**（默认折叠，wd-collapse）：
     - 折叠头部并排两个标签：「合规」「实时归一化」
     - 展开内容：表格列出每个奖品（名称 / 稀有度 / 出现概率%，按概率降序）
     - 表头说明："出现概率为按当前在池剩余库存归一化后的实时值，不构成保底承诺"
-  - **底部 fixed CTA 条**（.fixed-cta-bar）：「单抽 ¥X」按钮 → 跳支付（GACHA-104）
+  - **底部 fixed CTA 条**（BizFixedCta，纸底 + 顶部粗墨边 + 安全区）：「单抽 ¥X」按钮（var(--c-red) 朱红）→ 跳支付（GACHA-104）
 - [ ] **AC 3**：归一化算法（前端展示 + 后端返回一致）：
   - 输入：所有 current_stock > 0 的奖品 weight 数组
   - 输出：每个奖品 weight / sum(weights) × 100，保留 2 位小数

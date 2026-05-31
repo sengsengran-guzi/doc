@@ -4,7 +4,7 @@
 **复杂度**: L（V1.1 最复杂 ticket — 思考密度比 BEAN-004 更高，禁止快速过 §0 自检）
 **关联 PRD**: doc/02-prd.md M2 §概率算法 + §并发与防超卖 + §异常分支
 **关联拆解**: doc/02-需求拆解.md §3.3 第 787 行
-**关联 mockup**: design/mockup/gacha-draw.html（结果展示页 — 视觉参考，本 ticket 仅后端，UI 在 GACHA-105）
+**关联 mockup**: design/mockup/gacha-draw.html（结果展示页 — 仅布局参考；视觉以 C 系统为准，doc/13；出奖动画为 doc/13 §3.2 待建 Biz 组件。本 ticket 仅后端，UI 在 GACHA-105）
 **关联 ADR**: 如本日实施时涉及"是否引入分布式锁框架 / 异步事件解耦" → 新建 ADR-0003
 **依赖**: GZ-GACHA-101 + GZ-PAY-101 ✅(D08)
 

@@ -111,7 +111,7 @@
 
 ### 全局
 
-- **设计冻结期纪律**：admin 全部走 plus-ui BizTable + Element Plus 默认 + ruoyi 自带 EasyExcel 导出（**不调样式**，6/10-6/14 风格统一窗口再调）
+- **admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）**：admin 全部走 plus-ui BizTable + Element Plus 默认 + ruoyi 自带 EasyExcel 导出（**不调样式**，admin 不评判视觉）
 - **menu_id 段**（CLAUDE.md §6 #6）：ADMIN V1.1 11000-11099 / FINANCE 11100+（ADMIN-105 对账中心占 11100-11199）
 - **包名**（CLAUDE.md §6 #4）：`gz.ord.*` / `gz.gacha.*` / `gz.user.*` / `gz.common.*`（ADMIN-105 / 106 跨域聚合 — 新建 `gz.common.finance.*` 装对账逻辑）
 - **不动 ruoyi 自带模块**（CLAUDE.md §6 #1）

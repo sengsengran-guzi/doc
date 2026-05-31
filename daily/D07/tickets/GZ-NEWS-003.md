@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M6 §关键页面（后台）+ M7.6 资讯管理
 **关联拆解**: doc/02-需求拆解.md §2.5 第 519-530 行
-**关联 mockup**: design/mockup/admin-news.html（编辑器形态 — 视觉参考，**设计冻结期不还原视觉**；列表形态 mockup 缺口，admin 列表直接用 plus-ui BizTable 默认）
+**关联 mockup**: design/mockup/admin-news.html（编辑器形态 — 仅布局参考；admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统；列表形态 mockup 缺口，admin 列表直接用 plus-ui BizTable 默认）
 **关联 ADR**: —（如富文本编辑器选型有分歧可新建 ADR-0002）
 **依赖**: GZ-SYS-005 ✅(D02) ｜ NEWS-001/002（D06 完工，gz_news_article 基础字段已落）
 
@@ -17,8 +17,8 @@
   - §关键节点 步骤 1-5（甲方运营 admin 端创建 → 编辑 → 立即发布 / 定时发布）
   - §异常分支（富文本 XSS / 外站链接 / 图片体积超限）
 - **字段表**：doc/11-字段权威表.md **§5.1 `gz_news_article`**（NEWS-001 已落基础，本 ticket 按需 ALTER 补 CMS 编辑字段）+ §5.3 `gz_file_object`（封面 / 内嵌图 file_id 关联）+ 附录 A.4（状态枚举）+ 附录 A.11（分类字典）
-- **UI 参考**（设计冻结期）：
-  - admin ticket：doc/12-UI-权威索引.md §AD-NEWS-LIST-EDIT — 列表 + 富文本编辑 + 定时发布；**仅参考字段 / 表单结构，不还原视觉**；列表态走 plus-ui BizTable 默认
+- **UI 参考**：
+  - admin ticket：doc/12-UI-权威索引.md §AD-NEWS-LIST-EDIT — 列表 + 富文本编辑 + 定时发布；admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统），**仅参考字段 / 表单结构**；列表态走 plus-ui BizTable 默认
   - mp ticket：N/A（本 ticket 仅 admin，mp 渲染在 NEWS-002 D06 已完工）
 
 ## What
@@ -107,7 +107,7 @@ admin 端落「资讯管理」模块：
 | R2 | XSS 白名单过严 → 正常排版（如 inline style）被剥离 | 与 Kevin 确认白名单粒度；初版严格，后续按运营反馈放宽（业务运营人员可信，主要防外部投稿） |
 | R3 | 富文本编辑器粘贴 Word / 网页内容 → 大量冗余 inline style | wangEditor 自带"粘贴纯净化"开关，默认开启；运营复制 Word 时弹提示「建议清除格式」|
 | R4 | 阅读量 read_count V1.0 不防刷（doc/11 §5.1 备注）| 接受 — 运营自己刷不影响业务；防刷 v2 候选 |
-| R5 | mockup admin-news.html 仅编辑器形态，列表形态缺口 | 列表用 plus-ui BizTable 默认形态（doc/12 §AD-NEWS-LIST-EDIT 已裁定接受）；6/10-6/14 风格统一时若客户不满意再加列表 mockup |
+| R5 | mockup admin-news.html 仅编辑器形态，列表形态缺口 | 列表用 plus-ui BizTable 默认形态（doc/12 §AD-NEWS-LIST-EDIT 已裁定接受）；admin 走 ruoyi/Element Plus 默认审美，若客户不满意再加列表 mockup |
 
 ---
 

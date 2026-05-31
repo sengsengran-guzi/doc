@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§4 会员中心占位流** §订单 tab 占位段（V1.0 仅占位 / V1.1 真接入 / 拼豆不混入）
 - **字段表**：doc/11-字段权威表.md（**本 ticket 不动表**，仅定义前端契约 VO）
-- **UI 参考**（设计冻结期降级为视觉参考）：doc/12-UI-权威索引.md **§MP-ORD-LIST**（V1.0 占位 + V1.1 真数据） + mockup `order-list.html`（实施时按 PRD 删拼豆 tab — doc/12 §7 偏差 D3）
+- **UI 参考**（视觉走 C 日漫海报浓墨：页面用 Biz* 组件 + var(--c-*)，见 doc/tokens.md + doc/13；旧 mockup 仅作布局参考，以 c-tokens.scss 的 rpx 为准）：doc/12-UI-权威索引.md **§MP-ORD-LIST**（V1.0 占位 + V1.1 真数据） + mockup `order-list.html`（实施时按 PRD 删拼豆 tab — doc/12 §7 偏差 D3）
 
 ## What
 

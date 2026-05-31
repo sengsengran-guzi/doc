@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M7.2 扭蛋池管理 + M2 §概率算法
 **关联拆解**: doc/02-需求拆解.md §3.5 第 921-932 行
-**关联 mockup**: design/mockup/admin-gacha-pool.html ⚠️ V1.0/V1.1 设计冻结期：admin 走 ruoyi 默认 + plus-ui BizTable / Element Plus 默认组件，**不参考 mockup 视觉**；mockup 仅作页面结构 / 功能项参考
+**关联 mockup**: design/mockup/admin-gacha-pool.html ⚠️ admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）+ plus-ui BizTable / Element Plus 默认组件，**不参考 mockup 视觉**；mockup 仅作页面结构 / 功能项参考
 **关联 ADR**: —
 **依赖**: GZ-GACHA-101 ✅(D08/D09 — 机器 + 奖品 schema 已落)
 
@@ -14,7 +14,7 @@
 
 - **业务流**：doc/10-业务流权威图.md **§8 扭蛋机抽奖全流程** §业务规则（概率算法 / 库存）+ §并发与防超卖
 - **字段表**：doc/11-字段权威表.md **§7.1 `gz_gacha_machine` 扭蛋机** + **§7.2 `gz_gacha_prize` 奖品**（概率权重 weight 字段 + 库存 stock_current / stock_initial 字段 + 稀有度 rarity 字段）+ §A.6 状态字典 + §10.2 sys_dict_data §稀有度字典
-- **UI 参考**（设计冻结期）：doc/12 §AD-GACHA-POOL §页面结构（机器列表 + 奖品池编辑视图 + 实时归一化概率预览）
+- **UI 参考**：doc/12 §AD-GACHA-POOL §页面结构（机器列表 + 奖品池编辑视图 + 实时归一化概率预览）。admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）
 
 ## What
 
@@ -63,7 +63,7 @@ admin 端扭蛋池管理：扭蛋机器 CRUD + 上下架开关 + 奖品池可视
 2. **库存空奖品不参与归一化**：AC 6 锚定；与 doc/10 §8 业务规则 + doc/11 §7.2 stock 字段口径一致
 3. **稀有度走字典 `gz_gacha_rarity`**（doc/11 §A.6）：N / R / SR / SSR / UR 五档；前端按字典渲染 chip 颜色
 4. **menu_id 10100-10199 段**（CLAUDE.md §6 #6 GZ-GACHA admin）
-5. **设计冻结期：admin 走 ruoyi 默认**：el-table / el-drawer / el-form 默认组件；不调样式
+5. **admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）**：el-table / el-drawer / el-form 默认组件；不调样式
 6. **包名 `org.dromara.gz.gacha.*`**
 
 ### 关键技术决策

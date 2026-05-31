@@ -1,7 +1,14 @@
-# 谷子宇宙 · 视觉 Token v1（基于 V4 拍板版）
+# 谷子宇宙 · 视觉 Token — C 日漫海报浓墨
 
-> 所有 mockup 必须在 `<style><:root>` 中引用本文件定义的变量，**不要硬编码颜色**。
-> 来源：从甲方现有"谷子宇宙"小程序首页抠取主色，V4 已客户口头认可。
+> 小程序唯一皮肤：米白纸 + 墨黑粗描边 + 朱红 + 硬投影（无虚化），漫画分镜 / 号外报纸气质。
+>
+> **适用范围：仅 miniapp（C 端微信小程序）**。后台 admin 走 ruoyi / Element Plus 默认审美，**不适用本设计系统**。
+>
+> **唯一色值/尺寸真源**：`code/main/miniapp/src/style/c-tokens.scss`（CSS 变量 + 全局组件类）与 `code/main/miniapp/uno.config.ts`（`theme.colors.c` 镜像 + 字号别名 + shortcuts）。两处必须一致。本文是「设计语义说明」，数值与真源逐一对齐；改色改尺寸先改真源、再回写本文，组件里禁止硬编码 hex。
+>
+> 设计原则与「怎么用」见 [doc/13-设计语言-C日漫浓墨.md](13-设计语言-C日漫浓墨.md)。
+>
+> **单位**：设计稿 375pt 基准，`px → rpx 取 ×2`。本文色卡给 hex（设计语义），尺寸给 rpx（小程序实际值），同时标注 CSS 变量名与 UnoCSS 类。
 
 ---
 
@@ -9,200 +16,186 @@
 
 ### 1.1 品牌色
 
-| Token | Hex | 用途 |
+| 语义 | Hex | CSS 变量 | Uno 类 | 用途 |
+|---|---|---|---|---|
+| 朱红 | `#E73E2A` | `--c-red` | `text-c-red` / `bg-c-red` | **主 CTA / 价格 / 高亮 / 选中态**（最高权重，全局唯一主行动色） |
+| 朱红按下 | `#C8301E` | `--c-red-deep` | `text-c-red-deep` | 朱红按下态 |
+| 竹绿 | `#2E8B3F` | `--c-green` | `text-c-green` / `bg-c-green` | 次级行动 / 成功 / 营业中 / 库存余量 |
+| 鸟金 | `#F4C200` | `--c-yellow` | `text-c-yellow` / `bg-c-yellow` | 标签 / 利益贴纸 / 强调高亮（多用黑底金字或金底黑字） |
+| 藏青 | `#1E4D8C` | `--c-blue` | `text-c-blue` / `bg-c-blue` | 资讯 / 链接 / 物流相关 |
+
+**铁律：价格永远朱红（`--c-red`），绝不用竹绿。** 竹绿只承担次级行动 / 成功态 / 营业中 / 库存量。
+
+### 1.2 中性色（纸与墨）
+
+| 语义 | Hex | CSS 变量 | Uno 类 | 用途 |
+|---|---|---|---|---|
+| 页面底（米白纸） | `#F5F1E8` | `--c-bg` | `bg-c-bg` | 整页背景（带横线稿纸纹） |
+| 卡片底（纸白） | `#FFFCF4` | `--c-paper` | `bg-c-paper` | 分镜框 / 顶栏 / CTA 条底 |
+| 墨黑 | `#1A1A1A` | `--c-ink` | `text-c-ink` / `border-c-ink` | 粗描边 / 主文字 / 标题 / 黑底块 |
+| 次墨 | `#5C5249` | `--c-ink-2` | `text-c-ink-2` | 辅助文字 / 说明 |
+| 弱墨 | `#9A948A` | `--c-ink-3` | `text-c-ink-3` | 占位 / 禁用 |
+| 浅描边 | `#E0D9C8` | `--c-line` | `border-c-line` | 纸面上的浅分割线 |
+
+### 1.3 分镜彩纸底 tint（商品 / 角色占位的底色，写死 5 档）
+
+| 语义 | Hex | CSS 变量 | 用途 |
+|---|---|---|---|
+| 粉 | `#FFE5F0` | `--c-tint-pink` | IP 占位 / 商品分镜底（随机分配，营造杂志彩页感） |
+| 红 | `#FFE0DC` | `--c-tint-red` | 同上 |
+| 蓝 | `#E8F4FF` | `--c-tint-blue` | 同上 |
+| 黄 | `#FFF4D1` | `--c-tint-yellow` | 同上（也用于「到店须知」浅黄提示框） |
+| 绿 | `#E5FFE9` | `--c-tint-green` | 同上 |
+
+### 1.4 稀有度色（扭蛋 V1.1 用，先收口）
+
+| 档位 | Hex | CSS 变量 |
 |---|---|---|
-| `--brand-primary` | `#5BC85F` | 主 CTA / Logo / 高亮 / 库存条 / 主要图标 / 选中态 |
-| `--brand-primary-deep` | `#3DAE43` | 主色按下态 / 强调文字 / 边框深 |
-| `--brand-primary-soft` | `#E8F8E9` | 主色 8% 浅染（卡片底 / chip 底 / 跑马灯底） |
-| `--brand-accent` | `#FFC72C` | 辅助黄：标签 / 二级 CTA / 利益贴纸 / Banner 强调 |
-| `--brand-accent-deep` | `#F2A900` | 辅助黄按下态 |
-
-### 1.2 功能色
-
-| Token | Hex | 用途 |
-|---|---|---|
-| `--price` | `#FF4B4B` | 价格 / 倒计时数字 / 稀缺数字 / 删除/危险动作 |
-| `--price-deep` | `#E03333` | 价格强调态 / 按下 |
-| `--success` | `#5BC85F` | 同 brand-primary（不再单独定义） |
-| `--warning` | `#FFC72C` | 同 brand-accent |
-
-### 1.3 中性色
-
-| Token | Hex | 用途 |
-|---|---|---|
-| `--bg` | `#F7F8FA` | 页面底色（整页背景） |
-| `--card` | `#FFFFFF` | 卡片白底 |
-| `--ink` | `#1F1F1F` | 正文 / 标题 |
-| `--ink-2` | `#5C5C66` | 次级文字 / 辅助说明 |
-| `--ink-3` | `#9A9AA3` | 弱文字 / 占位 / 已禁用 |
-| `--line` | `#ECECEF` | 分割线 / 卡片边框 |
-
-### 1.4 稀有度色（卡牌四档，写死）
-
-| Token | Hex | 用途 |
-|---|---|---|
-| `--r-ssr` | `#FFD700` | SSR 金（边框 + 角标） |
-| `--r-sr` | `#A663F4` | SR 紫 |
-| `--r-r` | `#4A90E2` | R 蓝 |
-| `--r-n` | `#C0C0C0` | N 灰 |
-| `--r-ssr-soft` | `#FFF7D6` | SSR 卡背景渐变上端 |
-| `--r-sr-soft` | `#F1E6FE` | SR 软底 |
-| `--r-r-soft` | `#E5F0FB` | R 软底 |
-
-### 1.4b 稀有度光晕（盲盒重画版新增，用于 draw / 拟物机器胶囊发光）
-
-| Token | 值 | 用途 |
-|---|---|---|
-| `--rarity-glow-ssr` | `rgba(255,215,0,.55)` | SSR 揭晓光晕 / 金胶囊发光 |
-| `--rarity-glow-sr`  | `rgba(166,99,244,.45)` | SR 揭晓光晕 |
-| `--rarity-glow-r`   | `rgba(74,144,226,.35)` | R 揭晓光晕 |
-| `--rarity-glow-n`   | `rgba(192,192,192,.25)` | N 揭晓光晕 |
-
-### 1.5 物流时间线色（订单详情用）
-
-| 状态 | 颜色 |
-|---|---|
-| 已完成节点圆点 + 连线 | `--brand-primary` |
-| 当前节点圆点 | `--brand-primary` + 外圈光晕 `rgba(91,200,95,.25)` |
-| 未完成节点圆点 + 连线 | `--ink-3` (`#9A9AA3`) |
-| 异常 / 卡单节点 | `--price` (`#FF4B4B`) |
+| SSR | `#FFD700` | `--c-r-ssr` |
+| SR | `#A663F4` | `--c-r-sr` |
+| R | `#4A90E2` | `--c-r-r` |
+| N | `#B8B2A6` | `--c-r-n` |
 
 ---
 
-## 2. 字号 Token
+## 2. 描边 & 阴影（C 套灵魂）
 
-> 小程序内字号偏紧凑，对齐拼多多/淘宝信息密度。
+C 套的辨识度全在「粗墨边 + 硬投影」。投影是**纯黑、无虚化、有偏移量**的硬阴影，不是 Material 那种柔光。
 
-| Token | px | 用途 |
+### 2.1 描边
+
+| 语义 | rpx | px | CSS 变量 | 用途 |
+|---|---|---|---|---|
+| 粗描边 | `5rpx` | 2.5px | `--c-bw` | 分镜框 / 顶栏 / 主按钮 / CTA 条 |
+| 中描边 | `4rpx` | 2px | `--c-bw-2` | 小卡 / 标签框 / 气泡 |
+| 细描边 | `3rpx` | 1.5px | `--c-bw-3` | 座位格 / 图例 / outline 标签 |
+
+描边颜色一律 `--c-ink`（墨黑）。
+
+### 2.2 硬投影
+
+| 语义 | 值 | CSS 变量 | 用途 |
+|---|---|---|---|
+| 分镜投影 | `8rpx 8rpx 0 #1A1A1A` | `--c-shadow` | 分镜框默认投影（4px 偏移） |
+| 按钮投影 | `6rpx 6rpx 0 #1A1A1A` | `--c-shadow-btn` | 主按钮（3px 偏移） |
+| 小元素投影 | `4rpx 4rpx 0 #1A1A1A` | `--c-shadow-sm` | 小卡 / 入口格 / chip（2px 偏移） |
+| 选中态红投影 | `6rpx 6rpx 0 #E73E2A` | `--c-shadow-sel` | 日期 / 时段 / 座位「被选中」时投影换成朱红 |
+| CTA 条上沿 | `0 -4rpx 0 rgba(0,0,0,.06)` | `--c-shadow-cta` | 底部固定 CTA 条上边缘 |
+
+**按下态**：主按钮 `:active` 时 `transform: translate(3rpx, 3rpx)` 同时投影缩到 `3rpx 3rpx`，制造「被按进纸里」的物理感。
+**选中态**：可选元素选中时，把硬投影颜色从墨黑换成朱红（`--c-shadow-sel`），并轻微位移 `translate(-1rpx,-1rpx)` 上浮。
+
+---
+
+## 3. 字号 Token
+
+> 单位 rpx（小程序），px 为设计稿对照（rpx ÷ 2）。
+
+| 语义 | rpx | px | CSS 变量 | Uno 类 | 用途 |
+|---|---|---|---|---|---|
+| 报头巨字 | `84rpx` | 42 | `--c-fs-hero` | `text-c-hero` | 首页报头巨字（「痛 · 入荷」） |
+| 结果大字 | `56rpx` | 28 | `--c-fs-display` | `text-c-display` | 扭蛋出奖 / 大结果数字（V1.1） |
+| 页面主标题 | `40rpx` | 20 | `--c-fs-h1` | `text-c-h1` | 漫画标题 MangaTitle / 步骤序号 |
+| 区块标题 | `32rpx` | 16 | `--c-fs-h2` | `text-c-h2` | 平行四边形区块签 / 大按钮 |
+| 强调正文 | `30rpx` | 15 | `--c-fs-lg` | `text-c-lg` | 强调正文 / 门店名 |
+| 正文 / 按钮 | `26rpx` | 13 | `--c-fs-body` | `text-c-body` | 正文 / 按钮文字 |
+| 副文字 / chip | `22rpx` | 11 | `--c-fs-sm` | `text-c-sm` | 副文字 / 气泡 / chip |
+| 标签 / 说明 | `20rpx` | 10 | `--c-fs-xs` | `text-c-xs` | 标签文字 / 辅助说明 |
+| 角标 / 编号 | `18rpx` | 9 | `--c-fs-2xs` | `text-c-2xs` | 角标 / monospace 编号 |
+| 极小编码 | `16rpx` | 8 | `--c-fs-3xs` | `text-c-3xs` | `SCENE.01` / `STORE_01` 等编码小字 |
+
+数字（价格 / 倒计时 / 余量）加 `.c-num`（`font-variant-numeric: tabular-nums`）对齐。
+
+---
+
+## 4. 间距 / 圆角
+
+| 语义 | rpx | px | CSS 变量 | 用途 |
+|---|---|---|---|---|
+| 页面左右内边距 | `28rpx` | 14 | `--c-gap-page` | 页面横向 padding |
+| 卡内边距 | `24rpx` | 12 | `--c-gap-card` | 分镜框内部 padding |
+| 常规间隔 | `16rpx` | 8 | `--c-gap` | 元素间常规 gap |
+
+**圆角：C 套基本直角（`--c-radius: 0`），追求海报 / 分镜的硬朗感。**
+
+| 语义 | 值 | CSS 变量 | 用途 |
+|---|---|---|---|
+| 基础圆角 | `0` | `--c-radius` | 所有卡 / 按钮 / 标签默认直角 |
+| 气泡圆角 | `36rpx 36rpx 36rpx 8rpx` | `--c-radius-bubble` | 对话气泡（唯一圆角特例，左下角收尖模拟气泡尾巴） |
+
+例外：顶栏返回按钮、头像、稀有度圆点等「天生圆形」元素仍可用 `border-radius: 50%`。
+
+---
+
+## 5. 字体
+
+| 语义 | 值 | CSS 变量 |
 |---|---|---|
-| `--fs-display` | 30 | 价格大数字 / 抽奖结果数字 |
-| `--fs-h1` | 16 | 页面主标题（商品名 / 机器名） |
-| `--fs-h2` | 14 | 区块标题（"奖品池" "热销"） |
-| `--fs-body` | 13 | 正文 / 按钮文字 |
-| `--fs-sm` | 11 | 副文字 / chip / 倒计时 |
-| `--fs-xs` | 10 | 标签文字 / 辅助说明 |
-| `--fs-xxs` | 9 | 标签内 / 极小辅助 |
+| 正文字族 | `'PingFang SC','Hiragino Sans GB','Heiti SC',system-ui,sans-serif` | `--c-font` |
+| 编码 / 数字小字 | `'SF Mono','Roboto Mono',Menlo,monospace` | `--c-font-mono` |
 
-字体：`'Noto Sans SC', system-ui, sans-serif`；数字加 `font-variant-numeric: tabular-nums`（用 `.num` class）。
+漫画标题靠 `font-weight: 900` + 紧字距（`letter-spacing: -1rpx`）出粗黑效果；编码小字（`SCENE.01` / 日期 / 单号 / 国际单号）一律走 monospace，强化「号外报纸 / 机读」气质。
 
 ---
 
-## 3. 间距 Token (spacing)
+## 6. 组件类清单 ↔ Biz 组件
 
-> 用 Tailwind 默认间隔（4px 基准），不另起一套。
+页面**不直接撒全局类**，统一走 `src/components/biz/` 下的业务组件（组件库无关纪律，见 [.claude/CLAUDE.md §7.5](../.claude/CLAUDE.md)）。下表是「全局类 → Biz 组件 → 用途」的对照。
 
-| 场景 | 值 |
-|---|---|
-| 页面左右内边距 | `px-3` (12px) |
-| 卡片内边距 | `p-3` (12px) |
-| 卡片之间垂直间隔 | `mt-3` (12px) |
-| 区块标题与内容间隔 | `mb-2.5` (10px) |
-| 标签之间 | `gap-1` (4px) |
-| 按钮内文字行距 | `mt-0.5` (2px) |
-| 底部 fixed CTA 条上方留白 | `mb-32` (128px，给 CTA 让位) |
-
----
-
-## 4. 圆角 Token (radius)
-
-| 场景 | Tailwind | px |
+| 全局类 | Biz 组件 | 用途 |
 |---|---|---|
-| 大卡片 / Banner | `rounded-lg` | 8 |
-| 小 chip / 标签 | `rounded` | 4 |
-| 极小标签（rarity-chip） | `rounded-[2px]` | 2 |
-| 按钮 | `rounded-md` | 6 |
-| 头像 / 圆点 | `rounded-full` | 999 |
-| 进度条 | `rounded-full` | 999 |
+| `.c-screen` | `BizScreen` | 屏幕根容器：米白底 + 横线稿纸纹 |
+| `.c-panel`（`--dashed` / `--sm` / `--ink` / `--flat` / `--accent`） | `BizPanel` | 分镜框：纸底 + 粗墨边 + 硬投影。一切内容容器的基座 |
+| `.c-btn`（`--block` / `--lg` / `--sm` / `--green` / `--ink` / `--ghost` / `--disabled`） | `BizButton` | 主行动按钮：粗墨边 + 硬投影 + 900 字重 + 按下位移 |
+| `.c-tag`（`--red` / `--green` / `--ink` / `--outline`） | `BizTag` | 标签：鸟金底黑字 / 反白墨底 / 描边款 |
+| `.c-manga-title`（`--stroke`） | `BizMangaTitle` | 漫画粗黑标题，`--stroke` 加白描边 |
+| `.c-section-title`（`__tag` / `__sub` / `__more`） | `BizSectionTitle` | 区块标题：黑色平行四边形签 + monospace 副标 + 「全部 →」 |
+| `.c-step-title`（`__n` / `__date`） | `BizStepTitle` | 拼豆步骤标题（①②③ 朱红序号 + 标题 + 右侧日期） |
+| `.c-speech` | `BizSpeechBubble` | 对话气泡（白底墨边 + 收尖圆角） |
+| `.c-screentone`（`--fine` / `--wide` / `--light`） | `BizScreentone` | 网点底纹（绝对定位覆盖层，放分镜内） |
+| `.c-burst` | （`BizScreentone` 的 burst 模式 / 局部用 class） | 集中线（径向，强调用） |
+| `.c-topbar` | （未抽组件） | 自定义导航条样式类；V1.0 用**原生导航栏 C 配色**（pages.config.ts globalStyle）+ 页面内 `.masthead` 报头条（见 `pages/index/index.vue`），暂不单独抽组件 |
+| `.c-cta-bar` | `BizFixedCta` | 底部固定 CTA 条 |
+| `.c-mono` | （工具类，按需挂） | monospace 编码小字 |
+| `.c-num` | （工具类，按需挂） | 数字 tabular 对齐 |
+| `.c-price` | （工具类，按需挂） | 价格朱红大字 |
+
+V1.1 待建 Biz 组件（出奖动画 / 物流时间线 / 核销码 / 概率条）详见 doc/13 的原子清单表。
 
 ---
 
-## 5. 阴影 Token
+## 7. 底部 tabbar 规范
 
-| 场景 | 值 |
-|---|---|
-| 卡片 hover/常态 | `0 1px 3px rgba(0,0,0,.04)` |
-| 底部 fixed CTA 条 | `0 -2px 12px rgba(0,0,0,.05)` |
-| 主 CTA（绿）发光 | `0 2px 8px rgba(91,200,95,.45)` |
-| SSR 金边光晕 | `0 1px 6px rgba(255,215,0,.25)` |
-| 角标（红） | `0 2px 6px rgba(255,75,75,.3)` |
-| 利益贴纸（黄） | `0 1px 2px rgba(255,199,44,.4)` |
-
----
-
-## 6. 组件级共享 class（约定）
-
-所有 mockup 都用以下命名（V4 已落定）：
-
-| class | 用途 |
-|---|---|
-| `.frame` | 375px 视口容器 |
-| `.status-bar` | 顶部 9:41 状态栏 |
-| `.nav-bar` | 顶部导航 |
-| `.num` | 数字 tabular |
-| `.tag-green` / `.tag-yellow` / `.tag-red` / `.tag-outline` | 四种标签 |
-| `.rarity-chip` + `.ssr/.sr/.r/.n` | 稀有度角标 |
-| `.prize-card` + `.ssr/.sr/.r` | 奖品卡边框 |
-| `.cta-single` / `.cta-ten` | 双 CTA 按钮 |
-| `.countdown-num` | 倒计时黑底数字格 |
-| `.scroll-marquee` + `.scroll-marquee-inner` | 跑马灯 |
-| `.stock-bar-track` + `.stock-bar-fill` | 库存进度条 |
-| `.section-bar` | 区块标题左侧绿条 |
-| `.benefit-sticker` | 黄底利益贴纸 |
-| `.badge-corner` | 卡片左上红色角标 |
-| `.tabbar` + `.tabbar-item` + `.tabbar-item.active` | 底部 5 tab |
-| `.fixed-cta-bar` | 详情/选择页底部固定 CTA 条 |
-| `.timeline-node` + `.timeline-node.done/.active/.todo` | 物流时间线节点 |
-
----
-
-## 7. 底部 5 tab 结构（统一规范）
+### 7.1 V1.0：精简 3 tab
 
 ```
-[ 首页 ] [ 扭蛋 ] [ 预购 ] [ 拼豆 ] [ 我的 ]
-  ⌂        🎰      📦      🎨      👤
+[ 首页 ]   [ 拼豆 ]   [ 我的 ]
+   ⌂          🎨         👤
 ```
 
-- 高度 `h-14` (56px)
-- 选中态：图标 + 文字 `--brand-primary-deep`
-- 未选中：图标 + 文字 `--ink-2`
-- 字号 10px，图标 20px
-- 在所有"主路由级"页面出现：home / gacha-list / preorder-list / booking-select / me-home / news-list
-- 详情页（gacha-detail / gacha-draw / preorder-detail / order-detail）**不**显示 tab，用 fixed CTA 条代替
+- V1.0 主打**拼豆预约**，故底部只放 3 tab。
+- **扭蛋 / 预购属 V1.1，不占 tab**：V1.0 阶段从首页 teaser 卡片进入「ComingSoon 占位页」。
+- **资讯不占 tab**：从首页资讯卡片进入资讯列表 / 详情。
+- 选中态：图标 + 文字朱红（`--c-red`），文字 900 字重；顶部一道 30rpx 朱红短横标记选中项。
+- 未选中：墨黑（`--c-ink`），600 字重。
+- 底部留安全区（`env(safe-area-inset-bottom)`）。
+
+### 7.2 V1.1：扩展 5 tab
+
+```
+[ 首页 ]   [ 扭蛋 ]   [ 预购 ]   [ 资讯 ]   [ 我的 ]
+   ⌂          ○          □          ☰          ☻
+```
+
+V1.1 扭蛋 / 预购上线后，tabbar 扩到 5 个；资讯从首页卡片升格为独立 tab。结构与选中态规范不变。
 
 ---
 
-## 8. 视口与 frame
+## 8. 视觉避坑
 
-```css
-.frame {
-  max-width: 375px;
-  margin: 20px auto;
-  background: var(--bg);
-  min-height: 812px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.12);
-  position: relative;
-}
-body { background: #DDD; }  /* 灰底衬托 375 视口 */
-```
-
----
-
-## 9. 文案/视觉避坑（V4 已确认 + 2026-05-18 盲盒大修订）
-
-- 不写"必中 1 SR"等保底承诺 → 用"立省 21"等价值表达
-- 价格永远 `--price` 红，绝不用品牌绿（绿色用于 CTA / 库存 / 高亮，不混淆为价格）
-- SSR 不做呼吸动画（亮底克制版）
-- IP 占位用 emoji，不用真实 IP 图（CHIIKAWA / 立牌 / 大毛绒 / 徽章）
-- 概率公示默认折叠，"合规 / 实时归一化"双标签外露
-- **盲盒语义（2026-05-18 大修订）**：
-  - ❌ 抽奖 / 中奖 / 开奖 / 抽奖概率 / 中奖率
-  - ✅ 扭蛋 / 开盒 / 获得 / 出现概率 / 出现率
-  - 核心金句：「100% 获得，概率为获得对应商品的可能性」（区别抽奖"可能落空"）
-  - 保留：奖品池（玩家圈通用）/ 概率公示（合规术语）
-- **趣味性**（甲方明确要求）：
-  - gacha-detail 必须有拟物扭蛋机（玻璃罩 + 胶囊 + 把手 + 出蛋口）
-  - gacha-draw 必须三段分镜动画演示（转动 → 裂开光爆 → 揭晓稀有度光晕）
-  - gacha-list 每个机器卡用立体迷你机器视觉，不是平面商品图
-- **收集驱动**：
-  - 每次开盒后强提示图鉴进度（伏笔 me-collection）
-  - 集齐特典明示徽章奖励（玩家圈共识：集齐欲望 > 单抽欲望）
+1. **IP 占位规则**：所有二次元角色 / 商品图均为**占位**，用「彩纸 tint 底 + 角色剪影（`CharSilhouette`）+ `MOCK` 水印」表示，上线由甲方替换正版授权图。**文档与代码示例里不要把真实 IP 名当正式内容**，统一写「IP 占位」。
+2. **价格永远朱红**：价格 / 倒计时 / 稀缺数字一律 `--c-red`，不用竹绿。
+3. **网点 / 集中线克制**：网点（`.c-screentone`）`opacity` 控制在 0.12–0.25，只做底纹不抢内容；集中线（`.c-burst`）只在报头 / 出奖等强调位用，整页不超过 1–2 处。
+4. **文案语气 = 适度二次元梗 + 去重日文**：保留中文二次元梗（谷子号外 / EXTRA、痛入荷、抽爆、欧皇 / 非酋、SCENE.01、围观），但重日文改中文（無料予約→免费预约、満→约满、朝/昼/夜→上午/下午/晚上、予約→预约）。完整对照表见 [doc/13](13-设计语言-C日漫浓墨.md)。
+5. **不逐像素还原 mockup**：JSX 设计稿 / mockup 是「视觉语言 + 布局参考」，落地以 c-tokens.scss 的 rpx 数值为准，不追求逐像素复刻圆角 / 间距 / 阴影。
+6. **不混 emoji 到正式 UI 文案**：emoji 仅限占位示意（如设计稿入口图标），正式上线图标走 iconify / 本地 SVG。

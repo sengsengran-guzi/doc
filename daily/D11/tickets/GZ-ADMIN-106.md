@@ -4,7 +4,7 @@
 **复杂度**: M
 **关联 PRD**: doc/02-prd.md M7.9 数据看板（MVP 必看指标）
 **关联拆解**: doc/02-需求拆解.md §3.5 第 983 行
-**关联 mockup**: `design/mockup/admin-dashboard.html`（V1.1 完整版 — 视觉参考，设计冻结期不逐像素还原；plus-ui el-row + el-col + el-card 默认）
+**关联 mockup**: `design/mockup/admin-dashboard.html`（admin 概念参考；admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统、不评判视觉、不逐像素还原；plus-ui el-row + el-col + el-card 默认）
 **关联 ADR**: —
 **依赖**: GZ-ADMIN-103（订单聚合）+ GZ-ADMIN-105（对账中心，本 ticket 复用其聚合 API）
 
@@ -14,7 +14,7 @@
 
 - **字段表**：doc/11-字段权威表.md §4.6（4% 分成口径 — 本 ticket 数据源来自 ADMIN-105 聚合）
 - **业务流**：doc/10-业务流权威图.md §6 物流推进流（"待发货订单数"卡片需要按 logistics_node 状态聚合，doc/10 §6 7 节点状态机）
-- **UI 参考**（设计冻结期）：`admin-dashboard.html`（看大致布局 + 卡片数量 + 网格列数；**不还原**圆角 / 阴影 / 渐变 / icon 套件，plus-ui 默认 el-card 即可）
+- **UI 参考**（admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统）：`admin-dashboard.html`（admin 概念参考，看大致布局 + 卡片数量 + 网格列数；**不还原**圆角 / 阴影 / 渐变 / icon 套件，plus-ui 默认 el-card 即可）
 
 ## What
 
@@ -91,7 +91,7 @@ admin 端「首页 → 数据看板」V1.1 扩展 — V1.0 已有的基础看板
 | R1 | 聚合 API 调用慢（一次查 8 个口径）| 单次查询走索引（已存 + ADMIN-105 v_gz_finance_daily 视图）实测 < 500ms 可接受；如压测发现 > 1s 切并行查询 |
 | R2 | 热销 Top 10 数据稀疏（V1.1 上线初期没销量）| 卡片显示"暂无数据"占位 + el-empty 组件 |
 | R3 | 待发货订单数与 ADMIN-104 实际数不一致（不同接口口径漂移）| 复用同一 SQL 片段 / 抽 `IGzLogisticsService.countByNodes(nodes)` 给两边调 |
-| R4 | mockup admin-dashboard.html 视觉风格与 plus-ui 默认有偏差 | 设计冻结期 — Kevin testing-human 不评判视觉（CLAUDE.md §7.5），6/10-6/14 风格统一窗口再调 |
+| R4 | mockup admin-dashboard.html 视觉风格与 plus-ui 默认有偏差 | admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统）— Kevin testing-human 不评判视觉、只评判功能（CLAUDE.md §7.5） |
 
 ### ADR 候选
 
