@@ -32,6 +32,7 @@
 - [ ] **AC 5**：mockup 含的点赞 / 收藏 / 评论底部 toolbar（doc/12 §7 偏差 D7）：评论入口**不做**；点赞 / 收藏 **UI 保留** 但点击 toast"V1.0 不支持"（不实现后端）
 - [ ] **AC 6**：i18n 走 `t('news.xxx')`（含分类名 — 走前端 i18n 而不是后端 name 字段；后端 name 字段仅 admin 端展示，mp 端用 i18n key）
 - [ ] **AC 7**：单测覆盖：列表分页 / view_count 增量 / 富文本清洗 happy path
+- [ ] **AC 8（首页接真数据 — Kevin 点名的「首页」V1.0 完成项）**：首页 `pages/index/index.vue` 已存在，其资讯区当前是硬编码 `const news = [...]` 占位。本 ticket 收尾时替换为真实数据：调 `GET /app/gz/news/article/list?pageSize=3`（最新 3 条 published）渲染首页资讯卡（title/category/time/hot），首页「更多资讯 →」跳 `/pages/news/list`。改完 `pnpm build:mp-weixin` 仍绿、无残留 mock news 数组。归本 ticket，不单开。
 
 ## Tech（端 + 范围）
 

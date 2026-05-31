@@ -10,8 +10,9 @@
 
 - **主线 1**（会员中心 4 ticket）：mp 端「我的」tab 一次性把首页 + 个人资料编辑 + 地址簿 CRUD + 订单 tab 占位四件套全部立起（GZ-USER-001/002/003/004）
 - **主线 2**（资讯 C 端 2 ticket）：mp 端资讯主路径 = 文章列表（4 分类 tab）+ 详情（富文本/视频）+ 微信分享（GZ-NEWS-001/002）
+- **主线 2.5**（首页接真数据，随 NEWS-001 收尾，不单开 ticket）：首页 `pages/index/index.vue` 已存在（脚手架期已建好的 C 系统报头 + 拼豆 hero + 资讯卡 + 扭蛋/预购 teaser），但**资讯区现在是硬编码占位**。NEWS-001 落地资讯列表接口后，把首页资讯区接真实 `GET /app/gz/news/article/list`（取前 3 条按热度/时间），首页「更多资讯」跳资讯列表页。算 NEWS-001 的一条 AC。
 
-完工后 mp 端「我的」「资讯」两个 tab 业务闭环完成（订单 tab 是 V1.1 占位），剩余 V1.0 任务集中在 D07-D14（拼豆收尾 + 业务支付通道 + admin CMS + 联调）。
+**完工后 mp 端 C 端主体功能（首页 / 拼豆 / 我的 / 资讯）全部 functionally complete**（拼豆 D05 已闭环；订单 tab 是 V1.1 占位）。剩余 V1.0 任务只剩 **D07 后台收官**（资讯 CMS + 数据看板 + 支付通道 + V1.0 集成回归）。即 **D06 末 = C 端可整体走查；D07 末 = V1.0 30 ticket 全闭环**（Kevin 在 D07 后做一次批量人验，见 §人验口径）。
 
 ## Ticket 清单（6 个，按依赖图）
 
@@ -48,7 +49,7 @@
 1. 读 D06/README.md（本文件）+ 依赖图
 2. **第一波**：先派 GZ-USER-001（独立先跑）→ ✅ 后并行 spawn USER-002 / USER-003 / USER-004
 3. **第二波**：同时（或第一波启动后）串行 spawn NEWS-001 → NEWS-002
-4. 6 个 ticket 全部 ✅ → Kevin testing-human + 日终 closing
+4. 6 个 ticket AI Tier 1A+1B 全 ✅ → ticket close（mp 6 个全进 progress.md「人验」列）→ 日终 closing（写 summary，**不 commit**）。**Kevin 人验不在本日**——D05/D06 的 mp ticket 累积，D07 完工后一次性批量人验（见 §人验口径）
 
 ## 今日特殊约束
 
@@ -66,29 +67,35 @@
   - 数据契约层预留订单聚合接口 `/app/gz/user/orders/list?type=...`，V1.1 直接接入
 - **NEWS-001 分类硬约束**：4 类固定（全部 / 新品 / 活动 / 攻略），admin 端可在 v2 扩；V1.0 分类表只允许这 4 条记录（DDL 种子数据），UI 显示「全部」tab 不入库（前端聚合）
 - **NEWS-002 朋友圈分享**：必须用小程序原生 `onShareTimeline()` 钩子（微信限制），自定义分享卡片走 `onShareAppMessage()`；分享数计数表如 doc/11 §5 未列则 NEWS-002 ticket 内确认 schema 后写 DDL（建议增量字段 `gz_news_article.share_count` 而不是单独表，减少 V1.0 表数量）
-- **menu_id**：USER 域 7000-7099 / NEWS 域 8000-8099（CLAUDE.md §6 #6）；本日 admin 端 0 改动，但 NEWS-001 落 DDL 时种子分类数据不挂菜单（admin CMS 在 GZ-NEWS-003 D07+ 才挂）
-- **不要 commit**：6 个 ticket 全部 ✅ + Kevin testing-human 通过后再统一 commit
+- **menu_id**：USER 域 7000-7099 / NEWS 域 8000-8099（CLAUDE.md §6 #6）；本日 admin 端 0 改动，但 NEWS-001 落 DDL 时种子分类数据不挂菜单（admin CMS 在 GZ-NEWS-003 D07 才挂）
+- **§人验口径（本批 D05+D06+D07 统一批量人验，放 D07 后）**：Kevin 明确**本批 mp 人验集中在 D07 完工后跑一次**（CLAUDE.md §8.2 Tier 2 异步批量，不每日跑）。所以本日 6 个 ticket 只走 AI Tier 1A+1B gate → 全 ✅ 即 close 解锁下游 + 进 progress.md 人验列；**不在 D06 单独打断 Kevin 做人验**。AI 测试 ❌ → 闭环回 coder 修，不惊动 Kevin
+- **不要 commit**：D05/D06/D07 全部 AI ✅ + Kevin D07 后批量人验通过后，再统一 commit（注意项目当前非 git repo，commit 前需先 `git init`）
 
 ## 与昨日 reports 对账（D05）
 
-D05 完工后预期产物（拼豆收尾 — 详情 / 预约列表 / 取消 / 核销 / admin / 首页）：
-- ✅ GZ-BEAN-006「我的预约」入口已在 mp 端「我的」tab 落地 → 本日 USER-001 会员中心九宫格保留「我的预约」入口（路由 `/pages/me/bookings/list`，以 D05 实际路由为准）
-- ✅ GZ-SYS-005 OSS 上传服务 D02 已就位 → USER-002 头像上传 + NEWS-001 富文本配图直接复用 `OssClient`
-- ⚠️ 若 D05 BEAN-006 实际路径与本 README 假设不一致 → USER-001 同步修正九宫格跳转地址
+D05 已完工（拼豆收尾 — 详情 / 预约列表 / 取消 / 核销 / admin / 首页），本日依赖的实际产物：
+- ✅ GZ-BEAN-006「我的预约」列表页**实际路由 = `/pages/bean/my-list`**（不是早期假设的 `/pages/me/bookings/list`）→ 本日 USER-001 会员中心九宫格「我的预约」入口 `uni.navigateTo('/pages/bean/my-list')`，**别再用旧路由**
+- ✅ 拼豆首页 `/pages/bean/index`（BEAN-010）已是「拼豆」tab 落地页；首页 `pages/index/index.vue` 的拼豆 hero 跳它（已接）
+- ✅ GZ-SYS-005 文件上传服务 D02 已就位（dev MinIO / prod 切腾讯云 COS，合同附件二）→ USER-002 头像上传 + NEWS-001 富文本配图直接复用现有上传封装
+- ⚠️ D05 经验：D04 曾"超额交付"（后端接口比 ticket 卡假设的更全），**本日 coder §0 自检务必先核实 gz-user / gz-news 后端是否已有现成 controller/service**（D02/D03 可能已搭了部分），避免重复造或找不存在的类
 
 ## 完成判定（DoD）
+
+> 本日 DoD = **AI 侧全绿即收官**；下面的 testing-human 项由 coder 预填进 `testing-human.md`，**留给 D07 后 Kevin 批量人验**勾（不在 D06 当天跑）。
 
 - [ ] 6 个 ticket 任务卡 §revision 段空（无未闭环问题）
 - [ ] 6 个 reports/<T>.md 写完（含 §0 自检 + §N 完工 + ≥ 3 个代码 block 自测 raw output）
 - [ ] mvn install + plus-ui build:prod + miniapp dev:mp-weixin 三端全绿
-- [ ] testing-human.md 全勾：
-  - mp「我的」tab 头像 / 昵称 / 九宫格入口全部跳转有效
+- [ ] 6 个 ticket AI Tier 1A+1B 全 ✅ → close + 进 progress.md 人验列
+- [ ] 首页资讯区已接真实接口（NEWS-001 AC，不再硬编码占位）
+- [ ] cat reports/*.md > summary.md 已生成
+- [ ] **testing-human.md 已预填**（不勾）以下供 D07 后批量人验：
+  - mp「我的」tab 头像 / 昵称 / 九宫格入口全部跳转有效（「我的预约」→ `/pages/bean/my-list`）
   - 个人资料：昵称 / 头像 / 手机号编辑保存后落库（gz_user_audit_log 多 1 条记录）
   - 地址簿：新建 + 编辑 + 删除 + 设为默认；默认地址唯一（再设另一条 → 上一条自动取消默认）
   - 订单 tab 3 子 tab 全部显示「暂无订单，敬请期待 V1.1」占位
-  - 资讯列表 4 分类 tab 切换正常；详情富文本 + 视频可播
-  - 资讯详情顶部「分享给朋友」+「分享到朋友圈」两个按钮可触发；分享计数 +1（DB / 埋点可查）
-- [ ] cat reports/*.md > summary.md 已生成
+  - 资讯列表 4 分类 tab 切换正常；详情富文本 + 视频可播；首页资讯卡显示真实文章
+  - 资讯详情「分享给朋友」+「分享到朋友圈」两按钮可触发；分享计数 +1
 
 ## 已知风险
 
@@ -108,7 +115,6 @@ D05 完工后预期产物（拼豆收尾 — 详情 / 预约列表 / 取消 / �
 ```bash
 cd doc/daily/D06
 cat reports/*.md > summary.md
-# Kevin testing-human OK 后再 commit
-git add -A && git commit -m "D06 (d5): 会员中心 USER-001/002/003/004 + 资讯前端 NEWS-001/002"
-# 然后写 D07/README.md（D07 候选：拼豆收尾剩余 ticket / SYS-007 支付通道 / NEWS-003 admin CMS）
+# 本批不 commit：等 D07 完工 + Kevin 批量人验通过后，D05+D06+D07 一起 commit（commit 前先 git init）
+# D07/README.md 已就位（资讯 CMS + 看板 + 支付通道 + V1.0 集成回归）→ 直接「开始 d6」进 D07
 ```

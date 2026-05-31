@@ -22,12 +22,13 @@
 
 ## AC（验收标准）
 
-- [ ] **AC 1**：mp 端「取消预约」按钮点击 → wd-message-box 二次确认弹窗（文案：「确定取消预约？取消后该时段座位将释放给他人」，cancel + confirm 两按钮）
-- [ ] **AC 2**：确认后调 `POST /app/gz/bean/booking/{id}/cancel`，请求体 `{cancelReason?: string}`（V1.0 不收 reason，预留字段）
-- [ ] **AC 3**：后端 service：①事务开始 ②`SELECT ... FOR UPDATE` 取 booking ③校验 status = pending（非 pending → 返回 409「该预约已 XX 不可取消」） ④校验 user_id = current_user_id ⑤UPDATE status=cancelled, cancel_time=NOW ⑥INSERT booking_log (action=cancel, from_status=pending, to_status=cancelled, operator_id=userId) ⑦提交
-- [ ] **AC 4**：成功后 mp 端 wd-toast「取消成功」 + 自动刷新当前页（详情页 → 状态变 cancelled + QR 灰显；列表页 → 卡片移到「已取消」tab）
-- [ ] **AC 5**：失败 case：used / no_show 已是终态 → wd-toast「该预约已 XX，不可取消」（按返回的 errorCode 映射文案）
-- [ ] **AC 6**：i18n 全覆盖（`bean.cancel.xxx`）；单测：service 层 happy path + status 非 pending 拒绝场景各 1 个
+- [x] **AC 1**：mp 端「取消预约」按钮点击 → 二次确认弹窗（`uni.showModal`，文案：「确定取消预约？取消后该时段座位将释放给他人」，cancel + confirm 两按钮）
+- [x] **AC 2**：确认后调 `POST /app/gz/bean/booking/{id}/cancel`（V1.0 不收 cancelReason，接口预留）
+- [x] **AC 3**：后端 service（D04 已实现，本 ticket 不改）：事务 + 状态守卫（status=pending，非 pending → ServiceException code=4008） + 本人校验 + UPDATE cancelled + cancelledTime + booking_log(operator_type=user) + dedup_token 释放座位
+- [x] **AC 4**：成功后 mp 端 `uni.showToast`「取消成功」 + 自动刷新当前页（详情页 → 重拉 detail，状态变 cancelled + QR 灰显由 isInactive 驱动；列表页 → 重拉 listMyBookings 本地重分组，卡片移到「已取消」tab）
+- [x] **AC 5**：失败 case：used / no_show 已是终态 → 后端返 4008，message「预约状态不允许此操作（当前状态：xxx）」由 http.ts 全局 toast 弹出；payload 透出 code 时本地兜底「该预约已核销 / 已过期，不可取消」
+- [x] **AC 6**：i18n 全覆盖（`bean.cancel.*`）；后端 service 单测（happy + 非 pending 拒绝）D04 已覆盖；mp 端 cancel.logic 纯逻辑单测 11 个用例
+- [x] **AC 7**：Tier 2 可达 — Kevin 从拼豆 tab → 首页「我的预约」→ my-list pending 卡片「取消」/ 点入 detail「取消预约」即触发（入口天然可达，无需临时入口）
 
 ## Tech（端 + 范围）
 

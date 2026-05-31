@@ -6,14 +6,18 @@
 
 ---
 
-## 今日目标（V1.0 最后一公里）
+> **本日定位**：C 端主体功能（首页 / 拼豆 / 我的 / 资讯）在 **D06 末已 functionally complete**；本日是 **后台收官**——把"甲方能发资讯、能看数据、支付通道通"这三件 C 端跑起来必需的后台能力补齐，从而让整条 V1.0 业务环真正可运营。本日完工 = V1.0 30 ticket 全闭环。
 
-- **主线 1**（运营内容）：甲方运营端文章 CRUD + 富文本编辑器 + 定时发布 cron → 资讯模块完整闭环（GZ-NEWS-003 + GZ-NEWS-004）
+- **主线 1**（运营内容）：甲方运营端文章 CRUD + 富文本编辑器 + 定时发布 cron → 资讯模块完整闭环（GZ-NEWS-003 + GZ-NEWS-004）。**补齐它，D06 的 mp 资讯列表/首页资讯卡才有真实文章可读**
 - **主线 2**（数据观测）：基础数据看板（用户 / 预约 / 资讯阅读三类非交易指标），cron 每 5 分钟刷新 → admin 首页 KPI 卡片可用（GZ-ADMIN-003）
 - **主线 3**（支付通道）：微信支付 V3 SDK 集成 + 0.01 元测试单端到端打通（统一下单 → prepay_id → wx.requestPayment → 微信回调 → 后端验签 + 幂等 + 落 paid）→ V1.0 通道层就绪（GZ-PAY-001）
 
-**本日 4 ticket 完工后 = V1.0 30 ticket 全闭环**。Kevin testing-human 阶段除了单 ticket 验收外，**必须跑一遍 V1.0 端到端**：
-微信登录 → 浏览资讯 → 拼豆预约（选店/选时段/选座/绑手机/提交）→ 核销码生成 → 后台核销 → 后台看板数据自增 → 后台资讯 CMS 发文 → mp 端能读到。
+**本日 4 ticket 完工后 = V1.0 30 ticket 全闭环**。
+
+### ⭐ 人验口径：D07 后做一次批量人验（覆盖 D05+D06+D07 全部 mp ticket）
+
+Kevin 明确**整个 V1.0 的人力测试放在 D07 之后跑一次**（不每日打断）。所以 D05/D06/D07 的 mp ticket 全部只走 AI Tier 1A+1B gate → ✅ 即 close + 进各自 progress.md「人验」列累积。D07 完工后，Kevin 一轮批量人验扫掉积压，外加**必跑 V1.0 端到端**（见 §B）：
+微信登录 → 浏览资讯 → 拼豆预约（选店/选时段/选座/绑手机/提交）→ 核销码生成 → 后台核销 → 后台看板数据自增 → 后台资讯 CMS 发文 → mp 端能读到。批量人验全过 → D05+D06+D07 统一 commit（commit 前先 `git init`）。
 
 完工后 D08 起进 V1.1 开发期（6/16 周二），6/05-6/15 共 11 天 buffer 用于：staging 部署 / 客户验收演示 / **mp 视觉走查（6/10-6/14，已切 C 日漫海报浓墨，视觉以 doc/tokens.md + doc/13 为准）** / V1.0 残留 bug 修复。
 
@@ -137,8 +141,9 @@ D06 `summary.md`（预计待生成）抓"对下游 ticket 的提示"段：
 ```bash
 cd doc/daily/D07
 cat reports/*.md > summary.md
-# Kevin testing-human OK 后再 commit
-git add -A && git commit -m "D07 (d6): 资讯 CMS + 看板 + 支付通道 + V1.0 集成回归"
+# 4 ticket AI 全绿 → 通知 Kevin 跑批量人验（D05+D06+D07 mp ticket 一次性 + V1.0 端到端 §B）
+# 批量人验全过后，才统一 commit 整个 V1.0（项目当前非 git repo，commit 前先 git init）：
+#   cd <repo 根> && git init && git add -A && git commit -m "V1.0 收官：D01-D07 全 30 ticket（微信登录/支付通道/拼豆预约/会员中心/资讯/后台基础）"
 # 然后写 D08/README.md（V1.1 头一天，6/16 周二起；6/05-6/15 buffer 不写 daily README）
 ```
 

@@ -22,13 +22,14 @@ mp 底部 5 tab 之一「拼豆」点击后的落地页 `/pages/bean/index`：�
 
 ## AC（验收标准）
 
-- [ ] **AC 1**：mp 端 `pages/bean/index.vue` 路由 `/pages/bean/index`，配置为底部 tab "拼豆"的默认页（修改 `pages.json` tab bar）
-- [ ] **AC 2**：顶部 banner：调 `GET /app/gz/common/config/get?key=gz.bean.home.banner` 拉运营素材（图 URL + 文案 + 跳转 link，JSON 格式存 sys_config），无素材时显示占位图 + 默认文案「成都拼豆店开张啦」
-- [ ] **AC 3**：中部主 CTA「立即预约」朱红 BizButton 大按钮（var(--c-red)，约屏宽 80%，位于首屏可见区）→ 点击跳 `/pages/bean/select`（BEAN-003 选座页）
-- [ ] **AC 4**：次级入口「我的预约」（弱按钮 + 右箭头）→ 点击跳 `/pages/bean/my-list`（BEAN-006 列表页）
-- [ ] **AC 5**：底部规则说明卡片：固定 3-5 条文字（取消规则 / 到店时间 / 联系方式占位），文案走 i18n `bean.home.rules.*`
-- [ ] **AC 6**：未登录用户进入此页不拦截（仅浏览）；点「立即预约」时若未登录 → 弹「登录后才能预约」（复用 D02 useAuth）
-- [ ] **AC 7**：i18n 全覆盖；视觉走 C 设计系统 token（var(--c-*)，主 CTA = var(--c-red)），不硬编码 hex（doc/tokens.md）
+- [x] **AC 1**：mp 端 `pages/bean/index.vue` 路由 `/pages/bean/index`，底部 tab "拼豆"默认页（tabBar 已由 GZ-ADMIN-005 配好指向本页，无需改 pages.json）
+- [x] **AC 2**：顶部 banner：调 `GET /app/gz/common/config/get?key=gz.bean.home.banner` 拉运营素材（JSON {imageUrl,title,link} 存 sys_config），无素材时占位图 + 默认文案「成都拼豆店开张啦」
+- [x] **AC 3**：中部主 CTA「立即预约」朱红 BizButton 大按钮（type=red size=lg block，var(--c-red)，首屏可见）→ 跳 `/pages/bean/select`
+- [x] **AC 4**：次级入口「我的预约」（弱按钮卡 + 右箭头）→ 跳 `/pages/bean/my-list`（BEAN-006 列表页，同日上线后可达）
+- [x] **AC 5**：底部规则说明卡片 3 条文字（取消 / 到店 / 客服），文案走 i18n `bean.home.rule*`
+- [x] **AC 6**：未登录守卫（useNavGuard onShow 弹登录引导，GZ-ADMIN-005 已定）；点「立即预约」/「我的预约」走 useAuth.ensureLoggedIn 二次兜底（@/hooks/useAuth）
+- [x] **AC 7**：i18n 全覆盖；视觉走 C 设计系统 token（var(--c-*)，主 CTA = var(--c-red)），无硬编码 hex
+- [x] **AC 8（Tier 2 可达）**：拼豆 tab = 落地页本身（N=0 直达）；「立即预约」N=1 到选座页（已可达）；「我的预约」N=1 到列表页（BEAN-006 上线后）；本 ticket 已清理 GZ-BEAN-003 的 Tier2-entry-temp 临时入口（grep 全 mp 无残留）
 
 ## Tech（端 + 范围）
 
