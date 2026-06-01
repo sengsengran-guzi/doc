@@ -165,3 +165,159 @@ mp vitest），结果如下；建议 Kevin 在有 Agent 工具的会话补跑一
 | 入口可达性 | me tab → 门店管理区（useStaff 条件渲染），无需临时入口 | ✅ |
 
 后端已按 §12 停止并释放 8080，dev server 交还 Kevin。
+
+---
+
+# GZ-SYS-007 完整性补充 — AC9 + AC10（2026-06-01 追加）
+
+> AC1-8 已交付（上方报告，未改动）。本段补 AC9（停用/删除 sys_user 自动踢 mp token）+ AC10
+> （owner admin 自助绑定/解绑店员）。两者是 ADR-0004 安全红线 + 客户可运营性的完整闭环。
+
+## §0 自检结果（AC9/AC10）
+
+| 检查项 | 结果 |
+|---|---|
+| 上游基座（IMpStaffPermissionService / MpStaffSysUserMapper / GzStaffBindingController）就绪 | ✅ 复用，未重写 |
+| ruoyi SysUserServiceImpl.updateUserStatus(382)/deleteUserByIds(555) 签名确认 | ✅ 两者均在 ISysUserService 接口 |
+| UserStatus 枚举 字面量（OK='0'/DISABLE='1'/DELETED='2'） | ✅ 只在切到 '1' 停用时踢 |
+| gz-common 已传递依赖 spring-aop + aspectjweaver（无需新增模块依赖） | ✅ ruoyi-common-* starter 带；项目有 LogAspect 先例 |
+| Spring AOP 代理生效（CGLIB proxy-target-class 默认 true） | ✅ 纯 execution(FQN) 切点，不 import ruoyi-system 类 |
+| 已应用迁移最大版本 V202606051000 → 新迁移 V202606051100 > 之 | ✅ |
+| menu_id 5060-5063 在 GZ-SYS 段 5000-5999 且空闲（5050-5055 已用） | ✅ |
+| 编译通过（gz-common -am） | ✅ EXIT 0 |
+| ADR 已读 | ADR-0004（本 AC 是其 ④⑤ 项落地） |
+
+## 实现摘要（AC9/AC10）
+
+**AC9 — 停用/删除 sys_user 自动踢 mp token**（Spring AOP，不改 ruoyi 源码 铁律#1）：
+- 新增 `aspect/SysUserStaffKickoutAspect.java`：`@Aspect @Component`，纯 `execution()` 切
+  `org.dromara.system.service.impl.SysUserServiceImpl` 的 `updateUserStatus(Long,String)` /
+  `deleteUserByIds(Long[])`，**不 import 任何 ruoyi-system 类**（gz-common 零新增模块依赖）。
+  - `@AfterReturning` updateUserStatus：status='1'(停用) 且更新行>0 → `kickoutByStaffUserId(userId)`；
+    启用('0')/无变更/null 不踢；踢人抛错吞掉不打断 ruoyi 主流程。
+  - `@AfterReturning` deleteUserByIds：逐个 `kickoutByStaffUserId` + `clearStaffBindingByStaffUserId`
+    （把绑定该 user 的 gz_user.staff_user_id 置 NULL，清悬挂）。
+- mapper 加 `clearStaffBindingByStaffUserId`（按 staff_user_id 批量置 NULL）。
+
+**AC10 — owner admin 自助绑定管理**：
+- `MpStaffSysUserMapper` 加 `bindStaffById`（set staff_user_id）+ `selectStaffCandidates`（同租户正常未删 sys_user 候选）。
+- `IMpStaffPermissionService` + impl 加 3 方法：`selectBindingPage`（gz_user 分页 + 绑定快照）/
+  `listStaffCandidates` / `bindStaff`（校验 gz_user 存在 + sys_user 同租户/正常/未删；改绑先踢旧会话）。
+- `GzStaffBindingController` 加 3 端点：`GET /binding/list`、`GET /binding/candidates`、`POST /binding/{gzUserId}/bind`；
+  全部端点 perm 统一为 `gz:staff:binding:{list,bind,unbind}`（含原 unbind/kickout 由 `@SaCheckRole("owner")` 改为
+  `@SaCheckPermission`，走标准 RBAC，菜单 seed 仅授 owner 等价"仅 owner"）。
+- 菜单 seed `V202606051100__GZ-SYS-007-staff-binding-menu.sql`：menu_id 5060(C 列表) + 5061/5062/5063(F 三权限)，
+  挂 5000 谷子业务下，owner(100) 授权 4 条，staff(101) **不授**（绑定是 owner 专属敏感操作）。
+- admin 页 `plus-ui/src/views/gz-common/staff-binding/index.vue`（Element Plus 默认风格）+ api `staff-binding.ts`
+  + zh/en i18n（staffBinding 块）。列表查 gz_user（openid/手机号/userNo 搜）+ 显示绑定 + 「设为店员/改绑」弹窗（候选下拉）+「解绑」。
+
+## AC 完成情况（AC9/AC10）
+
+| AC | 状态 | 证据 |
+|---|---|---|
+| AC9 停用/删除 sys_user 自动踢 mp token | ✅ | 切面单测 7 + live 端到端（停用 101 → 同店员 token staff/me 401）+ 切面日志 |
+| AC10 owner 自助绑定/解绑（list/candidates/bind/unbind） | ✅ | bindStaff 单测 7 + live 6 场景（含 403 权限隔离 + ServiceException 校验） |
+
+## AI 自测（AC9/AC10）
+
+### 后端单测（编译 + 全量）
+```
+[INFO] Running org.dromara.gz.common.aspect.SysUserStaffKickoutAspectTest
+[INFO] - [gz-staff-aop] 停用 sys_user=101 → 自动踢出 1 个 mp 会话
+[INFO] - [gz-staff-aop] 停用 sys_user=101 自动踢人失败（不影响停用本身）: redis down   ← 异常吞掉分支
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0  -- SysUserStaffKickoutAspectTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0 -- MpStaffPermissionServiceImplTest（11→18，+7 bindStaff）
+[INFO] Tests run: 61, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+新增覆盖：
+- AC9 切面：停用→踢 / 启用不踢 / 停用0行不踢 / null不踢 / 踢异常吞掉 / 删除→逐个kick+clear / 空数组无操作
+- AC10 bindStaff：校验通过→绑 / gz_user不存在→异常 / sys_user不存在→异常 / 已停用→异常 / 跨租户→异常 / 改绑先踢旧会话 / null参数→异常
+
+### Flyway 菜单迁移（启动自动跑）
+```
+- Migrating schema `ry-vue` to version "202606051100 - GZ-SYS-007-staff-binding-menu"
+- Successfully applied 1 migration to schema `ry-vue`, now at version v202606051100
+
+-- DB 验证
+SELECT menu_id, menu_name, menu_type, perms FROM sys_menu WHERE menu_id BETWEEN 5060 AND 5063;
+  5060 | 店员绑定管理 | C | gz:staff:binding:list
+  5061 | 绑定查询    | F | gz:staff:binding:list
+  5062 | 设为店员    | F | gz:staff:binding:bind
+  5063 | 解绑       | F | gz:staff:binding:unbind
+SELECT COUNT(*) FROM sys_role_menu WHERE role_id=100 AND menu_id BETWEEN 5060 AND 5063;  → 4  (owner 全授)
+SELECT COUNT(*) FROM sys_role_menu WHERE role_id=101 AND menu_id BETWEEN 5060 AND 5063;  → 0  (staff 不授)
+```
+
+### AC9 live 端到端验证（真后端 8080 + dev MySQL/Redis）★
+```
+# 步骤1 mp 店员登录（code=mock-178staff → openid=mock-mock-178 命中 seed 绑定 id=1→101）
+# 后端日志：[wx-login] 店员登录 gzUserId=1 → 加载 sys_user=101 权限（roles=1 perms=22）
+
+# 步骤2 停用前 staff/me（店员 token）
+{"code":200,"data":{"staff":true,"staffName":"成都门店运营","roles":["staff"],
+  "perms":[...,"gz:bean:booking:verify",...]}}    ← 22 个权限，店员有效
+
+# 步骤3 owner 登录 → access_token (loginId=sys_user:100)
+
+# 步骤4 owner 停用 staff sys_user 101（PUT /system/user/changeStatus {userId:101,status:"1"}）
+{"code":200,"msg":"操作成功","data":null}
+# 切面织入日志：[gz-staff-aop] 停用 sys_user=101 → 自动踢出 1 个 mp 会话   ★ AC9 自动生效
+
+# 步骤5 停用后，同一店员 token 再调 staff/me（AC9 核心断言）★
+{"code":401,"msg":"认证失败，无法访问系统资源","data":null}
+  ← 同 token 立即失效，无需手动 kickout、无需等下次登录 = AC9 验收达成
+
+# 清理：恢复 staff 101 启用 + gz_user id=1 绑回 101（DB 已复原供后续测试）
+```
+
+### AC10 live 端到端验证（真后端，owner token，6 场景）★
+```
+# a binding/list → total:3，id=1 staffUserId:101 staffUserName:"gz_staff_chengdu" staffActive:true；纯顾客 staffUserId:null
+# b binding/candidates → [{userId:100,gz_owner},{userId:101,gz_staff_chengdu}]（不含密码/邮箱）
+# c POST /staff/1/unbind → {data:true}；list 复查 staffUserId:null
+# d POST /staff/binding/1/bind?staffUserId=101 → {data:true}；list 复查 staffUserId:101 staffActive:true
+# e bind staffUserId=999（不存在）→ {"code":500,"msg":"店员账号不存在：999"}   ← 校验生效
+# f 店员 token 调 owner 端点 binding/list → {"code":403,"msg":"没有访问权限"}   ← 权限隔离仅 owner
+```
+
+### admin 前端 type-check
+```
+vue-tsc --noEmit  → 新增 staff-binding.ts / staff-binding/index.vue 零 TS 报错
+（全项目预存噪音文件不在本 ticket 改动范围）
+```
+
+## 风险提示 / 已知 issue（AC9/AC10）
+
+- **AC9 切面织入范围**：仅切 `SysUserServiceImpl` 单例方法的外部调用（admin SysUserController → Spring 代理 → 切面）。
+  若未来出现"绕过 Spring 代理的内部 this 调用"或批量脚本直连 DB 停用 → 切面不触发；此时 fallback：
+  ① 下次 mp 登录 resolve 已校验 status 降级；② owner 可手动调 `POST /system/gz/staff/kickout/{staffUserId}` 兜底。已 live 验证 admin 标准停用入口生效。
+- **AC10 改绑即时性**：改绑 / 解绑会即时踢旧会话（旧权限即时失效）；**新绑权限需该用户下次 mp 登录才加载**
+  （登录时 resolve 装载 RBAC）。这是 ADR-0004 装载模型的固有语义，符合 AC10 验收口径"绑后下次 mp 登录获得权限"。
+- live 仅测停用分支（避免删除真实 sys_user 破坏 dev 数据）；删除分支由切面单测 2 个用例覆盖（逐个 kick + clear 悬挂）。
+
+## 对下游 ticket 的提示（AC9/AC10）
+
+- **底座完整闭环已成**：后续 mp 管理功能下沉边际成本 = 加一行 `@SaCheckPermission` + admin 给店员角色授权 +
+  （需即时回收权限时）已有 AC9 自动踢 / AC10 owner 自助绑解。无需再动权限底座。
+- **ADR-0004 ④⑤ 项已落地**，ADR 范围切分表的 AC9/AC10 可标 ✅。
+
+## §AI 测试段（AC9/AC10 — Tier 1B）
+
+**注**：本 agent 运行环境无 Agent spawn 工具（无法自动 spawn kevin-qa）。已由 kevin-coder 亲自用真后端
+（spring-boot 8080 + dev MySQL/Redis）完成 Tier 1B 等价覆盖。
+
+| Tier 1B 项 | 覆盖方式 | 结果 |
+|---|---|---|
+| 后端集成（AC9 停用→自动踢 / AC10 list/candidates/bind/unbind） | 真后端 curl 端到端 11 场景（AC9×5 + AC10×6） | ✅ 全通过 |
+| 切面 AOP 织入生效性 | live 停用 sys_user → 切面日志 + 同 token 401 | ✅ 已 live 证实 |
+| 权限隔离（仅 owner） | 店员 token 调 owner 端点 → 403 | ✅ |
+| API 契约回归 | 后端 VO 字段 ↔ admin TS 接口对齐（StaffBindingVO/StaffCandidateVO） | ✅ |
+| admin 页面 | Element Plus 默认风格 CRUD + 弹窗（owner 解绑/踢人无新 admin 页时已 curl 覆盖；本批新增 staff-binding 页 vue-tsc 零错） | ✅ type-check 通过；Playwright E2E 建议 Kevin 在有工具会话补跑 |
+| 单测 | SysUserStaffKickoutAspectTest(7) + MpStaffPermissionServiceImplTest(18, +7) | ✅ Tests run 61 全通过 |
+
+后端已按 §12 停止并释放 8080，临时验证脚本已清理，dev server 交还 Kevin。
+
+**人验提示**：AC9（停用自动踢）/ AC10（owner 绑定管理）均为 **admin + 后端**，无 mp 新页 → 按 CLAUDE.md §8.2
+**纯 admin/后端 ticket 无人验**，Tier 1A + 1B 全 ✅ 即终态 close。admin staff-binding 页 Kevin 如愿可在后台
+「谷子业务→店员绑定管理」目视确认（功能层，不评判视觉）。

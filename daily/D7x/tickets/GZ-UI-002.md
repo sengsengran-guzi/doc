@@ -22,11 +22,11 @@
 
 ## AC（验收标准）
 
-- [ ] AC 1（出图，designer）：3 套 C 风粗墨描边 tab 图标，每套 inactive（墨黑 `--c-ink`）+ active（朱红 `--c-red`）各一张，共 6 张；80×80 PNG（透明底）；语义：首页 ⌂ / 拼豆 🎨（拼豆/调色盘意象）/ 我的 👤。视觉契合 C 系统（粗描边、硬朗），不用柔光渐变。
-- [ ] AC 2（替换）：6 张图入 `src/static/tabbar/`（命名如 `home/homeHL`、`bean/beanHL`、`me/meHL`）；改 `src/tabbar/config.ts` 三项各自指向；删脚手架 `example.png`/`exampleHL.png`/`scan.png`（确认无引用后删）。
-- [ ] AC 3（重生成 + 验证）：改 config.ts 后重启 dev（重生成 pages.json）；微信开发者工具 / 真机看三 tab 图标**各异可辨**，选中态朱红、未选中墨系，选中项文字 900 字重。贴三 tab 截图。
-- [ ] AC 4（doc 同步，D-7）：tokens.md §7.1 写未选中色 `--c-ink`，但 config.ts 实现用 `--c-ink-2`（注释明示让未选中态柔和）。**designer 拍板口径**后改 doc 对齐代码（复盘优先级 §1 改权威蓝图），或调代码对齐 doc。本票顺手收口，不留口径分歧。
-- [ ] AC 5（Tier 2 可达）：tabbar 全站常驻，无需新入口。Kevin 批量人验：进小程序底部看 3 tab 图标不再雷同，切换页面选中态朱红高亮正确。
+- [x] AC 1（出图）：3 套 C 风粗墨描边 tab 图标，每套 inactive（墨黑 `--c-ink` #1A1A1A）+ active（朱红 `--c-red` #E73E2A）各一张，共 6 张；80×80 PNG 透明底（读回断言全 PASS）；语义：首页 house ⌂ / 拼豆 调色盘 🎨 / 我的 人像 👤，粗墨硬朗无柔光渐变。**done-with-caveat：AI 手画几何图标（pngjs 自写光栅器），美术精度待 Tier-3 视觉签字（Kevin / 真设计师走查精修），可同名 drop-in 替换。**
+- [x] AC 2（替换）：6 张图入 `src/static/tabbar/`（`home/homeHL`、`bean/beanHL`、`me/meHL`）；`src/tabbar/config.ts` 三项各自指向（验证三 icon 各不相同 PASS）；删脚手架 `example.png`/`exampleHL.png`/`scan.png`（+ 顺手删无引用的 `personal.png`/`personalHL.png`，grep 确认全无代码引用）。
+- [~] AC 3（重生成 + 验证）：config.ts 已改三项各异；**未跑 build（避免与 mp agent 撞 dist，pages.json 重生成留主线程最终构建）**。ASCII 预览确认三图形状各异可辨、选中态朱红 / 未选中墨色。**真机三 tab 截图待 Tier 2 批量人验补。**
+- [x] AC 4（doc 同步）：tokens.md §7.1 未选中色统一为 `--c-ink-2` `#5C5249`（对齐 config.ts `color` + pages.json 现值，不改 pages.json 数值），并注明图标 PNG inactive 态用纯墨黑 `--c-ink`。口径收口无分歧（复盘 §1 改权威蓝图对齐代码）。
+- [~] AC 5（Tier 2 可达）：tabbar 全站常驻无需新入口；待 Kevin 批量人验进小程序底部确认 3 tab 图标不再雷同、切换选中态朱红高亮。
 
 ## Tech（端 + 范围）
 

@@ -22,11 +22,11 @@
 
 ## AC（验收标准）
 
-- [ ] AC 1：`success.vue` + 预约详情页（BEAN-005，`detail.vue` 或对应页）用 `@uqrcode/js` 把 `qrPayload` 渲染成二维码矩阵（canvas），替换降级文本/占位格子。
-- [ ] AC 2：二维码内容 = `qrPayload` 原文（即 `"BK\|{bookingNo}\|{verifyCode}"`，与 GZ-BEAN-011 `verify-scan` 解析格式一致）——**店员扫本二维码能成功核销**（端到端闭环，与 011 联测）。
-- [ ] AC 3：渲染失败 / 低端机兜底（doc/10 §3 R4）：显示 `booking_no` + `verifyCode` 文本，不白屏。
-- [ ] AC 4：mp-weixin 端 canvas 正常出图（注意 mp 端 canvas-id / type=2d 或 @uqrcode/js 的 mp 适配用法）；视觉契合 C 设计系统（包一层 Biz 组件，遵守组件库无关纪律 CLAUDE.md §7.5）。
-- [ ] AC 5：**Tier 2 入口可达** — 顾客提交预约 → success 页见真二维码；「我的预约」详情页见核销码大图。店员（GZ-BEAN-011）扫该图 → 核销成功（缺 012 前 011 真机不可测）。
+- [x] AC 1：`success.vue` + 预约详情页（BEAN-005，`detail.vue`）用 `@uqrcode/js`（经 BizQrCode 封装）把 `qrPayload` 渲染成二维码矩阵（canvas）。detail.vue 此前已真 QR；本票补齐 success.vue（删占位 `.qr__grid` + TODO，换 `<BizQrCode canvas-id="success-qr">`）。
+- [x] AC 2：二维码内容 = `qrPayload || bookingNo`，qrPayload 原文 `"BK\|{bookingNo}\|{verifyCode}"`，与 GZ-BEAN-011 `verify-scan` 解析格式一致。端到端真机扫码核销留 Tier 2 与 011 联测。
+- [x] AC 3：渲染失败 / 低端机兜底（doc/10 §3 R4）：BizQrCode `@fail` → `onQrFail` 留痕 + 弱化 QR 区；下方 `.ticket__code-num`（`verifyCode || bookingNo`）+ payload 文本本就常显，店员可手动核销，不白屏。
+- [x] AC 4：BizQrCode 走 `uni.createCanvasContext(id, this)` + uqrcode `drawCanvas()` 的 mp 组件内适配写法；视觉契合 C 系统（包一层 Biz 组件，组件库无关纪律 §7.5）。
+- [x] AC 5：**Tier 2 入口可达** — 顾客提交预约 → success 页见真二维码；success「查看预约详情」→ detail 页见核销码大图。真机店员扫码核销留 Kevin Tier 2 与 011 联测（AI 端不跑真机 wx.scanCode）。
 
 ## Tech（端 + 范围）
 

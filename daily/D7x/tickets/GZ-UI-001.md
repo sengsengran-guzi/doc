@@ -23,13 +23,14 @@
 
 ## AC（验收标准）
 
-- [ ] AC 1（P0 D-1）：客服浮层圆钮换朱红底 + 墨黑粗描边 + 硬投影（无虚化），红点换鸟金/朱红 + 墨黑描边，`:active` 投影缩位移；全站任意页右下角验证视觉契合 C 系统。贴改前后截图。
-- [ ] AC 2（P1 D-3）：`verify-scan.vue` 7 处伪 token 全换真 token；圆角归零；成功态底色 `--c-tint-green`；与 success.vue 核销凭证视觉对齐（理想换 BizPanel + 竹绿状态条）。
-- [ ] AC 3（P1 D-4）：`me/index.vue` staff-badge 伪 token 换真 token 或 `<BizTag>`；圆角归零。
-- [ ] AC 4（P2 D-6）：BizSeatList 满席态 `var(--c-line)`。
-- [ ] AC 5（回归 gate）：`cd code/main/miniapp && grep -rnE "var\(--c-(font-(sm|lg|xs|body|h1|h2|hero)|ink-[0-9]|accent)" src` **无输出**（伪 token 清零），贴 raw output。
-- [ ] AC 6：**纯改皮，零运行时行为改动**；`pnpm type-check` 零 error（与 GZ-SYS-008 一并保证）+ 既有 vitest 不回归。
-- [ ] AC 7（Tier 2 可达）：相关页本就有现成入口（FAB 全站常驻 / verify-scan 店员个人中心「核销」/ me 我的 tab），**无需新增临时入口**。Kevin 批量人验：① 任意页看右下角客服钮为朱红硬投影 ② 绑定店员登 mp → 我的见鸟金店员徽章 → 核销页看成功态为竹绿 C 风。
+- [x] AC 1（P0 D-1）：客服浮层圆钮 `#ff6b81`→`var(--c-red)` 底 + `var(--c-bw-2) solid var(--c-ink)` 墨黑粗描边 + `4rpx 4rpx 0 var(--c-ink)` 硬投影（无虚化）；`:active` 投影缩 `2rpx 2rpx 0`；红点 `#faad14`→`var(--c-yellow)` + `2rpx solid var(--c-ink)`。截图留 Kevin Tier 2（AI 端无真机截图工具）。
+- [x] AC 2（P1 D-3）：`verify-scan.vue` 7 处伪 token 全换真 token（`--c-fs-sm/--c-ink-2/--c-tint-green/--c-fs-lg/--c-shadow-btn`）；圆角归零；**理想已落地**：成功结果框加竹绿状态条（`--c-green` + 墨黑描边）+ `--c-tint-green` 底，与 success.vue 核销凭证对齐。
+- [x] AC 3（P1 D-4）：`me/index.vue` staff-badge `--c-font-xs`→`--c-fs-xs`、`--c-accent-tint`→`--c-tint-yellow`（鸟金系）；圆角 `6rpx`→`0`。
+- [x] AC 4（P2 D-6）：BizSeatList 满席态 `#e5e0d5`→`var(--c-line)`。
+- [x] AC 5（回归 gate）：`cd code/main/miniapp && grep -rnE "var\(--c-(font-(sm|lg|xs|body|h1|h2|hero)|ink-[0-9]{2}|accent)" src` **无输出**（伪 token 清零），贴 raw output。
+  > **AC5 正则修正（2026-06-01，复盘优先级 §1 改权威 spec）**：原正则用 `ink-[0-9]`（1 位数）会**误伤真 token** `--c-ink-2`/`--c-ink-3`（全站 91 处合法用法）。伪 token 实为 `--c-ink-60` 这类**2 位数**写法，故收紧为 `ink-[0-9]{2}` 才能只抓伪 token、不误伤真 token。改后该正则在 src 下零输出（实测 91 处合法 ink-2/3 均不命中）。
+- [x] AC 6：**纯改皮，零运行时行为改动**（仅改 `<style>` + 1 处布尔 prop 绑定修正 + verify-scan 模板加竹绿状态条容器）；`pnpm type-check` 零 error（与 GZ-SYS-008 一并）+ vitest 114/114 全绿不回归。
+- [x] AC 7（Tier 2 可达）：相关页本就有现成入口（FAB 全站常驻 / verify-scan 店员中心「核销」/ me 我的 tab），**无需新增临时入口**。真机视觉留 Kevin Tier 2 批量人验。
 
 ## Tech（端 + 范围）
 

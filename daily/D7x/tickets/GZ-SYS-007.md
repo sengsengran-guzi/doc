@@ -36,8 +36,8 @@
 
 ### 完整性补充（AC9-AC10，本批次必做，不推 V1.1）
 
-- [ ] AC 9：**停用 sys_user 即时踢 mp token（自动）**。现状仅提供 owner 手动 `POST /system/gz/staff/kickout/{staffUserId}` + 下次登录降级。补：在 admin「系统管理→用户管理」**停用/删除店员 sys_user 时自动触发**对应 mp token 踢出（监听 ruoyi 用户停用/删除事件或在停用入口挂钩，复用已就绪的 `kickoutByStaffUserId`）。验收：admin 停用 gz_staff → 该店员当前 mp token 立即失去管理权限（再调管理端点 401/403），无需手动调 kickout、无需等下次登录。给出实现 + raw output。
-- [ ] AC 10：**owner 自助绑定管理**（admin 端）。owner 在 admin 新增「店员绑定管理」：按 openid / 手机号 / user_no 查 gz_user → 设/改/解其 `staff_user_id`（即指定某微信用户为某 sys_user 店员）。复用 `IMpStaffPermissionService`（绑定零新增逻辑，解绑/踢人已就绪），仅加查询 + set 端点 + 一个 admin 列表/操作页。验收：owner 不写 SQL 即可给一个微信用户绑/解店员身份，绑后该用户下次 mp 登录（或即时）获得权限，解后即时失效。perms 走 `gz:staff:binding:*`，仅 owner 角色。
+- [x] AC 9：**停用 sys_user 即时踢 mp token（自动）**。**实现**：Spring AOP 切面 `SysUserStaffKickoutAspect`（放 ruoyi-gz-common，不改 ruoyi 源码），纯 `execution()` 切 `SysUserServiceImpl.updateUserStatus(Long,String)`（status='1' 停用→`kickoutByStaffUserId`）+ `deleteUserByIds(Long[])`（逐个 kick + 置 NULL 清悬挂），零新增模块依赖。**证据**：① 切面单测 7 通过（停用踢/启用不踢/0行不踢/null/异常吞/删除kick+clear/空数组）；② live 端到端 — owner 停用 sys_user 101 → 切面日志 `[gz-staff-aop] 停用 sys_user=101 → 自动踢出 1 个 mp 会话` → 同店员 token 再调 `/app/gz/staff/me` 返 `{"code":401}`，无需手动 kickout、无需等下次登录。详见 reports AC9 段。
+- [x] AC 10：**owner 自助绑定管理**（admin 端）。**实现**：`GzStaffBindingController` 加 `GET /binding/list`（查 gz_user + 绑定快照，openid/手机号/userNo 搜）/ `GET /binding/candidates`（候选 sys_user）/ `POST /binding/{gzUserId}/bind`（set staff_user_id，校验同租户+正常+未删）；perms `gz:staff:binding:{list,bind,unbind}`，菜单 seed `V202606051100`（5060-5063，仅 owner 100 授权）；admin 页 `gz-common/staff-binding/index.vue` + api + zh/en i18n。**证据**：① bindStaff 单测 7 通过（校验各分支 + 改绑先踢）；② live 6 场景 — list/candidates/bind/unbind 全 200，绑不存在 sys_user 返 `{"code":500,"msg":"店员账号不存在：999"}`，店员 token 调 owner 端点返 `{"code":403}`（权限隔离）。owner 不写 SQL 即可绑/解店员身份。详见 reports AC10 段。
 
 ## Tech（端 + 范围）
 

@@ -14,9 +14,9 @@
 
 ## AC（验收标准）
 
-- [ ] AC 1：`cd code/main/miniapp && pnpm type-check`（或对应 vue-tsc 命令）**零 error**，贴 raw output。
-- [ ] AC 2：修复方式是**真修类型**（补类型/收窄/正确断言），**禁止** `any` / `@ts-ignore` 掩盖（铁律 #7）；如确为第三方类型缺陷，用 `unknown` + 收窄或局部 d.ts 声明，并注释原因。
-- [ ] AC 3：不改任何运行时行为（纯类型修复）；改动文件 mp 单测仍全绿。
+- [x] AC 1：`cd code/main/miniapp && pnpm type-check`（vue-tsc --noEmit）**零 error**，exit=0，raw output 见 report。
+- [x] AC 2：**真修类型**，零 `any` / 零 `@ts-ignore`：① `BizCustomerServiceFab.vue:92` `show-message-card="false"`（字符串）→ `:show-message-card="false"`（布尔绑定，修 TS2322）；② `login/index.vue:35` `uni.switchTab({...}).catch()`（在 void 上调 catch，TS2339）→ 改用 uni-app 的 `fail` 回调（语义等价，类型干净）。
+- [x] AC 3：纯类型修复，运行时行为等价（`:show-message-card="false"` 与原 `"false"` 渲染一致；`fail` 回调与原 `.catch` fallback 逻辑一致）；vitest 114/114 全绿。
 
 ## Tech（端 + 范围）
 
