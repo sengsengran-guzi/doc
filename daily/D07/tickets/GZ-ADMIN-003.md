@@ -37,11 +37,14 @@ admin 端首页数据看板：
   - `tenant_id` + 公共字段（CLAUDE.md §6 #2 #3）
   - UNIQUE `(tenant_id, snapshot_time, metric_key)` — 同一时刻同一 metric 只一行
   - IDX `(tenant_id, metric_key, snapshot_time DESC)`（查最新值用）
-- [ ] **AC 2**：cron 任务 `gz_dashboard_snapshot_job` — INSERT 一行 ruoyi `sys_job`：
-  - cron `0 0/5 * * * ?`（每 5 分钟整点触发）
-  - invoke_target=`gzDashboardSnapshotJob.run()`
-  - misfire_policy=3 DO_NOTHING / concurrent=1 / status=0 启用
-- [ ] **AC 3**：定时任务 Bean `GzDashboardSnapshotJob` — 计算 5 个 metric 并批量 INSERT：
+- [ ] **AC 2**：**SnailJob 执行器**（**不是** Quartz `sys_job`；仓库无 `sys_job` 表，任何 `INSERT INTO sys_job` 的 Flyway 会启动 hard-fail）。job 在 **SnailJob 控制台** 注册（admin「定时任务」菜单，非 Flyway DDL）— reports 贴注册参数：
+  - 任务名称：`GZ-DASHBOARD-SNAPSHOT`
+  - 执行器路由（executor_info）：`gzDashboardSnapshotTask`（= `@JobExecutor` name）
+  - 触发类型：CRON，表达式 `0 0/5 * * * ?`（每 5 分钟整点触发，容器时区 Asia/Shanghai）
+  - 阻塞策略：丢弃（DISCARD，等价旧 Quartz misfire DO_NOTHING + concurrent 禁止）
+  - 组：`ruoyi_group`
+  - **权威参考样板**：`ruoyi-modules/ruoyi-gz-bean/.../job/GzBeanNoShowMarkJob.java`（GZ-BEAN-009）
+- [ ] **AC 3**：SnailJob 执行器 Bean `GzDashboardSnapshotJob`（`@Component @JobExecutor(name="gzDashboardSnapshotTask")` + `public ExecuteResult jobExecute(JobArgs)`，委托 service）— service 计算 5 个 metric 并批量 INSERT：
   - `total_users` = `SELECT COUNT(*) FROM gz_user WHERE tenant_id='1001' AND del_flag=0`
   - `today_new_users` = 同上 + `AND DATE(create_time)=CURDATE()`
   - `total_bookings` = `SELECT COUNT(*) FROM gz_bean_booking_log WHERE tenant_id='1001' AND from_status IS NULL AND to_status='pending'`（用 log 表统计累计创建，因为 booking 表 cancelled 会物理删；doc/11 §3.5 锚定）
@@ -68,11 +71,12 @@ admin 端首页数据看板：
 - **后端**：`ruoyi-modules/ruoyi-gz-common/`（看板属于跨域聚合，放 common 而非 news/bean/user — 否则 module 间互依赖）
   - `controller/GzDashboardController.java`（admin 路径 `/system/gz/dashboard`）
   - `service/IGzDashboardService.java` + `service/impl/GzDashboardServiceImpl.java`
-  - `job/GzDashboardSnapshotJob.java`（定时任务 Bean）
+  - `job/GzDashboardSnapshotJob.java`（SnailJob `@JobExecutor` 执行器壳；对齐 `ruoyi-gz-bean/.../job/GzBeanNoShowMarkJob.java`，核心逻辑在 service）
   - `domain/GzDashboardSnapshot.java` + `domain/vo/GzDashboardLatestVO.java`
   - `mapper/GzDashboardSnapshotMapper.java`（写快照）
   - `mapper/GzDashboardMetricMapper.java`（跨表查询 — 5 个 COUNT / SUM 各一个方法）
-  - DDL × 1（snapshot 表 + sys_job INSERT + sys_menu INSERT）
+  - **pom 加 `ruoyi-common-job` 依赖**（gz-common 当前无；如 PAY-001 已先加则复用，§0 自检确认）
+  - DDL × 1（snapshot 表 + sys_menu INSERT；**无 sys_job INSERT** — job 走 SnailJob 控制台注册）
 - **Admin**：`plus-ui/src/views/dashboard/index.vue`（或 plus-ui 默认首页路径，§0 自检确认）+ `api/gz-common/dashboard.ts`
 - **小程序**：N/A
 - **测试**：mvn 单测 + 手动触发 refresh + 浏览器看卡片数值

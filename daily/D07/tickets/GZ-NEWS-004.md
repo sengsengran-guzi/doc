@@ -18,49 +18,56 @@
 
 ## What
 
-后端 ruoyi `sys_job` cron 任务 `gz_news_publish_due_job` 每分钟扫描 `gz_news_article WHERE status='scheduled' AND schedule_publish_time <= now()` → 批量 UPDATE status='published' + 写 publish_time = schedule_publish_time（或 now，业务取前者更符合甲方预期）→ 失败要告警（不能静默）。
+后端 **SnailJob** 注解式执行器 `gzNewsScheduledPublishTask` 每分钟扫描 `gz_news_article WHERE status='scheduled' AND schedule_publish_time <= now()` → 批量 UPDATE status='published' + 写 publish_time = schedule_publish_time（或 now，业务取前者更符合甲方预期）→ 失败要告警（不能静默）。
+
+> ⚠️ **调度框架 = SnailJob（com.aizuda），不是 Quartz `sys_job`**。RuoYi-Vue-Plus 5.5.x 已用 SnailJob（`sj_*` 表 + `@JobExecutor`），**仓库无 `sys_job` 表** —— 任何 `INSERT INTO sys_job` 的 Flyway 迁移会在启动时 hard-fail 拖垮整个 app。job 名 / cron 表达式 / 路由 / 阻塞策略在 **SnailJob 服务端控制台**（admin「定时任务」菜单，`sj_job` 表）配置，**不走 Flyway DDL 注册**。**权威参考样板**：`ruoyi-modules/ruoyi-gz-bean/src/main/java/org/dromara/gz/bean/job/GzBeanNoShowMarkJob.java`（GZ-BEAN-009，D05 已落，javadoc 详述本约束）。
 
 ## AC（验收标准）
 
-- [ ] **AC 1**：DDL `V202606041030__GZ-NEWS-004-insert-sys_job-publish-due-cron.sql`：
-  - INSERT ruoyi `sys_job` 一行：job_name=`gz_news_publish_due_job` / invoke_target=`gzNewsScheduledPublishJob.run()` / cron_expression=`0 * * * * ?`（每分钟第 0 秒）/ misfire_policy=`3`（DO_NOTHING，避免追溯触发批量发布旧 due）/ concurrent=`1`（禁止并发）/ status=`0`（启用）
-- [ ] **AC 2**：定时任务 Bean `GzNewsScheduledPublishJob`：
-  - 方法 `run()` — 加 `@Component("gzNewsScheduledPublishJob")` + 加 `@TenantIgnore`（如 ruoyi 多租户拦截）或显式遍历租户（V1.0 单租户 '1001' 直接查）
-  - 查询：`SELECT id, schedule_publish_time FROM gz_news_article WHERE tenant_id='1001' AND status='scheduled' AND schedule_publish_time <= now() AND del_flag=0`
+- [ ] **AC 1**：**无 Flyway DDL**（本 ticket 不建表、不 INSERT 任何调度表）。schedule 字段 + `scheduled` 状态枚举由 NEWS-003 DDL 已落地；job 注册在 SnailJob 控制台手工配置（见 AC 4）。reports 写明：① 已确认仓库无 `sys_job` 表（`grep sys_job script/sql ✗`）② SnailJob 控制台注册参数表
+- [ ] **AC 2**：SnailJob 执行器 Bean `GzNewsScheduledPublishJob`（对齐 `GzBeanNoShowMarkJob` 样板）：
+  - 类注解 `@Component @RequiredArgsConstructor @JobExecutor(name = "gzNewsScheduledPublishTask")`
+  - 方法签名 `public ExecuteResult jobExecute(JobArgs jobArgs)`（**不是** `run()`）；委托 `IGzNewsArticleService.publishDueArticles(batchSize)`；用 `SnailJobLog.REMOTE.info/error` 写远程日志（落 `sj_job_log_message`）
+  - service 查询：`SELECT id, schedule_publish_time FROM gz_news_article WHERE tenant_id='1001' AND status='scheduled' AND schedule_publish_time <= now() AND del_flag=0`（V1.0 单租户 '1001'，无需遍历租户）
   - 批量 UPDATE：`UPDATE gz_news_article SET status='published', publish_time=schedule_publish_time, update_time=now() WHERE id IN (...)` — 单事务，乐观锁（如表有 version）
-  - 日志：`log.info("gz_news_publish_due_job: published {} articles, ids={}", count, ids)`
   - 单批上限 100 篇（防积压时一次性更新过多）；如查询返回 100 则连续触发下一批，最多 5 批（500 篇）后退出本次执行，等下分钟继续
 - [ ] **AC 3**：异常告警（不能静默）：
-  - try-catch 包裹查询 / 更新；catch Exception → `log.error("gz_news_publish_due_job failed", e)` + 写 ruoyi `sys_job_log` 失败记录（status=1）
-  - V1.0 告警渠道 = 仅日志 + sys_job_log（无短信 / 钉钉 webhook，doc/10 §5 已裁定 V1.0 告警最简）；prod 监控由 ruoyi 自带 `sys_job_log` admin 页面查看
-- [ ] **AC 4**：admin 端「定时任务」menu（ruoyi 自带 menu_id=110 系统监控）下 `sys_job` 列表可看到 `gz_news_publish_due_job` + 可手动 trigger 一次 + 可查执行日志 — **本 ticket 不新增 menu**，复用 ruoyi 自带
-- [ ] **AC 5**：单测 `GzNewsScheduledPublishJobTest` ≥ 3 个测试方法：
+  - try-catch 包裹查询 / 更新；catch Exception → `SnailJobLog.REMOTE.error(...)` + 返回 `ExecuteResult.failure(msg)`（触发 SnailJob 告警通道 + 标记批次异常，落 `sj_job_log_message` / `sj_job_task_batch`）；失败数 > 0 时同样返回 failure
+  - V1.0 告警渠道 = SnailJob 远程日志 + 控制台批次状态（无短信 / 钉钉 webhook，doc/10 §5 已裁定 V1.0 告警最简）；prod 监控由 SnailJob 控制台执行日志查看
+- [ ] **AC 4**：**SnailJob 控制台注册**（admin「定时任务」菜单，非新增 menu）— reports 贴注册参数：
+  - 任务名称：`GZ-NEWS-PUBLISH-DUE`
+  - 执行器路由（executor_info）：`gzNewsScheduledPublishTask`（= 本类 `@JobExecutor` name）
+  - 触发类型：CRON，表达式 `0 * * * * ?`（每分钟第 0 秒，容器时区 Asia/Shanghai）
+  - 阻塞策略：丢弃（DISCARD，上次未跑完不叠加，等价旧 Quartz misfire DO_NOTHING + concurrent 禁止）
+  - 组：`ruoyi_group`
+- [ ] **AC 5**：单测 `GzNewsArticleServiceImplTest`（针对 `publishDueArticles`，脱离 SnailJob server 直测 service 方法）≥ 3 个测试方法：
   - happy path（mock mapper 返回 3 篇 due → 验证 update 调用 + publish_time = schedule_publish_time）
   - 无 due 数据时直接返回（mapper 返回空列表 → 不执行 update）
   - 批量上限（mock 返回 100 篇 → 触发第二批；> 500 篇时本次执行最多处理 500 篇）
 - [ ] **AC 6**：集成测试（reports 必须贴 raw output）：
   - admin 端 NEWS-003 编辑器新建文章 → 状态 scheduled + schedule_publish_time = now + 2 min
-  - 等 2 分钟 + cron 触发 → DB `SELECT status, publish_time FROM gz_news_article WHERE id=?` 返回 published + publish_time
+  - SnailJob 控制台手动「执行一次」`GZ-NEWS-PUBLISH-DUE` 或等 cron 触发 → DB `SELECT status, publish_time FROM gz_news_article WHERE id=?` 返回 published + publish_time
   - mp 端 NEWS-001 列表能看到该文章
 
 ## Tech（端 + 范围）
 
 - **后端**：`ruoyi-modules/ruoyi-gz-news/`
-  - `job/GzNewsScheduledPublishJob.java`（定时任务 Bean，独立目录 `job/` 与 `controller/` `service/` 平级）
-  - `service/IGzNewsArticleService.java` 加 `publishDueArticles(int batchSize): int` 方法（返回本批处理数量）
+  - `job/GzNewsScheduledPublishJob.java`（SnailJob `@JobExecutor` 执行器壳，独立目录 `job/` 与 `controller/` `service/` 平级；对齐 `ruoyi-gz-bean/.../job/GzBeanNoShowMarkJob.java`）
+  - `service/IGzNewsArticleService.java` 加 `publishDueArticles(int batchSize): int` 方法（返回本批处理数量；核心可测逻辑全在 service，job 类只是触发壳）
   - `service/impl/GzNewsArticleServiceImpl.java` 实现
   - `mapper/GzNewsArticleMapper.java` 加 `selectDueScheduled(int limit)` + `batchPublish(List<Long> ids)` 方法
-  - DDL × 1（INSERT sys_job）
-- **Admin**：本 ticket 不动 admin 前端（复用 ruoyi 自带「系统监控 → 定时任务」页查看 / 手动触发）
+  - **pom 加 `ruoyi-common-job` 依赖**（gz-news 当前无；对齐 gz-bean pom：`<artifactId>ruoyi-common-job</artifactId>` 即可，groupId 继承）
+  - **无 Flyway DDL**（job 注册走 SnailJob 控制台，见 AC 4）
+- **Admin**：本 ticket 不动 admin 前端（复用 SnailJob「定时任务」控制台查看 / 手动触发）
 - **小程序**：N/A
-- **测试**：mvn 单测 + 手动 cron trigger（ruoyi sys_job admin 页点「执行一次」按钮）+ Kevin 创建 due 文章实际等 2 分钟看效果
+- **测试**：mvn 单测（直测 service.publishDueArticles）+ SnailJob 控制台手动触发 + Kevin 创建 due 文章实际等 2 分钟看效果
 
 ## 备注
 
 ### 强约束
 
-1. **misfire_policy=3 DO_NOTHING**（doc/10 §5 N5 锚定）— 系统重启 / cron 暂停导致错过若干次触发时，**不追溯补跑**；下次正常触发时一次性扫所有 due 即可（避免短时间内大量积压 push）
-2. **concurrent=1 禁止并发**（ruoyi `@DisallowConcurrentExecution`）— 防 cron 执行慢时同一时刻两个 instance 同时跑（虽然单批 100 上限不太可能慢，但安全起见）
+1. **阻塞策略 DISCARD（丢弃）**（SnailJob 控制台配置，等价旧 Quartz misfire DO_NOTHING）— 系统重启 / 任务暂停导致错过若干次触发时，**不追溯补跑**；下次正常触发时一次性扫所有 due 即可（避免短时间内大量积压 push）
+2. **禁止并发**（SnailJob 阻塞策略 DISCARD 已含「上次未跑完不叠加」）— 防执行慢时同一时刻两个 instance 同时跑（虽然单批 100 上限不太可能慢，但安全起见）
 3. **publish_time 取 schedule_publish_time 而非 now**（业务预期：「我安排 14:00 发，实际就是 14:00 发」，避免 cron 14:00:30 触发显示 14:00:30 不符合预期）— doc/10 §5 N5 已裁定
 4. **批量上限 100 / 5 批**（业务保护）— 防止运营误设 1000 篇同时段定时发布 → cron 单次 lock 表过久
 5. **不写 admin 端任务管理 UI**（复用 ruoyi 自带 sys_job admin 页）— CLAUDE.md §10 不重复造轮子
@@ -70,7 +77,7 @@
 
 | # | 决策 | 理由 |
 |---|---|---|
-| D1 | 用 ruoyi `sys_job`（Quartz）而非 Spring `@Scheduled` | ruoyi sys_job 提供 admin 页 + 执行日志 + 手动触发 + 暂停/启用 — 全部开箱即用，零代码 |
+| D1 | 用 **SnailJob**（`@JobExecutor`）而非 Spring `@Scheduled` | RuoYi-Vue-Plus 5.5.x 内置 SnailJob，提供控制台 + 执行日志 + 手动触发 + 暂停/启用 — 全部开箱即用；仓库无 Quartz `sys_job` 表 |
 | D2 | cron 表达式每分钟（`0 * * * * ?`）| 业务对发布精度要求分级（甲方设的是分钟级时间），每分钟扫描足够 |
 | D3 | 单批 100 + 总批 5 | 平衡：单批 100 一次 UPDATE 性能 OK / 总批 5 防 cron 一次执行过久阻塞下分钟触发 |
 | D4 | 不接 V1.0 告警渠道 | doc/10 §5 已裁定 V1.0 仅日志 + sys_job_log；V1.1 业务支付涉及钱才加钉钉告警 |
@@ -80,7 +87,7 @@
 
 | # | 风险 | 缓解 |
 |---|---|---|
-| R1 | cron 触发时 schedule_publish_time 字段尚未在 D06 NEWS-001 DDL 落地（D07 NEWS-003 ALTER 才补） | §0 自检确认 NEWS-003 DDL 已先跑（Flyway 时间戳排序：NEWS-003 V202606041000 → NEWS-004 V202606041030） |
+| R1 | 执行器触发时 schedule_publish_time 字段尚未在 D06 NEWS-001 DDL 落地（D07 NEWS-003 ALTER 才补） | §0 自检确认 NEWS-003 已先 merge（schedule_publish_time + scheduled 枚举落地）；本 ticket 串行在 NEWS-003 之后 |
 | R2 | 大量 due 同分钟触发（如运营误设 100 篇同时发布）→ cron 单次跑超 1 分钟 | 单批 100 + 总批 5 上限 + 单事务批量 UPDATE（不是逐条 update）→ 实测应 < 5s |
 | R3 | 系统重启 24h+ 导致大量 due 积压 → misfire 后下次跑批量过大 | misfire DO_NOTHING + 单次上限 500 → 多次 cron 周期消化；接受这种边界场景下「积压发布会延迟若干分钟」|
 | R4 | 时区问题（schedule_publish_time 用户在小程序看的是 GMT+8，cron 服务器若 UTC 会差 8 小时）| ruoyi 默认 `spring.jackson.time-zone=GMT+8` + MySQL `time_zone='+08:00'` — §0 自检确认 application.yml 配置 |

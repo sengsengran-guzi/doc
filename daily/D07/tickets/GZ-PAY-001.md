@@ -62,7 +62,7 @@ V1.0 通道层 HelloWorld：打通"统一下单 → prepay_id → 小程序 wx.r
   - 用乐观锁 `UPDATE ... WHERE id=? AND version=? AND status='pending'`（版本号 + 状态双重 check）
 - [ ] **AC 8 异常告警**（拆解 §2.2 AC 3 强约束）：
   - 验签失败 → log.error + 写 callback_log process_status='failed'（V1.0 不接钉钉告警，仅日志 + DB 审计）
-  - 超时关单 → cron 每 5 min 扫 `status='pending' AND expire_time < now()` → UPDATE status='timeout'（doc/10 §2 E5）
+  - 超时关单 → **SnailJob 执行器**（**不是** Quartz `sys_job`；仓库无 `sys_job` 表，`INSERT INTO sys_job` 会启动 hard-fail）每 5 min 扫 `status='pending' AND expire_time < now()` → UPDATE status='timeout'（doc/10 §2 E5）。job 在 **SnailJob 控制台** 注册：任务名 `GZ-PAY-EXPIRE-ORDER` / 执行器路由 `gzPayExpireOrderTask`（= `@JobExecutor` name）/ CRON `0 0/5 * * * ?` / 阻塞策略 DISCARD / 组 `ruoyi_group`。reports 贴注册参数。**权威参考样板**：`ruoyi-gz-bean/.../job/GzBeanNoShowMarkJob.java`（GZ-BEAN-009）
 - [ ] **AC 9 mock 降级路径（商户号未到位）**：
   - service 层抽象接口 `IWechatPayClient`：真实实现 `WechatPayV3ClientImpl`（用官方 SDK） + mock 实现 `MockWechatPayClient`（返回固定 prepay_id + 模拟回调）
   - dev profile 默认走 mock（`gz.pay.client.mode=mock`）/ staging+prod 走 real（`gz.pay.client.mode=real`）
@@ -90,10 +90,11 @@ V1.0 通道层 HelloWorld：打通"统一下单 → prepay_id → 小程序 wx.r
   - `service/IGzPayTransactionService.java` + `service/impl/GzPayTransactionServiceImpl.java`
   - `service/internal/IWechatPayClient.java` + `WechatPayV3ClientImpl.java` + `MockWechatPayClient.java`（双实现）
   - `service/internal/PayOrderNoGenerator.java`（业务订单号生成 `TEST-yyyyMMdd-000001` 格式 / 后续业务复用）
-  - `job/GzPayExpireOrderJob.java`（cron 5 min 扫超时关单）
+  - `job/GzPayExpireOrderJob.java`（SnailJob `@JobExecutor(name="gzPayExpireOrderTask")` 执行器壳，5 min 扫超时关单；对齐 `ruoyi-gz-bean/.../job/GzBeanNoShowMarkJob.java`，核心逻辑在 service，`ExecuteResult jobExecute(JobArgs)` 签名）
   - `domain/GzPayChannel.java` / `GzPayTransaction.java` / `GzPayCallbackLog.java` + VO + BO
   - `mapper/*` 三表对应 mapper
-  - DDL × 1（三表 + sys_job + sys_menu × 4 + INSERT channel 默认行）
+  - **pom 加 `ruoyi-common-job` 依赖**（gz-common 当前无；对齐 gz-bean pom；ADMIN-003 同样需要，谁先合谁加，§0 自检确认）
+  - DDL × 1（三表 + sys_menu × 4 + INSERT channel 默认行；**无 sys_job INSERT** — 超时关单 job 走 SnailJob 控制台注册）
   - `application-dev.yml` 加 `gz.pay.client.mode=mock` + `gz.pay.test.amount-cent=1`
   - `application-staging.yml` / `application-prod.yml` 加 `gz.pay.client.mode=real` + env var 占位符（`WECHAT_PAY_MCH_ID` / `WECHAT_PAY_API_V3_KEY` / `WECHAT_PAY_CERT_PATH` / `WECHAT_PAY_PRIVATE_KEY_PATH`）
 - **Admin**：`plus-ui/src/views/gz-pay/`
