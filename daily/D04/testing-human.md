@@ -1,4 +1,4 @@
-# D04（d3）— Testing-human（Kevin 真机 spot check）
+# D04 — Testing-human（Kevin 真机 spot check）
 
 > **B 方案**：admin + 后端 + 单测全部 AI 接管。本文件只列 Kevin 要点的具体动作 — mp 端真机 + 微信原生能力 + 并发场景手感。
 >

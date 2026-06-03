@@ -1,4 +1,4 @@
-# D02（d1）— Testing-human（Kevin 真机 spot check）
+# D02 — Testing-human（Kevin 真机 spot check）
 
 > **B 方案 2026-05-28**：admin + 后端 + 单测全部 AI 接管（Tier 1A coder + Tier 1B kevin-qa）。本文件只列 **Kevin 要点的具体动作** — mp 端真机 + 微信原生能力 + 产品 sense。
 >

@@ -1,128 +1,134 @@
-# GZ-ADMIN-104 — 物流批次推进
+# GZ-ADMIN-104 — 跨境物流 2 态推进（mp 店员端主形态 + plus-ui owner 兜底）
 
 **优先级**: P1
-**复杂度**: L（V1.1 admin 域复杂 ticket — 批次定义 + 批量事务 + 强制录单号 + 操作日志）
-**关联 PRD**: doc/02-prd.md M5 §物流推进方式 + M7.4 物流管理
-**关联拆解**: doc/02-需求拆解.md §3.5 第 950 行
-**关联 mockup**: ⚠️ 缺口（admin-logistics.html 待补；admin 走 ruoyi/Element Plus 默认审美（不套用 C 系统），用 plus-ui BizTable + el-form 默认 + el-dialog 批量编辑表格）
-**关联 ADR**: —（如批量事务策略遇到分歧可新建 ADR）
-**依赖**: GZ-ADMIN-103（订单聚合管理）+ GZ-USER-103（物流节点订阅消息；如未完工本 ticket 留 hook 不阻塞）
+**复杂度**: M（C1 简化后无批次 / 无归集；核心是 2 态状态机 + 必录单号校验 + 审计 + mp/admin 双端入口）
+**关联 PRD**: doc/02-prd.md M5 §跨境物流（PRD 7 节点表 4.4 已被 doc/10 C1 裁定为 2 态覆盖）
+**关联拆解**: doc/02-需求拆解.md §3.5
+**关联 mockup**: mp 走 C 日漫海报浓墨（doc/tokens.md + doc/13 为准，不逐像素还原）；plus-ui owner 兜底走 ruoyi/Element Plus 默认审美（不引 mockup 像素）
+**关联 ADR**: doc/_adr/0004-mp-admin-permission-foundation.md（mp 店员端权限底座，本卡复用）；doc/_adr/0005-cross-border-logistics-2-state.md（C1 物流 2 态对齐合同 §2.3，Kevin 决策 4）
+**依赖**: GZ-ADMIN-103（订单聚合管理，物流推进读它的订单详情）+ GZ-USER-103（mp 物流 2 态只读展示，本卡是其写入侧；如 USER-103 订阅消息 hook 未就绪则留 hook 不阻塞）
 
 ---
 
 ## 必读权威文档（缺一不可 — kevin-coder §0 自检会卡）
 
 - **业务流**：doc/10-业务流权威图.md
-  - **§6 物流推进流**（7 节点状态机 — 本 ticket 核心锚定）
-  - §6 §批次定义 段（自动归集口径 / 手动多选口径）
-  - §6 §强约束段（进入"国内派送"必录单号 / 节点不可逆）
-  - §6 §异常分支（甲方录错单号修正 / 单批 > 50 单异步走法）
+  - **§9 跨境物流权威状态（C1 裁定 2 态 + 终态）** — 本 ticket 核心锚定（L1 `in_japan` / L2 `in_china_dispatching` / L3 `delivered`）
+  - §9 状态机 + 关键节点 N1/N2/N8/N9（N2 进「已发往中国」必录单号；N8 owner 回退；N9 改单号）
+  - §9 异常分支 E2（录错单号修正）/ E5（漏录单号 → 按钮 disabled）/ E6（订单态不允许推进逐单拦截）
+  - §9 Q9.5（逐单手动切 + 录单号，**无批次自动归集**）
 - **字段表**：doc/11-字段权威表.md
-  - §5.x `gz_ord_order` 表 `logistics_node` 字段 enum 定义（7 节点）
-  - §5.x `gz_ord_order` 表 `express_company` + `express_no` 字段
-  - §5.x `gz_logistics_log` 物流推进日志表（如已建）/ 否则本 ticket 不新建（走 sys_oper_log）
-- **UI 参考**（admin 走 ruoyi/Element Plus 默认审美，不套用 C 系统）：admin ticket — **N/A**（plus-ui BizTable + el-table-column type="selection" + el-dialog 批量录单号表单 + el-button-group 节点推进按钮）
+  - §6.3 `gz_ord_order` 物流字段 `logistics_status` / `cn_carrier_code` / `cn_tracking_no` / `cn_dispatched_at`（已由 D09 建，本卡只 UPDATE）
+  - §7.4 `gz_gacha_order` 同名物流字段（已由 D09 建）
+  - **§8.3 `gz_logistics_audit`** — 物流审计表（已由前序日建；`action_type` ∈ status_forward / status_rollback / carrier_set / carrier_update；`from_*` / `to_*` / `reason` / `operator_type` / `operator_id` / `operated_time`）
+  - 附录 A.7 物流枚举（C1 2 态 + 终态）
+  - §字典表 `gz_express_carrier`（**9 项**：yto/sf/zto/yunda/jd/ems/debang/jitu/other；本卡 DDL 只补菜单，字典若前序日已 seed 则不重复 INSERT）
+- **下沉底座**：ADR-0004 §决策 1（mp openid 绑 sys_user + 登录加载 RBAC + `@SaCheckPermission` + 同租户 1001 + 停用/解绑即时踢）；落地见 GZ-SYS-007（StaffMeController / MpStaffPermissionServiceImpl）
+- **UI 参考**：
+  - mp 店员端：C 日漫海报浓墨（doc/tokens.md + doc/13 §3.2；**禁止**引 tokens §9，不存在；**不做物流时间线色 / 不引 tokens 1.5** — C1 删节点流转无时间线）
+  - plus-ui owner 兜底：`N/A（admin 走 ruoyi 默认审美，不评判视觉）`
 
 ## What
 
-admin 端「订单管理 → 物流推进」页 — 甲方按批次（自动归集 / 手动多选）一键把 N 个预购订单从当前节点推进到下一节点，进入"国内派送"节点时强制每单录入快递公司 + 单号，推进操作写日志。
+让店员/owner 把预购或扭蛋订单的 `logistics_status` 在订单详情页逐单手动从 `in_japan` 推进到 `in_china_dispatching`（必录 `cn_carrier_code` 走 `gz_express_carrier` 9 项字典 + `cn_tracking_no`，写 `cn_dispatched_at`）→ 再推到 `delivered`；每次状态/单号变更写 `gz_logistics_audit` + `@Log`，并提供改单号二次入口与 owner 回退。**主形态下沉 mp 店员端**（复用 ADR-0004 权限底座），plus-ui owner 端兜底。
 
 ## AC（验收标准）
 
-- [ ] **AC 1**：admin 端 `views/gz-ord/logistics/index.vue` 列表页（plus-ui BizTable，支持按 logistics_node / 商品 / 截止日 / 客户筛 + 分页 + 多选）
-  - 左侧 sidebar：节点分布卡片（7 节点各显示订单数 — 点击筛选）
-  - 主表：勾选框 / 订单号 / 商品名 / 数量 / 客户 / 当前节点 / 截止日 / 操作列
-- [ ] **AC 2**：批次定义两种方式：
-  - **自动归集模式**：admin 顶部 tab "按批次推进" → 后端按 `(sku_id, expected_arrival_date)` 自动 GROUP BY → 列出"批次卡片"（含商品 + 截止日 + 订单数 + 当前节点）→ 点卡片选中该批次全部订单
-  - **手动多选模式**：admin 顶部 tab "手动多选" → 主表显示订单列表 → 勾选多个订单（不限商品 / 截止日）→ 顶部"已选 N 单"显示
-- [ ] **AC 3**：一键推进按钮逻辑：
-  - 顶部"推进到下一节点"按钮 → 弹 el-dialog 二次确认（列出当前所选订单 + 当前节点 + 目标节点）
-  - 目标节点 = 当前节点 + 1（按 doc/10 §6 7 节点 enum 序）
-  - 所选订单若处于不同节点 → 按钮 disable + tooltip"请仅选择同节点订单"
-  - 节点不可逆（doc/10 §6 强约束）— 后端校验 target_node > current_node，否则 400
-- [ ] **AC 4**：进入"国内派送"节点的强校验：
-  - 目标节点 = `domestic_shipping`（国内派送）→ el-dialog 不是简单确认而是**批量录单号表格**（el-table，每行：订单号 / 商品 / 快递公司下拉 / 单号 input）
-  - 快递公司下拉走 sys_dict_data `gz_express_company`（顺丰 / 京东 / 中通 / 圆通 / 韵达 / 其他）
-  - 任一单号留空 → 提交按钮 disable + 行高亮红框
-  - 全部填完 → 提交时后端事务内 UPDATE 每单的 logistics_node + express_company + express_no
-- [ ] **AC 5**：批量事务策略（doc/10 §6 §异常分支）：
-  - 单批 ≤ 50 单：同步事务 + 进度条
-  - 单批 > 50 单：拒绝同步提交，提示"请拆分为 ≤ 50 单 / 一批"（V1.1 不做异步 job，简化）
-  - 事务中任一单更新失败 → 整批 rollback + toast 错误明细
-- [ ] **AC 6**：推进操作写 sys_oper_log（@Log 注解）：
-  - 业务标题：`物流批次推进 [批次定义] [N 单] [from→to]`
-  - 业务类型：`UPDATE`
-  - 操作人：当前登录 admin
-- [ ] **AC 7**：订阅消息 hook（如 USER-103 已实现）：
-  - 推进成功后异步 publish `LogisticsNodeChangedEvent`（包 order_ids + new_node + timestamp）
-  - USER-103 监听该事件 → 调微信订阅消息 API 通知 C 端用户
-  - USER-103 未完工 → ApplicationEventPublisher 调用保留但 listener 暂无人接（不报错）
-- [ ] **AC 8**：单号修正二级入口（R4 缓解）：
-  - 单订单详情页（GZ-ADMIN-103 已建）补"修改快递单号"按钮（owner 权限）→ 弹简单 el-form 改 express_company + express_no → 写 sys_oper_log
-- [ ] **AC 9**：单测覆盖：
-  - happy path：批量推进 5 单 from `paid` to `domestic_warehouse`（mock DB）
-  - 进入 `domestic_shipping` 节点 + 任一单号留空 → 校验失败 returns 400
-  - 节点不可逆：尝试 target_node < current_node → 校验失败 returns 400
-  - 不同节点订单混选 → 校验失败 returns 400
-  - 单批 51 单 → 校验失败 returns 400
-  - 共 5 个测试方法，全部 raw assertion
-- [ ] **AC 10**：所有写操作加 @Log；新建菜单 menu_id 11005-11009 段（ADMIN V1.1 11000-11099）
+- [ ] **AC 1（后端 — 2 态推进接口）**：`POST /推进` 把单个订单 `logistics_status` 从 `in_japan` → `in_china_dispatching`，body 必带 `cn_carrier_code` + `cn_tracking_no`；
+  - service 校验 `cn_carrier_code` ∈ `gz_express_carrier` 9 项（yto/sf/zto/yunda/jd/ems/debang/jitu/other），非法 → 400
+  - `cn_carrier_code` 或 `cn_tracking_no` 任一为空 → 400（doc/10 §9.E5）
+  - 写订单 `logistics_status=in_china_dispatching` + `cn_carrier_code` + `cn_tracking_no` + `cn_dispatched_at=NOW()`（同事务）
+  - 同时写 `gz_logistics_audit` 一条：`action_type=status_forward` 主审计 + `carrier_set` 首录单号审计（或单条审计含 `to_status` + `to_carrier_code` + `to_tracking_no`，按实现选其一，reports 说明口径）
+- [ ] **AC 2（后端 — 推到已签收）**：`in_china_dispatching` → `delivered` 推进接口，写 `logistics_status=delivered` + `delivered_time=NOW()` + `gz_logistics_audit`（`action_type=status_forward`，`from_status=in_china_dispatching` / `to_status=delivered`）
+- [ ] **AC 3（后端 — 状态不可逆 + 订单态校验）**：
+  - 目标态序号 ≤ 当前态（如 `delivered`→`in_china_dispatching`）→ 400「状态不可回退」（doc/10 §9 状态机；owner 回退走 AC 6 独立接口）
+  - 跳态（`in_japan`→`delivered` 不经 `in_china_dispatching`）→ 400
+  - 订单 `business_status` 不允许推进（如 `refunded` / 已 `delivered`）→ 400「该订单当前状态不可推进物流」（doc/10 §9.E6，逐单拦截）
+- [ ] **AC 4（后端 — 改单号二次入口）**：`PUT 改单号` 接口可改 `in_china_dispatching` 订单的 `cn_carrier_code` / `cn_tracking_no`（不改 `logistics_status`、不重置 `cn_dispatched_at`）；写 `gz_logistics_audit`（`action_type=carrier_update`，记 `from_carrier_code` / `from_tracking_no` / `to_carrier_code` / `to_tracking_no`）；**不禁止修改**（doc/10 §9.N9 / E2）
+- [ ] **AC 5（后端 — 跨业务复用）**：同一套接口按 `business_type`（`preorder` / `gacha`）+ `business_order_no` 定位订单，分别 UPDATE `gz_ord_order` / `gz_gacha_order`；`gz_logistics_audit` 写入 `business_type` + `business_order_no`（doc/11 §8.3）
+- [ ] **AC 6（后端 — owner 回退）**：`POST 回退` 接口仅 owner 权限把 `logistics_status` 回退到上一态，`reason` **必填**（空 → 400）；写 `gz_logistics_audit`（`action_type=status_rollback`，记 `from_status` / `to_status` / `reason`）（doc/10 §9.N8）
+- [ ] **AC 7（权限 — 复用 ADR-0004 底座）**：所有写接口走 `@SaCheckPermission("gz:ord:logistics:push")`（推进/录单号/改单号）；回退接口走 `@SaCheckPermission("gz:ord:logistics:rollback")`（仅 owner 授权）；纯顾客 / 无权限 mp token → 403；同租户 1001（不另造平行 RBAC）
+- [ ] **AC 8（审计 + 操作日志）**：每个写接口加 ruoyi `@Log(title="跨境物流推进", businessType=UPDATE)`；`gz_logistics_audit.operator_type=admin`、`operator_id=` 当前登录用户名；reports 贴 DB 审计行 raw output
+- [ ] **AC 9（mp 店员端 — 主形态）**：mp 店员端订单详情页（复用 GZ-ADMIN-201 订单查看详情）增加物流推进操作区：
+  - 当前 `in_japan` → 显「发往中国」按钮 → 弹 `BizDatePicker` 风格表单（快递公司 9 选 1 下拉 + 单号输入）；二者任一空 → 提交按钮 disabled（doc/10 §9.E5）
+  - 当前 `in_china_dispatching` → 显「已发往中国」+ 快递公司中文 + 单号 + 「改单号」入口 + 「推到已签收」按钮
+  - 当前 `delivered` → 显「已签收」终态，无操作按钮
+  - 仅用 `src/components/biz/Biz*` 原子组件 + `var(--c-*)` token，不直接撒 `<wd-*>` 标签；快递公司中文经 `gz_express_carrier` 字典翻译
+- [ ] **AC 10（plus-ui owner 兜底）**：plus-ui `views/gz-ord/` 订单详情（GZ-ADMIN-103 已建）补物流推进操作区（el-form + el-select 快递公司字典 + 单号 input + el-dialog 二次确认）：发往中国 / 推已签收 / 改单号 / **owner 回退**（仅 owner 可见，reason 必填）；走 ruoyi/Element Plus 默认审美
+- [ ] **AC 11（单测覆盖）**：service 单测 ≥ 6 个 raw assertion：
+  - happy path：`in_japan`→`in_china_dispatching` 录合法快递 + 单号 → 字段 + 审计正确（mock DB）
+  - 漏录单号（`cn_tracking_no` 空）→ 400
+  - 非法快递编码（不在 9 项）→ 400
+  - 状态回退（`delivered`→`in_china_dispatching`）非 owner → 400
+  - 订单 `business_status=refunded` 推进 → 400（E6）
+  - owner 回退 `reason` 空 → 400
+- [ ] **AC 12: Tier 2 入口可达**（mp ticket 强制，CLAUDE.md §8.3）— Kevin 从「店员账号登 mp → 个人中心『门店管理』区块（GZ-SYS-007 已建）→ 订单查看（GZ-ADMIN-201）→ 订单详情」点 ≤ 4 次到达本卡物流推进操作区。
+  - 若 GZ-ADMIN-201 订单查看入口已就绪 → 走真入口（首选）
+  - 若订单查看详情入口尚未挂上 → 在 `pages/index/index.vue` 或个人中心「门店管理」区加临时入口直达店员订单详情 + 注释 `<!-- TODO(Tier2-entry-temp): GZ-ADMIN-104, remove when GZ-ADMIN-201 merged -->`
 
 ## Tech（端 + 范围）
 
-- **后端**：`ruoyi-modules/ruoyi-gz-ord/`（物流主域）
-  - `controller/admin/GzLogisticsAdminController.java`（admin 路径 `/admin/gz/ord/logistics`）+ 接口：
-    - `GET /batches/auto`（自动归集查询，按 sku_id + expected_arrival_date GROUP BY）
-    - `POST /advance`（批量推进 — body: order_ids[] + target_node + express_info[]?）
-    - `PUT /express/{order_id}`（单单单号修正）
-  - `service/IGzLogisticsService.java` + impl
-  - `service/internal/LogisticsAdvanceValidator.java`（节点不可逆 / 同节点 / ≤ 50 单 / 国内派送录单号 校验集中处）
-  - `domain/event/LogisticsNodeChangedEvent.java`（领域事件）
-  - DDL × 1（`V202606191100__GZ-ADMIN-104-menu-and-dict.sql`）：插入「订单管理 → 物流推进」菜单（menu_id 11005）+ sys_dict_data `gz_express_company` 6 项
-- **Admin 前端**：`code/main/plus-ui/`
-  - `views/gz-ord/logistics/index.vue` 主列表 + 左侧节点 sidebar + 顶部 tab
-  - `views/gz-ord/logistics/components/BatchAdvanceDialog.vue`（普通节点推进 dialog）
-  - `views/gz-ord/logistics/components/DomesticShippingDialog.vue`（国内派送强制录单号 dialog，含 el-table 编辑表格）
-  - `views/gz-ord/logistics/components/ExpressEditDialog.vue`（单单单号修正）
-  - `api/gz-ord/logistics.ts` 三个 API 封装
-- **测试**：mvn 单测 + 浏览器实操：自动归集 → 批量推进 5 单 → 进入国内派送录单号 → 数据库 verify
+- **后端**：`code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-ord/`（物流推进主域；扭蛋单复用同 service，跨业务定位走 `business_type`）
+  - `controller/GzLogisticsController.java`（mp 店员端 + admin 共用，路径如 `/app/gz/ord/logistics`（mp）+ owner 端复用同 service）+ 接口：
+    - `POST /forward`（推进到下一态：`in_japan`→`in_china_dispatching` 必带快递/单号；`in_china_dispatching`→`delivered`）
+    - `PUT /carrier`（改单号，body: business_type + business_order_no + cn_carrier_code + cn_tracking_no）
+    - `POST /rollback`（owner 回退，body 含 reason，`@SaCheckPermission("gz:ord:logistics:rollback")`）
+  - `service/IGzLogisticsService.java` + impl（状态机校验 / 9 项字典校验 / 必录校验 / 审计写入集中处）
+  - `domain/dto/LogisticsForwardDto.java` / `LogisticsCarrierUpdateDto.java` / `LogisticsRollbackDto.java`
+  - **DDL × 1**：`ruoyi-admin/src/main/resources/db/migration/V202606191300__GZ-ADMIN-104-logistics-menu.sql` — 插入「物流推进」菜单（**menu_id 11003**，挂订单管理下；perms `gz:ord:logistics:push` / `gz:ord:logistics:rollback`，授权 owner + 店员推进权 / 仅 owner 回退权）。**不新建表**（`gz_ord_order` / `gz_gacha_order` 物流字段 + `gz_logistics_audit` 前序日已建）；`gz_express_carrier` 字典若前序日未 seed 则在本 DDL 补 9 项，已 seed 则不重复
+- **mp 店员端**：`code/main/miniapp/`
+  - 订单详情页（复用 GZ-ADMIN-201）物流推进操作区组件（`Biz*` 原子组件）
+  - `src/api/gz-ord/logistics.ts`（forward / carrier / rollback 封装）
+- **Admin（owner 兜底）**：`code/main/plus-ui/`
+  - `views/gz-ord/`（GZ-ADMIN-103 订单详情）补物流推进操作区 + 改单号 dialog + owner 回退 dialog
+  - `api/gz-ord/logistics.ts`
+- **测试**：mvn 单测（service ≥ 6 个）+ mp 店员端真机 happy path（人验）+ plus-ui owner 端 Playwright E2E（kevin-qa）
 
 ## 备注
 
-### 强约束
+### 强约束（C1 / 合同）
 
-1. **节点不可逆**（doc/10 §6 §强约束）— 即便 owner 也不能回退节点（业务上节点回退引发对账混乱）；如确需回退走 ADR 流程
-2. **进入"国内派送"必录单号**（合同 §2.3 + doc/10 §6）— 无单号不可推进
-3. **国内物流仅展示甲方录入单号**（合同 §2.3）— 后端不调任何快递查询 API（不抓物流轨迹，C 端用户复制单号自查）
-4. **跨境物流甲方手动 7 节点推进**（合同 §2.3 + doc/10 §6）— 不自动抓海外仓 / 国际段轨迹
-5. **批量事务 ≤ 50 单** — 超过强制拆分（不在 V1.1 引入异步 job 框架）
-6. **不动 ruoyi 自带模块**（CLAUDE.md §6 #1）
+1. **2 态 + 终态，不是 7 节点**（doc/10 §9 C1）— **禁止** `logistics_node` / `gz_logistics_node` 表 / 7 节点 enum / 批次推进 / 自动归集 GROUP BY / 国内派送节点 / `gz_express_company` / `gz_logistics_log` / 物流时间线色 / tokens §1.5
+2. **进 `in_china_dispatching` 必录** `cn_carrier_code`（9 项字典）+ `cn_tracking_no`（doc/10 §9.N2 / E5）— DB 不加 CHECK（doc/11 F-D31，业务层校验：mp/owner 表单 disabled + service assert）
+4. **国内物流仅展示甲方录入单号**（合同 §2.3 #15）— 后端不调任何快递查询/轨迹抓取 API；用户复制单号自查
+5. **跨境物流不自动抓取**（合同 §2.3 #14）— 不接日本段/国际段轨迹
+6. **状态不可逆**（除 owner 回退专用接口，doc/10 §9 状态机）；回退 `reason` 必填，写审计
+7. **退款解耦**：`logistics_status` 独立于 `business_status` 并行，不互相覆盖；订单 `business_status=refunded` 时 `logistics_status` 保留最后态，UI 显「已退款」覆盖（doc/10 §9.E3）
+8. **复用 ADR-0004 底座**：mp 店员端走 `@SaCheckPermission` + 同租户 1001 + 停用/解绑即时踢；**不另造平行 RBAC**
+9. **不动 ruoyi 自带模块**（CLAUDE.md §6 #1）；`@Log` 用 ruoyi 自带
+
+### 下沉决策（Kevin 决策 2）
+
+- **物流推进主形态下沉 mp 店员端**：店员手机现场发货录单（贴单后扫一眼即推），是日常高频场景，落 mp 体验优先
+- **plus-ui owner 兜底**：owner 电脑后台也能切 2 态 + 改单号 + **回退**（回退仅 owner，店员无回退权）
+
+### 物流合同对齐（Kevin 决策 4 → ADR-0005）
+
+- 先实现 2 态，验收前与甲方口头确认，事后补签合同 §2.1；**不改 formal 合同**，决策记 ADR-0005（合同 v0.1 写「7 节点」由 doc/10 v0.2 C1 覆盖）
 
 ### 关键技术决策
 
 | # | 决策 | 理由 |
 |---|---|---|
-| D1 | 自动归集按 `(sku_id, expected_arrival_date)` GROUP BY，不存独立批次表 | V1.1 数据量小，运行时查询足够；建批次表引入额外同步成本 |
-| D2 | 单批 ≤ 50 单 + 同步事务（不引入异步 job） | 简化 V1.1 / 50 单同步事务实测 < 2s 可接受 / 异步 job 引入复杂度（进度条 / 失败重试 / 状态查询）不划算 |
-| D3 | 节点推进用领域事件 LogisticsNodeChangedEvent | 解耦 USER-103 订阅消息 + ADMIN-105 对账触发（如未来需要按节点流转记账） |
-| D4 | 国内派送 dialog 用 el-table 编辑表格而非循环 el-form | 用户体验：5 单一屏看完 + tab 切换填单号比逐表单切换快 |
-| D5 | 修改单号入口在订单详情页，不在物流推进页 | 物流推进页是"批量操作"思维，单号修正是"单据修正"思维，UX 分离更清晰 |
+| D1 | 逐单切 2 态，无批次/无自动归集 | C1 裁定（doc/10 §9 Q9.5）：快递单号一单一号，不存在批量录同一单号场景；mp 店员端逐单贴单即推更贴现场 |
+| D2 | mp + admin 共用同一 service，跨业务按 `business_type` 分流 UPDATE | 状态机/校验/审计单点，避免 mp 端与 owner 端逻辑漂移 |
+| D3 | 改单号入口独立于推进入口 | 「推进」是状态前移，「改单号」是单据修正，UX/接口分离更清晰；甲方运营反复改单号是常态 |
+| D4 | owner 回退走独立接口 + 独立 perm | 回退是高危操作，与店员日常推进权限隔离，强制 reason 留痕 |
+| D5 | `cn_dispatched_at` 仅首次进 `in_china_dispatching` 写，改单号/回退不重置 | 7 天自动签收时钟锚点（doc/11 §6.3），改单号不该重置签收倒计时 |
 
 ### 风险提示
 
 | # | 风险 | 缓解 |
 |---|---|---|
-| R1 | 批量推进 50 单事务卡 DB 写锁 | 实测 < 2s 可接受；如压测发现 > 5s → 切批次 25 单 |
-| R2 | 甲方录错单号 | AC 8 提供"修改单号"二级入口 + 写 sys_oper_log 留痕，不要禁止修改 |
-| R3 | sys_dict_data `gz_express_company` 6 项可能不够（甲方用顺心捷达等小众快递）| 下拉提供"其他"选项 → 弹文本输入快递公司名（落 `gz_order.express_company_custom` 字段，本 ticket 加字段）|
-| R4 | 节点不可逆 + 甲方误操作推进了不该推进的订单 | 详情页加"误推进申诉" hook → 走 ADR 流程不在本 ticket 处理 |
-| R5 | 自动归集查询慢（订单表大）| GROUP BY (sku_id, expected_arrival_date) 加复合索引 `idx_sku_arrival_node`（DDL 内加）|
-| R6 | LogisticsNodeChangedEvent 异步发布失败影响推进事务 | 用 Spring `ApplicationEventPublisher.publishEvent` + @TransactionalEventListener(phase=AFTER_COMMIT) — 事件失败不影响推进事务 |
-
-### ADR 候选
-
-- **ADR-V1.1-XX**：是否引入异步批量推进 job（如 V1.1 上线后甲方反复反馈"50 单不够" → 升级评估）
+| R1 | §0 自检假设上游表已建 → 实际未建翻车 | **§0 自检 grep migration 目录确认** `gz_ord_order` / `gz_gacha_order` 物流字段 + `gz_logistics_audit` + `gz_express_carrier` 字典实际存在（不假设上游已建）；缺则 STOP 报 Kevin |
+| R2 | mp 店员端进「已发往中国」漏录快递公司/单号 | 表单 9 项字典必选 + 单号必填，二者任一空 → 提交 disabled（doc/10 §9.E5）+ service 层二次 assert |
+| R3 | 国内单号录错无法修正 | AC 4「改单号」二次入口（mp + owner 端）+ 写 `gz_logistics_audit`（`carrier_update` 记 from/to）；**不禁止修改** |
+| R4 | owner 误回退 | 回退仅 owner perm + `reason` 必填 + 写审计；店员端无回退入口 |
+| R5 | mp 店员端订单详情入口未就绪（GZ-ADMIN-201 未 merge）→ Tier 2 测不了 | AC 12：GZ-ADMIN-201 入口未挂时本卡加临时入口 + `TODO(Tier2-entry-temp)` 注释，GZ-ADMIN-201 merge 后清理 |
+| R6 | 订阅消息 hook（doc/10 §9.N7）依赖 USER-103 | 进「已发往中国」/「已签收」后 `ApplicationEventPublisher.publishEvent` 留 hook（`@TransactionalEventListener(phase=AFTER_COMMIT)`）；USER-103 未就绪则 listener 暂无人接，不报错、不阻塞推进事务 |
 
 ---
 
-## §revision（Kevin testing-human 后填，初始空）
+## §revision（Kevin 批量人验后填，初始空 —— ticket 已 close 也可回填）
+
+<!-- 问题清单写这里，然后 @coder 修 D11/GZ-ADMIN-104 revision 段 -->

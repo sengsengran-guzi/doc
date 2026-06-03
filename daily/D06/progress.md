@@ -1,4 +1,4 @@
-# D06（Kevin 口径 d5）— Progress
+# D06 — Progress
 
 > 会员中心收尾 + 资讯 C 端日。6 ticket 全部 AI Tier 1A ✅ + 主线程权威复核全绿。
 > 6 个均 mp ticket → 进「人验」列累积，**留 D07 后批量人验**（Kevin 口径，CLAUDE.md §8.2 Tier 2 异步批量，不每日跑）。

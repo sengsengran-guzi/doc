@@ -1,161 +1,165 @@
-# GZ-GACHA-104 ⭐ — 抽奖事务 + 防超卖（V1.1 最复杂 ticket）
+# GZ-GACHA-104 ⭐ — 扭蛋开盒事务 + 防超卖（4 表原子 + 失败全额退款）
 
 **优先级**: P1
-**复杂度**: L（V1.1 最复杂 ticket — 思考密度比 BEAN-004 更高，禁止快速过 §0 自检）
-**关联 PRD**: doc/02-prd.md M2 §概率算法 + §并发与防超卖 + §异常分支
-**关联拆解**: doc/02-需求拆解.md §3.3 第 787 行
-**关联 mockup**: design/mockup/gacha-draw.html（结果展示页 — 仅布局参考；视觉以 C 系统为准，doc/13；出奖动画为 doc/13 §3.2 待建 Biz 组件。本 ticket 仅后端，UI 在 GACHA-105）
-**关联 ADR**: 如本日实施时涉及"是否引入分布式锁框架 / 异步事件解耦" → 新建 ADR-0003
-**依赖**: GZ-GACHA-101 + GZ-PAY-101 ✅(D08)
+**复杂度**: L（V1.1 最复杂 ticket — 思考密度比 BEAN-004 更高，**禁止快速过 §0 自检**）
+**关联 PRD**: doc/02-prd.md M2 §概率算法 + §并发与防超卖 + §异常分支 + §4.1 扭蛋规则（必中 / 概率公示 / 不保底 / 抽完即下架）
+**关联拆解**: doc/02-需求拆解.md §3.3（GZ-GACHA-104 抽奖事务 + 防超卖）
+**关联 mockup**: design/mockup/gacha-draw.html（结果展示仅布局参考；视觉以 C 系统为准，doc/13；三段分镜出奖动画在 GACHA-105。本 ticket **纯后端 + mp api 封装**，无 mp 页面）
+**关联 ADR**: 如本日实施时确需引入 MQ / 分布式锁框架解耦支付回调与开盒事务 → 新建 ADR-0003（默认不引，见备注 D5/D8）
+**依赖**: GZ-GACHA-101（`gz_gacha_machine` / `gz_gacha_prize` 已落表）+ GZ-PAY-101（微信支付 V3 通道 + `gz_pay_refund`，**D08，当前 pending — §0 自检 grep 实际存在再开始**）
 
 ---
 
 ## 必读权威文档（缺一不可 — kevin-coder §0 自检会卡 + ★ 重点反复读）
 
-- **业务流**：doc/10-业务流权威图.md **§7 扭蛋抽奖流** **全文**，特别是：
-  - §状态机（gacha_draw 状态：`pending_pay` → `paid` → `drawn` → `pending_delivery` → `delivered` / 失败态 `refunded`）
-  - §并发控制（**SELECT FOR UPDATE** 锁奖品行 + DB 事务 + 退款补偿 三层防线）
-  - §概率算法（归一化逻辑 — 与 GACHA-103 ProbabilityNormalizer 同一实现）
-  - §异常分支（库存竞争 / 退款失败 / 支付回调延迟 / 网络中断 全场景）
-  - §业务规则（**不做保底** PRD §4.1 / 抽完即下架）
-  - 如 §7 不全 → STOP @product 巡检；临时参考 §3 拼豆并发结构作类比
-- **字段表**：doc/11-字段权威表.md
-  - §7.1 `gz_gacha_machine`
-  - §7.2 `gz_gacha_prize`
-  - **§7.3 `gz_gacha_draw`**（核心抽奖记录表 — 完整 DDL 来源 + 中奖物 snapshot 字段定义）
-  - §1 全局公共字段
-  - GZ-USER 订单表（V1.1 USER 系列已落，本 ticket 仅 INSERT 不动 schema）
-- **UI 索引**：doc/12-UI-权威索引.md §MP-GACHA-DRAW（前端调用时序参考）
-- **支付集成**：D08 PAY-101 reports（`IGzPayService.unifiedOrder()` + `refund()` 接口签名 / 错误码）
+- **业务流**：doc/10-业务流权威图.md **§8 扭蛋机抽奖全流程（M2）全文**（**不是 §7 = 预购**），特别是：
+  - **§8.N6 事务流程**（4 表原子：`SELECT FOR UPDATE` 锁奖品 → 校验库存 → 归一化 → 随机抽 → 扣库存 version → INSERT draw → INSERT/UPSERT collection → INSERT order → COMMIT）
+  - **§8 状态机**（draw 仅终态记录；衍生订单 `pending_ship` → `in_logistics` → `delivered` / `refunded`）
+  - **§8 并发与一致性**（E3：事务内 `SELECT FOR UPDATE` 抓快照 + 一次性归一化，事务内不重读旧权重）
+  - **§8.E1 / E5 / E6 异常分支**（库存抢空 → 整事务 ROLLBACK，`gz_gacha_draw` / `gz_gacha_order` **都不落**，只写 `gz_pay_refund`；任一步失败全回滚）
+  - **§8 业务规则**（**必中** / **不做保底** PRD §4.1 / **抽完即下架 `auto_off`**）
+  - **§8.E3** 后台改概率瞬时（事务 SELECT FOR UPDATE 锁快照，用旧权重抽，一致性优先）
+- **支付回调分发**：doc/10-业务流权威图.md **§6.N6**（验签 + 幂等 + 业务回调：按 `out_trade_no` 前缀分发到扭蛋开盒事务；幂等基于 transaction_id）+ **§6.E2**（业务回调事务异常 → 重试 → 仍失败自动触发退款）
+- **字段表**：doc/11-字段权威表.md（**DDL 完整字段来源，1:1 对齐**）
+  - **§7.3 `gz_gacha_draw`**（开盒记录 — 9 字段全集 + 幂等唯一索引 `pay_transaction_id`）
+  - **§7.4 `gz_gacha_order`**（衍生订单 — `business_status='pending_ship'` 默认 + `logistics_status` 并行字段 + version）
+  - **§7.5 `gz_user_gacha_collection`**（图鉴 — 事务内 UPSERT +1）
+  - **§4.4 `gz_pay_refund`**（退款单 — V1.1 仅全额；`gz-pay` 已落表，本 ticket 仅 INSERT）
+  - **§1 全局公共字段** + **附录 A.6（衍生订单状态）/ A.7（物流状态）/ B.3（时间字段命名 `_time` / `_at`）**
+  - **§7.7 F7.3**（库存抢空 draw 不写）/ **F7.5**（公示价值单位 = 分）
+- **UI 索引**：doc/12-UI-权威索引.md §MP-GACHA-DRAW（前端调用时序参考；动画 UI 在 GACHA-105）
+- **支付集成（D08 PAY-101）**：reports/`GZ-PAY-101.md` — `IGzPayService` / `IWechatPayClient`（`WechatPayV3ClientImpl` / `MockWechatPayClient`）接口签名、统一下单 / 退款方法、V3 回调 `/api/pay/v3/notify`（AES-GCM `NotificationParser`）、流水表 `gz_pay_transaction` / `gz_pay_callback_log`、`gz.pay.client.mode=mock` 开关
+- **mp 管理权限底座（ADR-0004）**：doc/_adr/0004-mp-admin-permission-foundation.md（退款 `@SaCheckPermission` 复用，不另造 RBAC）
 
 ## What
 
-mp 端用户在详情页（GACHA-103）点「单抽 ¥X」CTA 后到付款成功的核心后端业务逻辑：
-1. 创建 pending_pay 抽奖记录（占位，关联机器 / 用户 / 待扣奖品池快照）
-2. 调 PAY-101 `unifiedOrder()` 拉起微信支付（mp 端唤起）
-3. 支付回调到达 → 进入抽奖事务：
-   - DB 事务开启
-   - `SELECT FOR UPDATE` 锁该机器全部 current_stock > 0 的奖品行
-   - 校验库存（如为空 → 标记 draw status='refunded' + 异步退款）
-   - 概率归一化（复用 `ProbabilityNormalizer`）
-   - 随机抽取（`SecureRandom` + 权重区间）
-   - 扣减中奖奖品 `current_stock -= 1`
-   - 写中奖物 snapshot 到 draw 表（防后台改奖品后历史错乱）
-   - 建待发货订单（INSERT GZ-USER 订单表 status='pending_delivery'）
-   - 提交事务
-4. 任何一步失败 → 整事务回滚 + 异步退款（PAY-101 `refund()` + 失败重试 3 次 + 失败入死信队列）
+落地扭蛋单抽从「投币支付 → 开盒事务 → 中奖锁定 / 图鉴 +1 / 衍生订单」的核心后端逻辑（doc/10 §8.N4-N6）：mp 用户在详情页（GACHA-103）点「投币开盒」拉起微信支付 V3 → 支付回调命中扭蛋分支 → 进开盒事务（`SELECT FOR UPDATE` 锁候选奖品 + 归一化 + 随机 + 乐观锁扣库存 + 写 draw + 图鉴 +1 + 建 `gz_gacha_order(pending_ship)`，**4 表原子**）→ 库存抢空整事务回滚（draw / order **不落**）仅写 `gz_pay_refund` 全额退款。本 ticket **纯后端 + mp `api/gz-gacha.ts` 封装**（出奖动画 / 揭晓页在 GACHA-105）。
 
 ## AC（验收标准）
 
-- [ ] **AC 1**：DDL `V202606171100__GZ-GACHA-104-create-gz_gacha_draw.sql` 落表：
-  - `gz_gacha_draw`（id / user_id / machine_id / machine_name_snapshot / prize_id 可空 / **prize_snapshot** JSON 字段(name+rarity+cover_url+public_value) / single_price 分 / out_trade_no 支付单号 / pay_status enum(`pending`/`paid`/`refunded`) / draw_status enum(`pending_draw`/`drawn`/`stock_empty_refunded`) / delivery_status enum(`pending_delivery`/`delivered`/`n/a`) / refund_reason 可空 / drawn_at 可空 / + 全局公共字段）
-  - UNIQUE `uk_tenant_out_trade_no (tenant_id, out_trade_no)`
-  - 索引 `idx_user_drawn_at (user_id, drawn_at DESC)`（GACHA-106 历史查询）
-  - 索引 `idx_user_machine (user_id, machine_id)`（GACHA-107 图鉴查询）
-- [ ] **AC 2**：mp 端 `POST /app/gz/gacha/draw/start`（参数 machine_id）：
-  - sa-token mp-client → 拿 user_id
-  - 校验机器 status='on_shelf' + 至少 1 奖品 stock > 0（否则返回 `MACHINE_EMPTY`）
-  - INSERT `gz_gacha_draw`（status `pending_pay` + 价格 snapshot + machine_name_snapshot）
-  - 调 `IGzPayService.unifiedOrder(outTradeNo, single_price, openid, ...)` → 返回 mp 支付参数 jsApiPayload
-  - 返回 `{drawId, jsApiPayload}` 给前端唤起支付
-- [ ] **AC 3**：支付回调（GZ-PAY-101 已建回调入口 `/external/gz/pay/wx-notify`）→ payService 处理签名 + 幂等校验后回调注册的 `GachaDrawPayCallback` Handler：
-  - 把 draw.pay_status='paid'
-  - 异步触发抽奖事务（`@Async("gachaExecutor")` 调 `executeDrawTransaction(drawId)`）
-- [ ] **AC 4** ⭐ **核心抽奖事务**：`@Transactional(rollbackFor=Exception.class)` 在 `GzGachaDrawServiceImpl.executeDrawTransaction(drawId)`：
-  1. 重读 draw（应为 paid + pending_draw 状态；其他状态返回幂等跳过）
-  2. **`SELECT * FROM gz_gacha_prize WHERE machine_id=? AND current_stock>0 FOR UPDATE`**（锁所有候选奖品行）
-  3. 如结果为空 → draw.draw_status='stock_empty_refunded' + INSERT refund 任务 + return（事务提交，异步退款）
-  4. 用 `ProbabilityNormalizer.normalize(prizes)` 算归一化权重
-  5. `SecureRandom` 抽取（生成 0~totalWeight 的随机 long，落在哪个奖品区间就中哪个）
-  6. `UPDATE gz_gacha_prize SET current_stock = current_stock - 1 WHERE id=? AND current_stock > 0`（带 stock > 0 条件防超卖兜底；affected rows = 0 → throw 触发回滚）
-  7. UPDATE draw（prize_id + prize_snapshot JSON + draw_status='drawn' + drawn_at=NOW + delivery_status='pending_delivery'）
-  8. INSERT GZ-USER 订单表（status='pending_delivery'，引用 draw_id + prize_snapshot）
-  9. 事务提交
-- [ ] **AC 5** ⭐ **失败回滚 + 退款**：
-  - 事务内任何 throw → 自动回滚（库存不扣 / draw 不变 / 订单不建）
-  - 事务回滚后异步触发退款：`refundService.refund(outTradeNo, single_price, 'gacha_draw_failed')`
-  - 退款失败重试 3 次（间隔 5s/30s/2min）；3 次仍失败 → 入死信队列 + 报警邮件给 Kevin
-  - 退款成功 → UPDATE draw.pay_status='refunded' + draw_status='stock_empty_refunded'
-- [ ] **AC 6** ⭐ **不做保底**（PRD §业务规则 4.1）：纯权重随机，不强制 N 抽必中 SR；不在 service 加任何"保底计数器"
-- [ ] **AC 7** ⭐ **抽完即下架**：奖品 current_stock 扣到 0 时**自动从抽奖池剔除**（步骤 2 `WHERE current_stock > 0` 自然过滤；同步：如机器所有奖品 stock=0 → 异步标 machine.status='off_shelf' + 通知运营）
-- [ ] **AC 8**：单测覆盖 6 个场景（每个 raw assertion）：
-  - happy path（mock 锁 + 抽到非空奖品 + 库存扣 1 + draw 状态 drawn）
-  - 库存空（mock SELECT FOR UPDATE 返回空 → status='stock_empty_refunded' + 触发退款）
-  - 库存竞争（mock UPDATE affected=0 → throw + 回滚）
-  - 退款失败重试 3 次（mock pay 抛 3 次 → 入死信）
-  - 幂等（drawId 已 drawn → 跳过）
-  - 概率随机性（10000 次抽样，每个奖品出现频次贴近权重比，χ² 检验 P > 0.05）
-- [ ] **AC 9** ⭐ **reports 必须包含并发压测 raw output**：
-  - 工具：`wrk -t10 -c50 -d10s` 或 `ab -n 200 -c 50`
-  - 场景：机器只剩 1 个 SSR + 50 并发用户同时支付回调到达
-  - 期望：DB 最终 SSR.current_stock = 0；恰好 1 个 draw 是 drawn 状态；其他 49 个 draw 是 stock_empty_refunded + 触发退款
-  - reports/<T>.md 贴 raw SQL 验证 + wrk 输出 + 退款 log 摘录
-- [ ] **AC 10**：写操作加 @Log；GachaDrawPayCallback 加幂等保护（基于 out_trade_no UNIQUE 兜底）
+- [ ] **AC 1**：DDL `V202606171400__GZ-GACHA-104-create-gz_gacha_draw-order-collection.sql` 建 3 张表，字段 **1:1 对齐 doc/11 §7.3 / §7.4 / §7.5**（金额一律 `_cent`；snapshot 一律 `*_snapshot_json` JSON 列；图片 `image_id` 而非裸 url；`del_flag` 仅 2 值；`tenant_id VARCHAR(20) NOT NULL DEFAULT '1001'`，INSERT 不显式赋；UNIQUE 必含 `tenant_id`）：
+  - **`gz_gacha_draw`**（§7.3）：`draw_no` VARCHAR(32)（`DRW-yyyyMMdd-6位序号`）/ `user_id` / `machine_id` / `prize_id` / `pay_transaction_id` VARCHAR(64) / `machine_snapshot_json` JSON / `prize_snapshot_json` JSON（名称 + 封面 image_id + 稀有度 + 公示价值 cent）/ `draw_amount_cent` BIGINT / `drawn_time` DATETIME(3) + §1 公共字段
+    - UNIQUE `uk_tenant_draw_no (tenant_id, draw_no)` + **UNIQUE `uk_tenant_pay_tx (tenant_id, pay_transaction_id)`（幂等关键）**
+    - IDX `(tenant_id, user_id, drawn_time DESC)`（GACHA-106 历史）/ `(tenant_id, machine_id)` / `(tenant_id, prize_id)`
+  - **`gz_gacha_order`**（§7.4）：`order_no` VARCHAR(64)（**`GACHA-yyyyMMdd-6位序号`**）/ `draw_id` / `user_id` / `machine_snapshot_json` / `prize_snapshot_json` / `total_amount_cent` / `address_snapshot_json` JSON NULL / `business_status` VARCHAR(16) DEFAULT `'pending_ship'` / `logistics_status` VARCHAR(20) DEFAULT `'in_japan'` / `pay_transaction_id` / `paid_time` / `delivered_time` NULL / `cn_carrier_code` NULL / `cn_tracking_no` NULL / `cn_dispatched_at` NULL / `version` INT DEFAULT 0 + §1 公共字段
+    - UNIQUE `uk_tenant_order_no (tenant_id, order_no)` + UNIQUE `uk_tenant_draw_id (tenant_id, draw_id)`（一抽一单）+ UNIQUE `uk_tenant_pay_tx (tenant_id, pay_transaction_id)`
+    - IDX `(tenant_id, user_id)` / `(tenant_id, business_status)` / `(tenant_id, logistics_status)`
+  - **`gz_user_gacha_collection`**（§7.5）：`user_id` / `machine_id` / `prize_id` / `first_drawn_time` DATETIME(3) / `drawn_count` INT DEFAULT 1 + §1 公共字段
+    - UNIQUE `uk_tenant_user_machine_prize (tenant_id, user_id, machine_id, prize_id)`（每用户每奖品一条；UPSERT 锚点）
+    - IDX `(tenant_id, user_id)` / `(tenant_id, user_id, machine_id)`
+- [ ] **AC 2**：mp 端 `POST /app/gz/gacha/draw/start`（参数 `machineId`）：
+  - sa-token mp-client → 拿 `user_id` + `openid`
+  - 校验机器 `status='on_shelf'` 且至少 1 奖品 `stock_remain > 0`（否则返回业务错误码 `MACHINE_EMPTY`，mp 文案「该扭蛋机暂时缺货」）
+  - 生成 `out_trade_no`（前缀 **`GACHA-yyyyMMdd-6位序号`**，全局唯一）→ 调 `IGzPayService.unifiedOrder(outTradeNo, single_price_cent, openid, businessType='gacha')`（金额取 `machine.single_price_cent`，**单位分**）→ 写 `gz_pay_transaction(status='created', business_type='gacha')`
+  - 返回 `{outTradeNo, jsApiPayload}` 给前端唤起 `wx.requestPayment`
+  - **本步不写 `gz_gacha_draw`**（draw 仅在开盒事务成功时落，库存抢空时不落 — doc/11 F7.3）
+- [ ] **AC 3**：支付回调（PAY-101 已建 `/api/pay/v3/notify`，AES-GCM `NotificationParser`）→ payService 验签 + 幂等（基于 transaction_id）后，按 `out_trade_no` 前缀 `GACHA-` 分发到本域回调 handler（doc/10 §6.N6）：
+  - 置 `gz_pay_transaction.status='paid'` + `paid_time`
+  - 异步触发开盒事务 `@Async("gachaExecutor") executeDrawTransaction(payTransactionId)`（回调线程不阻塞，微信要求 < 3s 响应）
+  - **不引 V2 / XML / api-key / 新建 `gz_pay_order` / `amount_fen` / `/api/wxpay/pay-notify`**（PAY-101 是 V3）
+- [ ] **AC 4** ⭐ **核心开盒事务**：`@Transactional(rollbackFor=Exception.class)` 在 `GzGachaDrawServiceImpl.executeDrawTransaction(payTransactionId)`（doc/10 §8.N6 严格顺序）：
+  1. 幂等：`gz_gacha_draw` 按 `pay_transaction_id` 已存在 → 直接 return（微信重复推送 / @Async 重入）
+  2. **`SELECT * FROM gz_gacha_prize WHERE machine_id=? AND stock_remain>0 FOR UPDATE`**（锁所有候选奖品行；锁奖品行不锁机器行，见 D1）
+  3. 候选为空 → **抛 `GachaStockEmptyException` 触发回滚**（draw / order 都不落，doc/11 F7.3）→ 由 AC5 退款补偿
+  4. `ProbabilityNormalizer.normalize(prizes)` 按当前 `stock_remain>0` 奖品的 `weight` **一次性归一化**（与 GACHA-103 概率公示同一 Bean / 同一口径；事务内不重读，doc/10 §8.E3）
+  5. `SecureRandomDrawer` 抽取（`SecureRandom` 生成 `0~totalWeight` long，落区间定中奖奖品；语义保留 `draw`，UI 文案归 GACHA-105）
+  6. `UPDATE gz_gacha_prize SET stock_remain=stock_remain-1, version=version+1 WHERE id=? AND version=? AND stock_remain>0`（**乐观锁 version + `stock_remain>0` 双兜底**；affected=0 → throw 触发回滚）
+  7. INSERT `gz_gacha_draw`（`draw_no` + `prize_id` + `machine_snapshot_json` + `prize_snapshot_json` + `draw_amount_cent` + `pay_transaction_id` + `drawn_time`）
+  8. **事务内** UPSERT `gz_user_gacha_collection`（`(user_id, machine_id, prize_id)` 命中 → `drawn_count+1`；未命中 → INSERT `drawn_count=1` + `first_drawn_time=NOW`）
+  9. INSERT `gz_gacha_order`（`order_no` `GACHA-yyyyMMdd-6位序号` + `draw_id` + snapshot + `total_amount_cent` + `business_status='pending_ship'` + `logistics_status='in_japan'` + `paid_time`）
+  10. COMMIT（**4 表变更原子**：prize 库存 + draw + collection + order）
+- [ ] **AC 5** ⭐ **失败 → 整事务回滚 + 全额退款**（doc/10 §8.E1 / §6.E2 / doc/11 F7.3）：
+  - AC4 任一步 throw → 自动回滚（库存不扣 / draw 不落 / collection 不变 / order 不建）
+  - 回滚后异步触发**全额**退款：`refundService.refundFull(payTransactionId, reason)` → 写 `gz_pay_refund`（`refund_amount_cent = 原 amount_cent`，**V1.1 仅全额，无金额 input**，doc/11 §4.4）；退款方法加 `@SaCheckPermission("gz:pay:refund:apply")`（系统触发以系统身份，不用 `@SaCheckRole`）
+  - 库存抢空场景：**不写 `stock_empty_refunded` draw 记录**（draw 表整体不落，doc/11 F7.3）；仅 `gz_pay_refund` + 通知用户「奖品已抽完，已为您退款」
+  - 退款失败：`gz_pay_refund.status='failed'`，重试 3 次（间隔 5s/30s/2min，配置化）；3 次仍失败 → 入 DB 死信队列 + 报警邮件给 Kevin（doc/10 §6.E2 / 附录 A.2 F4.4）
+- [ ] **AC 6** ⭐ **必中 + 不做保底**（doc/10 §8 业务规则 + PRD §4.1）：成功路径每次必出 1 个实物奖品（不出空奖）；纯权重随机，**不在 service 加任何「保底计数器」/「N 抽必中 SR」**
+- [ ] **AC 7** ⭐ **抽完即下架 `auto_off`**（doc/10 §8 + doc/11 §7.1 status 枚举）：奖品 `stock_remain` 扣到 0 时下次开盒 AC4 步骤 2 `WHERE stock_remain>0` 自然剔除；**整机所有奖品 `stock_remain=0` → 异步置 `gz_gacha_machine.status='auto_off'`**（**不用 `off_shelf` / `archived`**），GACHA-102 列表已过滤非 `on_shelf` 自然不再展示（不引 ws 推送）
+- [ ] **AC 8**：单测覆盖 6 个场景（每个 raw assertion，mock `IGzPayService` + mapper FOR UPDATE）：
+  - happy path：抽到非空奖品 → `stock_remain-1` + version+1 + draw 落库 + collection +1 + order `pending_ship`，4 表一致
+  - 库存抢空：`SELECT FOR UPDATE` 返回空 → throw → 回滚（draw / order **不落**）+ 触发全额退款
+  - 乐观锁竞争：`UPDATE` affected=0 → throw → 回滚
+  - 退款重试：mock 退款抛 3 次 → `gz_pay_refund.status='failed'` 入死信 + 报警
+  - 幂等：同 `pay_transaction_id` 二次进入 → 步骤 1 直接 return（不重复扣库存 / 不重复建单）
+  - 概率随机性：10000 次抽样，各奖品出现频次贴近 `weight` 比，χ² 检验 P > 0.05
+- [ ] **AC 9** ⭐ **reports 必含并发压测 raw output**（DoD 硬卡）：
+  - 场景：单机仅剩 1 个 SSR（`stock_remain=1`）+ N（≥ 20）并发用户同时支付回调到达
+  - 期望（贴 raw SQL 验证）：DB 最终 `SSR.stock_remain=0`；**恰好 1 条 `gz_gacha_draw` 中该 SSR**；其余用户**整事务回滚（无 draw / 无 order）+ 各写 1 条 `gz_pay_refund` 全额退款**；`gz_gacha_order.order_no` 全局唯一无冲突
+  - reports 贴：并发驱动脚本（多线程直调 `executeDrawTransaction` 或 wrk/ab 打回调）+ raw SQL count + 退款 log 摘录（≥ 3 个代码 block）
+- [ ] **AC 10**：mock 全链路自测 raw output（`gz.pay.client.mode=mock`）：统一下单 → mock 回调 → 开盒事务 → 库存扣减 / 图鉴 +1 / 衍生订单 `pending_ship` / 库存抢空退款分支，全链路打通；写操作加 `@Log`；handler 幂等基于 `uk_tenant_pay_tx` DB 唯一索引兜底
+
+> 纯后端 + mp api 封装 ticket，**无 mp 页面** → 跳过 Tier 2 入口可达 AC（CLAUDE.md §8.2；mp 页面入口 / 真机 happy path 在 GACHA-105 验）。
 
 ## Tech（端 + 范围）
 
-- **后端**：`ruoyi-modules/ruoyi-gz-gacha/`
+- **后端**：`code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-gacha/`（包名 `org.dromara.gz.gacha.{controller,service,mapper,domain,dto}`）
   - `controller/applet/GzGachaDrawMpController.java`（`POST /app/gz/gacha/draw/start`）
-  - `service/IGzGachaDrawService.java` + `service/impl/GzGachaDrawServiceImpl.java`（**核心事务方法 `executeDrawTransaction(drawId)`**）
-  - `service/internal/GachaDrawPayCallback.java`（PAY-101 回调注册）
-  - `service/internal/GachaRefundService.java`（退款 + 重试 + 死信）
-  - `service/internal/ProbabilityNormalizer.java`（GACHA-103 已建，本 ticket 复用）
-  - `service/internal/SecureRandomDrawer.java`（权重区间抽取，便于测试 mock）
-  - `domain/GzGachaDraw.java` + VO + BO（含 PrizeSnapshot 内嵌结构）
-  - `mapper/GzGachaDrawMapper.java`（含 `SELECT ... FOR UPDATE` 自定义方法）
-  - `config/GachaExecutorConfig.java`（`@Async("gachaExecutor")` 线程池配置）
-  - DDL × 1
-  - `application-dev.yml` + `application-staging.yml` + `application-prod.yml` 加 `gz.gacha.refund-retry-intervals: [5s, 30s, 2m]` + `gz.gacha.alert-email: kevin@example.com`
-- **小程序**：仅 `api/gz-gacha.ts` 加 `startDraw(machineId)` 调用 + 唤起 wx.requestPayment(jsApiPayload)；UI（动画 + 揭晓）在 GACHA-105
-- **测试**：mvn 单测（6 场景）+ wrk / ab 并发压测 raw output + DB 客户端验证
+  - `service/IGzGachaDrawService.java` + `service/impl/GzGachaDrawServiceImpl.java`（**核心事务 `executeDrawTransaction(payTransactionId)`**）
+  - `service/internal/GachaPayCallbackHandler.java`（PAY-101 回调按 `GACHA-` 前缀分发注册，doc/10 §6.N6）
+  - `service/internal/GachaRefundService.java`（`refundFull` + 重试 + 死信 + 报警）
+  - `service/internal/ProbabilityNormalizer.java`（GACHA-103 已建，本 ticket **复用同 Bean**）
+  - `service/internal/SecureRandomDrawer.java`（权重区间抽取，便于 mock 测试）
+  - `domain/GzGachaDraw.java` / `GzGachaOrder.java` / `GzUserGachaCollection.java` + VO / BO（含 snapshot 内嵌结构）
+  - `mapper/GzGachaDrawMapper.java` / `GzGachaOrderMapper.java` / `GzUserGachaCollectionMapper.java`（含 `SELECT ... FOR UPDATE` 自定义方法 + UPSERT）
+  - `config/GachaExecutorConfig.java`（`@Async("gachaExecutor")` 独立线程池）
+  - DDL × 1（AC1）
+  - `application-{dev,staging,prod}.yml` 加 `gz.gacha.refund-retry-intervals: [5s, 30s, 2m]` + `gz.gacha.alert-email`
+  - **退款权限复用 ADR-0004 底座**：`@SaCheckPermission("gz:pay:refund:apply")`（不另造 RBAC）
+- **小程序**：仅 `code/main/miniapp/src/api/gz-gacha.ts` 加 `startDraw(machineId)` 调用 + 唤起 `wx.requestPayment(jsApiPayload)`；**无 mp 页面**（动画 + 揭晓在 GACHA-105）
+- **测试**：mvn 单测（6 场景，`-DskipTests=false -pl ruoyi-modules/ruoyi-gz-gacha -am`）+ 并发压测 raw output + mock 全链路 raw output + DB 客户端 raw SQL 验证
 
 ## 备注
 
 ### 强约束 ★
 
-1. **三层防超卖是不可绕过的兜底**（doc/10 §7 权威）：DB 事务 / `SELECT FOR UPDATE` / `UPDATE current_stock WHERE current_stock > 0` 三层缺一不可
-2. **UNIQUE `uk_tenant_out_trade_no` 兜底支付回调幂等**（CLAUDE.md §6 #3）
-3. **中奖物 snapshot 必须落 JSON 字段**（doc/02 §3.3 行 794）— 防后台改奖品名 / 改稀有度 / 删除奖品后历史 draw 记录读不到准确信息
-4. **不做保底**（PRD §业务规则 4.1）— 任何"保底计数器" / "N 抽必中 X" 都禁止；纯权重随机
-5. **抽完即下架**（doc/02 §3.3 行 792）— 库存=0 的奖品自动从池中剔除；机器所有奖品=0 时标 off_shelf
-6. **退款失败重试 3 次 + 死信报警** — 不允许"用户钱扣了无货"出现
-7. **`@Async("gachaExecutor")` 独立线程池** — 不占用 ruoyi 默认 task executor；线程数 = max(8, cores × 2)
-8. **盲盒语义**（tokens.md §9）— 错误码 / 日志可保留 `draw` 技术语义，但用户可见的 toast / 邮件文案用扭蛋语义
+1. **三层防超卖不可绕过**（doc/10 §8.N6）：DB 事务 / `SELECT FOR UPDATE` 锁奖品行 / `UPDATE stock_remain WHERE version=? AND stock_remain>0`（乐观锁）三层缺一不可。
+2. **库存抢空 draw 不落**（doc/11 F7.3）：整事务回滚，`gz_gacha_draw` / `gz_gacha_order` 都不 INSERT，**禁止**写 `stock_empty_refunded` 状态的 draw；只写 `gz_pay_refund`。
+3. **幂等基于 `pay_transaction_id` 唯一索引**（doc/11 §7.3，**不是 out_trade_no 做 draw 幂等**）：微信重复推送 / @Async 重入都靠 `uk_tenant_pay_tx` 兜底。
+4. **退款 V1.1 仅全额**（doc/11 §4.4）：一笔对一单，无金额 input；C 端无退款入口（仅文案「如需退款请联系客服」）；权限 `@SaCheckPermission("gz:pay:refund:apply")`，**不用 `@SaCheckRole`**。
+5. **中奖物 / 机器 snapshot 落 JSON 列**（doc/11 §7.3，`machine_snapshot_json` + `prize_snapshot_json`）— 防后台改奖品名 / 改稀有度 / 删奖品后历史读不到准确信息（doc/10 §8.E7）；**不散列成多列**。
+6. **必中 + 不做保底**（PRD §4.1）：成功路径必出实物；纯权重随机，禁任何保底计数器。
+7. **抽完即下架 `auto_off`**（doc/11 §7.1 status）：整机库存归零异步置 `auto_off`，**禁 `off_shelf` / `archived`**。
+8. **支付集成走 PAY-101 V3**：复用 `IWechatPayClient`（`WechatPayV3ClientImpl` / `MockWechatPayClient`）+ apiV3Key + V3 `NotificationParser`(AES-GCM) + 回调 `/api/pay/v3/notify`；流水 `gz_pay_transaction` / `gz_pay_callback_log`。**禁 V2 / XML / api-key / 新建 `gz_pay_order` / `amount_fen` / `/api/wxpay/pay-notify`**。
+9. **`@Async("gachaExecutor")` 独立线程池**：不占 ruoyi 默认 task executor；线程数 max(8, cores×2)，队列满走 RejectedExecutionHandler 入 DB 再异步消费。
+10. **盲盒语义**（仅 gacha 域）：后端 enum / 字段 / 错误码可保留 `draw` 技术语义（`gz_gacha_draw` / `executeDrawTransaction`）；**用户可见 toast / 邮件 / `t('gacha.xxx')` 文案用扭蛋语义**（扭蛋 / 开盒 / 获得 / 出现概率；禁 抽奖 / 中奖 / 开奖）。引用 **doc/10 §8**（不是 §7）+ doc/12 MP-GACHA-DRAW + **doc/tokens.md §1.4 稀有度色**（四档）+ **doc/13 §3.2 三段动画**（GACHA-105；**禁引 tokens §9，不存在**）。
+11. **金额 / 命名硬约束**：金额一律 `_cent`；订单号 `GACHA-yyyyMMdd-6位序号` + DB 全局唯一约束；库存 `stock_remain`（不用 init/left）+ 乐观锁 `version`；`del_flag` 仅 2 值；`tenant_id VARCHAR(20) DEFAULT '1001'`，INSERT 不显式赋，UNIQUE 必含 tenant_id；`business_type='gacha'` 落 `gz_pay_transaction`，**禁在订单表加 `business_line`/`biz_line`/A/B 列**。
+12. **物流字段并行不互相覆盖**（doc/10 §9 C1）：`gz_gacha_order.logistics_status` ∈ {`in_japan`/`in_china_dispatching`/`delivered`}，独立于 `business_status`；本 ticket 建表落字段，物流推进在 ADMIN-104（**禁 7 节点 / `gz_logistics_node` / 批次推进**）。
 
 ### 关键技术决策
 
 | # | 决策 | 理由 |
 |---|---|---|
-| D1 | `SELECT FOR UPDATE` 锁奖品行（不锁机器行）| 锁粒度小 — 并发抽不同奖品互不干扰；锁机器行会让所有用户串行 |
-| D2 | 抽奖事务异步触发（支付回调线程不阻塞）| 微信支付回调要求 < 3s 响应；抽奖事务 SELECT FOR UPDATE + 多步 UPDATE 可能 > 1s |
-| D3 | 抽奖记录 snapshot 用 JSON 字段而非冗余字段 | JSON 字段灵活兼容 prize 表 schema 变更（如 V2 加属性）|
-| D4 | `SecureRandom` 而非 `Random` | SecureRandom 不可预测；防止用户通过种子推测中奖序列（虽然概率极低，但合规要求）|
-| D5 | 退款重试用 `@Scheduled` + DB queue 表，不用 MQ | V1.1 流量小，DB 轮询足够；引入 MQ 增加运维复杂度 |
-| D6 | "抽完即下架" 在事务内 UPDATE current_stock 后异步检测，不在事务内 | 检测全 prize stock=0 涉及二次 SELECT，增加事务时长；异步检测可接受秒级延迟 |
-| D7 | machine.status 自动改 off_shelf 后**不**通知 mp 端 | 用户下次进列表自然看不到（GACHA-102 已过滤 on_shelf）；不引入 ws 推送 |
-| D8 | 不引入 Redisson 分布式锁 | DB 行锁 + UNIQUE 已足够；引入 Redisson 增加依赖 + 增加超时风险 |
+| D1 | `SELECT FOR UPDATE` 锁奖品行（不锁机器行）| 锁粒度小，并发抽不同奖品互不干扰；锁机器行会让所有用户串行 |
+| D2 | 开盒事务异步触发（支付回调线程不阻塞）| 微信 V3 回调要求 < 3s 响应；事务 SELECT FOR UPDATE + 多步 UPDATE 可能 > 1s |
+| D3 | snapshot 用 JSON 列而非冗余字段 | 灵活兼容 prize schema 变更（V2 加属性），对齐 doc/11 §7.3 `*_snapshot_json` |
+| D4 | `SecureRandom` 而非 `Random` | 不可预测，防种子推测中奖序列（合规） |
+| D5 | 退款重试用 DB queue + `@Scheduled`（SnailJob 薄壳，非 Quartz）| V1.1 流量小，DB 轮询足够；引入 MQ 增运维。**若用 cron：SnailJob `@JobExecutor` 薄壳 + 可单测 service，pom 加 `ruoyi-common-job`，任务名/CRON 写 reports 由人在 SnailJob 控制台注册（禁 Quartz / Flyway INSERT sys_job）** |
+| D6 | `auto_off` 在事务外异步检测整机库存 | 检测全 prize stock=0 要二次 SELECT，事务内会增时长；异步秒级延迟可接受 |
+| D7 | `auto_off` 后不推 mp 端 | 用户下次进列表 GACHA-102 已过滤 on_shelf 自然看不到；不引 ws |
+| D8 | 不引 Redisson 分布式锁 | DB 行锁 + 乐观锁 version + UNIQUE 已足够；引 Redisson 增依赖 + 超时风险 |
+| D9 | 库存抢空抛异常走回滚（draw 不落），不写「失败 draw 记录」 | 对齐 doc/11 F7.3：事务整体回滚则 draw/order 都不应存在；退款单独走 `gz_pay_refund` |
 
 ### 风险提示 ★
 
 | # | 风险 | 缓解 |
 |---|---|---|
-| R1 ★ | 并发抢最后 1 个 SSR 时超卖（2 个用户都中同一物） | 三层防线 + reports 强制贴并发压测 raw output 证伪 |
-| R2 ★ | 退款失败但库存已扣 → 用户钱扣了无货 | 失败重试 3 次 + 死信队列 + 报警；最坏场景 Kevin 收到报警手动退款（合同 §维护流程内）|
-| R3 | 概率归一化算法在 GACHA-103 详情页与 GACHA-104 抽奖事务中实现不一致 | 抽 `ProbabilityNormalizer` Bean，两处复用同一实例；单测两处共用 fixture |
-| R4 | 支付回调延迟 > 30s（微信高并发抖动）→ 用户在 mp 端等待动画超时 | 前端轮询 `/app/gz/gacha/draw/{drawId}/status` 接口（GACHA-105 实现）；超时 60s 弹"已支付，结果稍后到账" |
-| R5 | `@Async` 抽奖事务线程池打满 | 线程池配置 max=20 + 队列 1000；满了触发 RejectedExecutionHandler 入 DB queue 再异步消费 |
-| R6 | SecureRandom 随机性偏差 | AC 8 单测中 10000 次抽样 + χ² 检验保证随机性；CI 中跑 |
-| R7 | UPDATE current_stock affected=0 但 SELECT FOR UPDATE 之前刚查时是 > 0（理论不可能，但...）| AC 4 步骤 6 用 `WHERE id=? AND current_stock > 0` 兜底；affected=0 → throw 触发回滚（即使两次查询之间被其他事务抢，行锁也保证不会发生）|
-| R8 | 支付回调签名校验绕过 | PAY-101 已实现微信支付签名校验 + 商户号绑定；本 ticket 不自实现，依赖 PAY-101 |
-| R9 | 死信队列入库后 Kevin 不知道 | 邮件报警 + 后台「异常退款」面板（admin-005 已建占位，本 ticket 仅写数据，不做 UI） |
+| R1 ★ | 并发抢最后 1 个 SSR 超卖（2 用户同中一物） | 三层防线（事务 + FOR UPDATE + 乐观锁 version）+ **AC9 并发压测 raw output 证伪** |
+| R2 ★ | 退款失败但库存已扣 → 钱扣了无货 | 库存抢空走回滚（库存归还、draw 不落）；扣库存成功后才建 draw/order，二者同事务原子；退款失败重试 3 次 + 死信 + 报警 |
+| R3 | 概率归一化在 GACHA-103 与本 ticket 不一致 | 抽 `ProbabilityNormalizer` Bean 两处复用，单测共用 fixture（doc/10 §8.E3 事务内锁快照口径） |
+| R4 ★ | **PAY-101 未完工 → 本 ticket 无法实施** | **§0 自检 grep migration 目录 + 代码确认上游表/接口实际存在**：`grep -r "interface IGzPayService" ruoyi-gz-common` + `grep -r "IWechatPayClient" .` + `ls db/migration | grep -i "gz_pay_refund\|gz_pay_transaction"` + `grep -i gz_gacha_prize db/migration/*GACHA-101*`；任一不存在 → STOP 报 Kevin，挂起等 D08（不假设上游已建） |
+| R5 ★ | 真实微信商户号 / 0.01 元端到端未就绪 | **外部前置风险（非默认就绪）**：dev/staging 仅 `gz.pay.client.mode=mock` 跑全链路自测；真实端到端备注标注 + 并行催甲方验收 V1.0；不当 ticket 完工条件 |
+| R6 | 支付回调延迟 > 30s → mp 等待动画超时 | GACHA-105 前端轮询 `/app/gz/gacha/draw/status`（按 out_trade_no）+ 超时 60s 弹「已支付，结果稍后到账」 |
+| R7 | `@Async` 线程池打满 | max=20 + 队列 1000；满走 RejectedExecutionHandler 入 DB queue 再异步消费 |
+| R8 | SecureRandom 随机性偏差 | AC8 χ² 检验（10000 抽样）保证；CI 中跑 |
+| R9 | 死信入库 Kevin 不知道 | 邮件报警 + admin「异常退款」面板（对账域 ticket 建，本 ticket 仅写数据不做 UI） |
 
 ### ADR 候选
 
-- **ADR-0003**：是否引入 MQ（RabbitMQ / RocketMQ）解耦支付回调与抽奖事务 — 默认 D5 不引；如压测发现 `@Async` 线程池频繁打满 → 新建 ADR-0003 评估
+- **ADR-0003**：是否引入 MQ 解耦支付回调与开盒事务 — 默认 D5 不引；若压测发现 `@Async` 线程池频繁打满再评估。
 
 ---
 
-## §revision（Kevin testing-human 后填，初始空）
+## §revision（Kevin 批量人验后填，初始空 —— ticket 已 close 也可回填）
 
 <!--
 - 问题 1：<现象> / 期望：<期望>

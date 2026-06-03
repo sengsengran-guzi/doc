@@ -1,4 +1,4 @@
-# D06（Kevin 口径 d5）— 会员中心收尾 + 资讯 C 端
+# D06 — 会员中心收尾 + 资讯 C 端
 
 > 日期：2026-06-03（周三）
 > 阶段：V1.0 实施期 day 5
@@ -37,7 +37,7 @@
 
 **整日触发**（推荐）：
 ```
-开始 d5
+开始 d6
 ```
 
 **单 ticket 触发**（局部 revision / 重做）：
@@ -116,5 +116,5 @@ D05 已完工（拼豆收尾 — 详情 / 预约列表 / 取消 / 核销 / admin
 cd doc/daily/D06
 cat reports/*.md > summary.md
 # 本批不 commit：等 D07 完工 + Kevin 批量人验通过后，D05+D06+D07 一起 commit（commit 前先 git init）
-# D07/README.md 已就位（资讯 CMS + 看板 + 支付通道 + V1.0 集成回归）→ 直接「开始 d6」进 D07
+# D07/README.md 已就位（资讯 CMS + 看板 + 支付通道 + V1.0 集成回归）→ 直接「开始 d7」进 D07
 ```

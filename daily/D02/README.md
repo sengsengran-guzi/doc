@@ -1,4 +1,4 @@
-# D02（Kevin 口径 d1）— 系统底座完工：微信登录 + 用户 + 客服 + OSS
+# D02 — 系统底座完工：微信登录 + 用户 + 客服 + OSS
 
 > 日期：2026-05-28（周四）
 > 阶段：V1.0 实施期 day 1（D01 GZ-SYS-001 已 ✅）
@@ -32,7 +32,7 @@
 
 **整日触发**（推荐 — 主线程读本 README → 按依赖顺序 spawn 多个 kevin-coder）：
 ```
-开始 d1
+开始 d2
 ```
 
 **单 ticket 触发**（如某 ticket revision 闭环 / 局部重做）：
@@ -91,6 +91,6 @@ D01 `summary.md` 抓"对下游 ticket 的提示"段：
 cd doc/daily/D02
 cat reports/*.md > summary.md
 # Kevin testing-human OK 后再 commit
-git add -A && git commit -m "D02 (d1): 系统底座完工 GZ-SYS-002/003/004/005"
+git add -A && git commit -m "D02: 系统底座完工 GZ-SYS-002/003/004/005"
 # 然后写 D03/README.md（D03 候选：GZ-ADMIN-001/002/004/005 + GZ-SYS-006）
 ```

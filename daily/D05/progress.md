@@ -1,4 +1,4 @@
-# D05（Kevin 口径 d4）— Progress
+# D05 — Progress
 
 > 拼豆收尾日。6 ticket 全部 AI Tier 1A ✅。mp ticket 进人验列待 Kevin 批量人验；纯后端/admin ticket AI ✅ 即终态。
 

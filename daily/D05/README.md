@@ -1,4 +1,4 @@
-# D05（Kevin 口径 d4）— 拼豆收尾：详情/列表/取消 + admin 核销 + no_show cron + 拼豆首页
+# D05 — 拼豆收尾：详情/列表/取消 + admin 核销 + no_show cron + 拼豆首页
 
 > 日期：2026-06-02（周二）
 > 阶段：V1.0 实施期 day 4 — 拼豆 V1.0 闭环最后一日
@@ -36,7 +36,7 @@
 **整日触发**（推荐 — 主线程读本 README → 按依赖图 spawn 多个 kevin-coder）：
 
 ```
-开始 d4
+开始 d5
 ```
 
 **单 ticket 触发**（如某 ticket revision 闭环 / 局部重做）：
@@ -101,6 +101,6 @@ D04 完工后预期产物（本日依赖）：
 cd doc/daily/D05
 cat reports/*.md > summary.md
 # Kevin testing-human OK 后再 commit
-git add -A && git commit -m "D05 (d4): 拼豆收尾 BEAN-005/006/007/008/009/010"
+git add -A && git commit -m "D05: 拼豆收尾 BEAN-005/006/007/008/009/010"
 # 然后写 D06/README.md（D06 候选：GZ-USER-001/002/003 + GZ-NEWS-001/002）
 ```
