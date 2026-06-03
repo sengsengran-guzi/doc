@@ -12,7 +12,7 @@
 
 ## 必读权威文档（缺一不可 — kevin-coder §0 自检会卡）
 
-- **业务流**：doc/10-业务流权威图.md **§8 扭蛋机抽奖全流程**（N7 拉结果 / N8 出奖动画揭晓 / N9 推图鉴进度；状态机 `drawn` 已开奖、`refunded` 已退款；E1 抢空自动退款回滚 = 不落 `gz_gacha_draw`）+ 附录 A.6 状态枚举。**不是 §7（= 预购）。**
+- **业务流**：doc/10-业务流权威图.md **§8 扭蛋机开盒全流程**（**§8 业务本质：付款必出 1 件 / 失败重抽不退款 / 扭蛋域无系统自动退款**；N7 拉结果 / N8 出奖动画揭晓 / N9 推图鉴进度；draw 轮询态 `pending`→`drawing`→`drawn`——付款后 @Async 开盒必出，只会 drawing→drawn，**不含 refunded**）+ 附录 A.6 状态枚举。**不是 §7（= 预购）。**
 - **字段表**：doc/11-字段权威表.md **§7.3 `gz_gacha_draw`**（`prize_snapshot_json` JSON 结构：奖品名 / 封面 `image_id` / 稀有度 / 公示价值；`machine_snapshot_json`；`draw_no` / `pay_transaction_id`）+ §7.4 `gz_gacha_order`（衍生订单号 `GACHA-yyyyMMdd-6位`，伏笔历史/图鉴）+ §7.5 `gz_user_gacha_collection`（图鉴进度数据源）+ F7.5（公示价值单位 = 分，UI ÷100）。
 - **UI 索引**：doc/12-UI-权威索引.md **§MP-GACHA-DRAW**（三段分镜 Frame1 转动 / Frame2 裂开光爆 / Frame3 揭晓稀有度光晕；揭晓后操作区：奖品大图 + 稀有度大角标 + 图鉴进度伏笔 + 集齐特典徽章 + CTA）。
 - **设计语言**：doc/13-设计语言-C日漫浓墨.md **§3.2 出奖三段动画 `BizGachaDraw`**（转动 → 光爆 → 揭晓；集中线爆闪 `.c-burst` + 稀有度光晕 + 大字结果）。
@@ -22,23 +22,22 @@
 
 ## What
 
-支付成功后 mp 端轮询 draw 状态 → 拿到 `drawn` 即播三段分镜开盒动画（转动 → 裂开光爆 → 揭晓稀有度光晕）→ 揭晓中奖物大图 + 稀有度角标 + 图鉴进度伏笔（伏笔 GACHA-107 图鉴）；抢空 `refunded` 走友好退款弹窗。盲盒语义（获得 / 开盒 / 出现概率）。
+支付成功后 mp 端轮询 draw 状态 → 拿到 `drawn` 即播三段分镜开盒动画（转动 → 裂开光爆 → 揭晓稀有度光晕）→ 揭晓获得物大图 + 稀有度角标 + 图鉴进度伏笔（伏笔 GACHA-107 图鉴）。**付款必出 1 件**（开盒事务失败走重抽改派，扭蛋域无系统退款），故轮询只会 `drawing`→`drawn` 必达揭晓，**无 refunded 揭晓分支**；仅保留超时兜底（结果稍后到账跳扭蛋记录）。盲盒语义（获得 / 开盒 / 出现概率）。
 
 ## AC（验收标准）
 
-- [ ] **AC 1**：mp 状态查询端点 `GET /app/gz/gacha/draw/status`（按 `payTransactionId` 或 `drawNo` 查，仅查询不改库）返回当前 draw 状态枚举（doc/10 A.6 子集：`pending` / `drawing` / `drawn` / `refunded`）；状态 = `drawn` 时附 `prize_snapshot_json` 解出的揭晓数据（奖品名 / 封面 `image_id` / 稀有度 / 公示价值 `_cent`）+ `drawNo` + `machineId`。service 校验 draw 归属当前 `user_id`（非本人 → 403/空），复用 GACHA-104 的 `IGzGachaDrawService`，**不新建表、无 DDL**。
+- [ ] **AC 1**：mp 状态查询端点 `GET /app/gz/gacha/draw/status`（按 `payTransactionId` 或 `drawNo` 查，仅查询不改库）返回当前 draw 轮询态枚举（doc/10 A.6 子集：`pending` / `drawing` / `drawn`——付款后开盒必出，**不返回 refunded 作为揭晓态**）；状态 = `drawn` 时附 `prize_snapshot_json` 解出的揭晓数据（获得物名 / 封面 `image_id` / 稀有度 / 公示价值 `_cent`）+ `drawNo` + `machineId`。service 校验 draw 归属当前 `user_id`（非本人 → 403/空），复用 GACHA-104 的 `IGzGachaDrawService`，**不新建表、无 DDL**。
 - [ ] **AC 2**：page `pages/gacha/draw.vue`：
   - 入参：`payTransactionId`（或 `orderId` / `machineId`，从 GACHA-104 投币流跳转 query 透传）。
   - 初始进入：全屏占位 + 轮询期屏蔽物理返回键（防误操作打断动画），揭晓后恢复。
-  - 轮询 `status` 接口：起始 1s/次，12 次后退化为 5s/次；累计超 60s 仍未 `drawn`/`refunded` → 弹「已支付，结果稍后到账，请到扭蛋记录查看」并跳 `/pages/gacha/history`（GACHA-106）。
+  - 轮询 `status` 接口：起始 1s/次，12 次后退化为 5s/次；累计超 60s 仍未 `drawn` → 弹「已支付，结果稍后到账，请到扭蛋记录查看」并跳 `/pages/gacha/history`（GACHA-106）。**这是唯一兜底分支**（付款必出，开盒事务失败走重抽改派；无系统退款故无 refunded 揭晓分支）。
   - 拿到 `drawn` → 停轮询 → 播三段分镜（见 AC 3）。
-  - 拿到 `refunded` → 停轮询 → 友好弹窗「很遗憾，奖品已被开空，已为你自动退款」+ 跳扭蛋机列表（不播动画；对齐 doc/10 §8.E1）。
 - [ ] **AC 3**：三段分镜动画（doc/13 §3.2 `BizGachaDraw` + doc/12 §MP-GACHA-DRAW）：
   - **段 1 转动**（约 0~1.5s）：扭蛋机晃动 + 胶囊滚动（CSS `transform: rotate/translate` 关键帧）。
   - **段 2 裂开光爆**（约 1.5~2.5s）：胶囊裂开 + 集中线爆闪（`.c-burst` + CSS `radial-gradient` + `scale` + `opacity` 关键帧）。
   - **段 3 揭晓**（约 2.5s~）：中奖物居中放大 + 对应稀有度光晕 —— SSR `var(--c-r-ssr)` / SR `var(--c-r-sr)` / R `var(--c-r-r)` / N `var(--c-r-n)`，**光晕色严格走 token，禁硬编码 hex/rgba**。
 - [ ] **AC 4**：揭晓后 UI：
-  - 中奖物大图（`image_id` 经签名 URL 渲染，非裸 url；空回退机器封面 `machine_snapshot_json.cover_image_id`）+ 稀有度大角标（走 `var(--c-r-*)`）+ 名称 + 公示价值（`_cent ÷ 100`，为空不展示，F7.5）。
+  - 获得物大图（`image_id` 经签名 URL 渲染，非裸 url；空回退机器封面 `machine_snapshot_json.cover_image_id`）+ 稀有度大角标（走 `var(--c-r-*)`）+ 名称 + 公示价值（`_cent ÷ 100`，为空不展示，F7.5）。
   - **图鉴进度伏笔条**（doc/12 §MP-GACHA-DRAW 收集驱动）：底部条「已获得 X/Y 件 — 查看图鉴」点击跳 `/pages/me/collection?machineId={machineId}`（GACHA-107；X/Y 来自 AC 1 返回或 `/app/gz/gacha/collection/progress`，GACHA-107 提供，未上线则伏笔条仅展示 CTA 不显数字，不报错）。
   - 双 CTA：「再开一次」（跳回该机详情 GACHA-103，透传 `machineId`）/「去看扭蛋记录」（跳 GACHA-106）。
 - [ ] **AC 5**：动画性能：
@@ -46,7 +45,7 @@
   - 低端机 fallback：`navigator.hardwareConcurrency < 4`（或微信 `wx.getDeviceInfo` 等价判定）→ **跳过段 1/2，直接段 3 揭晓 + 渐入**（不卡死老机型）。
 - [ ] **AC 6**：盲盒语义（D09 README §B）：mp 可见文案 + `t('gacha.draw.*')` key 用**扭蛋 / 开盒 / 获得 / 出现概率**；**禁** 抽奖 / 中奖 / 开奖。揭晓金句「获得 SSR · {prizeName}」（不是「中奖：XX」）。grep `t('gacha.*')` 与模板字符串无违禁词。
 - [ ] **AC 7**：组件库无关纪律 —— 三段动画封装为 `components/biz/Biz*`（如 `BizGachaDraw` 或拆 `BizGachaSpinStage` / `BizGachaBurstStage` / `BizPrizeRevealCard`），不直接撒 `<wd-*>`；可见字符串走 `t('gacha.draw.xxx')` + zh-CN 默认（en 补齐），不混 emoji。
-- [ ] **AC 8**：单测：① 后端 `getDrawStatusForMp` happy（drawn → 解 `prize_snapshot_json` 返揭晓数据 / refunded → 返退款态 / 非本人 → 拒）；② mp vitest 轮询编排（mock 连续 `drawing` N 次 → `drawn` → 触发揭晓 callback；超时 → 跳 history 分支）。
+- [ ] **AC 8**：单测：① 后端 `getDrawStatusForMp` happy（drawn → 解 `prize_snapshot_json` 返揭晓数据 / 非本人 → 拒）；② mp vitest 轮询编排（mock 连续 `drawing` N 次 → `drawn` → 触发揭晓 callback；超时未 `drawn` → 跳 history 兜底分支）。**无 refunded 揭晓分支单测**（付款必出，无系统退款）。
 - [ ] **AC 9: Tier 2 入口可达**（mp ticket 强制，CLAUDE.md §8.3）— Kevin 从扭蛋机详情页（GACHA-103，含投币开盒 CTA）走「点开盒 → mock 支付成功 → 自动进本揭晓页」可达；GACHA-104 投币流已跳本页，本卡承接其 query。**若 §0 自检发现 GACHA-104 投币 CTA 尚未跳本页**：在 `pages/gacha/draw.vue` 顶部加临时调试入口仅 dev（`#ifdef` 调试态用 mock drawNo 直进揭晓），注释 `<!-- TODO(Tier2-entry-temp): GZ-GACHA-105, remove when GZ-GACHA-104 投币流跳转接通 -->`。
 
 ## Tech（端 + 范围）
@@ -54,7 +53,7 @@
 - **后端**：`code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-gacha/`
   - `controller/applet/GzGachaDrawAppController.java` 加 `getStatus(...)` 只读方法（mp 前缀 `/app/gz/gacha/...`）。
   - service 复用 GACHA-104 `IGzGachaDrawService`，加 `getStatusForMp(payTransactionId/drawNo, userId)`（校验归属 + 解 `prize_snapshot_json`）。
-  - **无 DDL**（不新建表）；如确需新增列再走 `V<yyyyMMddHHmm>__GZ-GACHA-105-<desc>.sql`（时间戳 > 当前最大 `V202606051200`，已应用迁移不可改）。
+  - **无 DDL**（不新建表）；如确需新增列再走 `V<yyyyMMddHHmm>__GZ-GACHA-105-<desc>.sql`（时间戳 > 当前最大 `V202606061500`，已应用迁移不可改）。
 - **小程序**：`code/main/miniapp/src/`
   - `pages/gacha/draw.vue`
   - `components/biz/BizGachaDraw.vue`（或拆 `BizGachaSpinStage` / `BizGachaBurstStage` / `BizPrizeRevealCard`）
@@ -67,7 +66,7 @@
 
 ### 强约束
 
-1. **状态枚举锚 doc/10 A.6**（`pending`/`drawing`/`drawn`/`refunded`）——**禁**自造 `pending_pay`/`paid`/`pending_draw`/`stock_empty_refunded`。抢空退款态 = `refunded`（doc/10 §8.E1 + F7.3：事务回滚，`gz_gacha_draw` 不落，仅 `gz_pay_refund`）。
+1. **draw 轮询态锚 doc/10 A.6 子集**（`pending`/`drawing`/`drawn`）——付款后 @Async 开盒必出 1 件（失败重抽改派，无系统退款），轮询只会 drawing→drawn，**不把 refunded 当揭晓主流程态**；**禁**自造 `pending_pay`/`paid`/`pending_draw`/`stock_empty_refunded`，**禁**任何"抢空→退款揭晓分支"。
 2. **snapshot 取 `prize_snapshot_json`**（JSON 列，doc/11 §7.3）——不散列成多列；图片用 `image_id` FK `gz_file_object`，前端换签名 URL，**不存裸 url**。
 3. **稀有度光晕严格走 C 稀有度 token**（`var(--c-r-ssr/-sr/-r/-n)`，tokens §1.4）——四档，不引第五档，不硬编码 hex/rgba。
 4. **三段分镜节奏**（doc/13 §3.2）：转动 → 裂开光爆 → 揭晓，不省略段；低端机才走 fallback 直揭晓。

@@ -27,7 +27,7 @@ mp 会员中心「我的图鉴」页：以 `gz_user_gacha_collection` 表为数�
 ## AC（验收标准）
 
 - [ ] **AC 1**：mp 接口 `GET /app/gz/gacha/collection/my?machineId=`（sa-token mp-client → 当前 user_id）：
-  - **数据源是 `gz_user_gacha_collection` 表查询，不是对 `gz_gacha_draw` 做 distinct 聚合**（重复中奖靠表上 `drawn_count`，退款已回滚不落 collection）。
+  - **数据源是 `gz_user_gacha_collection` 表查询，不是对 `gz_gacha_draw` 做 distinct 聚合**（重复获得靠表上 `drawn_count`；每次开盒必出并在开盒事务内 UPSERT collection +1、无退款回滚，故图鉴数据完整）。
   - 入参 `machineId` 传 → 仅返回该机器分组；不传 → 返回该用户在 collection 中出现过的**所有机器**分组。
   - 返回 `GzGachaCollectionVo`：`machines` 数组，每项含 `machineId` / `machineName` / `coverImageId`（FK，非裸 url）/ `totalCount`（该机器奖品全集数）/ `ownedCount`（已得种类数）/ `isCompleteSet`（boolean）/ `prizes` 数组。每个 prize 含 `prizeId` / `name` / `imageId` / `rarity`（SSR/SR/R/N）/ `owned`（boolean）/ `drawnCount`（已得 = 重复次数，未得 = 0）/ `firstDrawnTime`（未得为 null）。
 - [ ] **AC 2**：**集齐判定基于 prize 全集**（含 `stock_remain=0` 已抽空、含 `status=auto_off` 自动下架的奖品；但**排除 `del_flag=2` 已删除**）：`isCompleteSet = (该机器 prize 全集 distinct prize_id 集合) ⊆ (该用户该机器 collection 的 prize_id 集合)`，即 `ownedCount == totalCount` 且 `totalCount > 0`。
@@ -76,7 +76,7 @@ mp 会员中心「我的图鉴」页：以 `gz_user_gacha_collection` 表为数�
 
 ### 强约束
 
-1. **数据源 = `gz_user_gacha_collection` 表查询**，**不是** `gz_gacha_draw` distinct 聚合（任务硬铁律）。重复中奖靠表上 `drawn_count` 角标；退款分支事务已回滚不落 collection（doc/11 F7.3），故图鉴天然不含已退款记录。
+1. **数据源 = `gz_user_gacha_collection` 表查询**，**不是** `gz_gacha_draw` distinct 聚合（任务硬铁律）。重复获得靠表上 `drawn_count` 角标；每次开盒必出并在开盒事务内 UPSERT collection +1（失败重抽改派、无退款回滚，doc/11 F7.3），故图鉴数据完整、无缺漏。
 2. **集齐判定基于 prize 全集**（含已抽空 `stock_remain=0` / 自动下架 `auto_off`），否则用户抽走最后 1 个 SSR 后该奖品库存归 0 会导致永远集不齐。排除 `del_flag=2`（删除即移出全集）。
 3. **V1.1 简版**（doc/02 §3.3 + doc/10 Q8.2/Q8.4）：仅「按机器分组 + 已得高亮 + 集齐徽章 + 重复角标」；徽章纯展示不发实物、不解锁功能。分享 / NFT / 跨机器套装 / 积分兑换 / 成就系统全部推 v2。
 4. **不维护「徽章拿到没」DB 字段**（doc/11 §7.5）— 集齐 = mp / service 层对全集与 collection 实时 COUNT 比对。
@@ -87,8 +87,8 @@ mp 会员中心「我的图鉴」页：以 `gz_user_gacha_collection` 表为数�
 
 | # | 决策 | 理由 |
 |---|---|---|
-| D1 | 数据源 `gz_user_gacha_collection`（非 draw 聚合） | 表已在 GACHA-104 N9 事务内 UPSERT 维护「用户×机器×奖品 + drawn_count」，直接查即准确；draw 聚合还要排退款 / 去重，多此一举（任务硬铁律）|
-| D2 | 重复中奖用 `drawn_count` 角标（×N）而非多格 | 图鉴是"集齐"语义，同奖品占一格 + 角标显重复数，对齐 doc/11 §7.5 `drawn_count` 显示口径 |
+| D1 | 数据源 `gz_user_gacha_collection`（非 draw 聚合） | 表已在 GACHA-104 N9 开盒事务内 UPSERT 维护「用户×机器×奖品 + drawn_count」（每次必出必落、无退款回滚），直接查即准确完整；draw 聚合还要去重，多此一举（任务硬铁律）|
+| D2 | 重复获得用 `drawn_count` 角标（×N）而非多格 | 图鉴是"集齐"语义，同奖品占一格 + 角标显重复数，对齐 doc/11 §7.5 `drawn_count` 显示口径 |
 | D3 | 集齐判定含 `stock_remain=0` / `auto_off`、排 `del_flag=2` | 抽空 / 下架的奖品仍是该机全集成员（否则集不齐）；已删除的不再属全集（运营撤掉的奖品不应卡死集齐）|
 | D4 | 灰显未得用 `grayscale(1) opacity(.35)` + 锁标 | doc/12 §MP-ME-COLLECTION 裁定的 locked 视觉；激发收集欲 |
 | D5 | 徽章仅展示、不写 DB reward 字段 | doc/10 Q8.4 + doc/11 §7.5 明确不发实物 / 不解锁；避免 V1.1 引入新奖励发放链路 |

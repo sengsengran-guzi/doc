@@ -14,7 +14,7 @@
 
 - **主线 1**（数据底座）：扭蛋机 + 奖品池数据模型（GZ-GACHA-101）→ 甲方运营能配机器、配奖品池、配概率权重 + 库存
 - **主线 2**（C 端浏览）：mp 扭蛋机列表（GZ-GACHA-102）+ 单机详情 + 概率公示（GZ-GACHA-103）→ 用户能逛机器、看每个奖品**实时归一化的出现概率**（合规）
-- **主线 3 ⭐**（核心交易）：抽奖事务 + 防超卖（GZ-GACHA-104）→ **V1.1 最复杂 ticket**（L）。DB 事务 + `SELECT FOR UPDATE` + 概率归一化 + 库存扣减 + 图鉴 +1 + 衍生订单，**4 表原子**；库存抢空整事务回滚 + 退款。调 **D08 GZ-PAY-101**（微信支付 V3，mock client 自测全链路）
+- **主线 3 ⭐**（核心交易）：开盒事务 + 防超卖（GZ-GACHA-104）→ V1.1 最硬 ticket（M，并发正确性密度高）。DB 事务 + `SELECT FOR UPDATE` + 概率归一化 + 乐观锁库存扣减 + 图鉴 +1 + 衍生订单，**4 表原子**；**付款必出 1 件**，缺货在付款前拦截（`MACHINE_EMPTY` 不收款），并发扣减失败 → 从剩余有货池重抽（必出，**无系统退款**）。调 **D08 GZ-PAY-101**（微信支付 V3，mock client 自测全链路）
 - **主线 4**（C 端体验 + 收集闭环）：三段分镜动画揭晓（GZ-GACHA-105）+ 抽奖历史（GZ-GACHA-106）+ 图鉴（GZ-GACHA-107）→ 收集驱动闭环
 
 ## Ticket 清单（7 个）
@@ -24,7 +24,7 @@
 | GZ-GACHA-101 | 扭蛋机 + 奖品池数据模型 + admin CRUD | M | GZ-SYS-001 ✅ | 后端 + admin | pending |
 | GZ-GACHA-102 | mp 扭蛋机列表 | M | GACHA-101 | 后端 + mp | pending |
 | GZ-GACHA-103 | mp 单机详情 + 概率公示（实时归一化） | M | GACHA-102 | 后端 + mp | pending |
-| GZ-GACHA-104 ⭐ | 抽奖事务 + 防超卖（4 表原子 + 失败退款） | **L** | GACHA-101 + **PAY-101（待 D08 完工 pending）** | 后端 + mp | pending |
+| GZ-GACHA-104 ⭐ | 开盒事务 + 防超卖（4 表原子 + 失败重抽，必出无退款） | **M** | GACHA-101 + **PAY-101 ✅（D08 已交付）** | 后端 + mp | pending |
 | GZ-GACHA-105 | mp 三段分镜动画 + 揭晓 | M | GACHA-104 | mp | pending |
 | GZ-GACHA-106 | mp 抽奖历史 | S | GACHA-104 | 后端 + mp | pending |
 | GZ-GACHA-107 | mp 图鉴（按机器分组 + 集齐徽章） | M | GACHA-105 | 后端 + mp | pending |
@@ -38,7 +38,7 @@
        │
        ├─ GACHA-102 (mp 列表) ─── GACHA-103 (mp 详情 + 概率公示)   ← 浏览波（与 104 并行）
        │
-       └─ GACHA-104 ⭐ (抽奖事务，依赖 GACHA-101 + PAY-101)        ← 关键路径
+       └─ GACHA-104 ⭐ (开盒事务，依赖 GACHA-101 + PAY-101)        ← 关键路径
               │
               ├─ GACHA-105 (mp 动画揭晓) ─── GACHA-107 (图鉴)       ← 体验波（与 106 并行）
               │
@@ -47,9 +47,9 @@
 
 依赖时序口径：
 - **GACHA-101 先行**（建表 + admin CRUD），其余全部阻塞在它后面。
-- GACHA-101 完工后：**(102 → 103) 与 (104 ⭐) 两条链并行起跑**（104 是 L，越早起跑越好）。
+- GACHA-101 完工后：**(102 → 103) 与 (104 ⭐) 两条链并行起跑**（104 并发正确性密度最高，越早起跑越好）。
 - **104 完工后**：**(105 → 107) 与 (106) 并行**。
-- GACHA-104 还依赖 **PAY-101**（D08 业务支付通道）。当前 PAY-101 **待 D08 完工（pending）**，不假设已 ✅。GACHA-104 §0 自检必须 `grep` 出 `IGzPayService` / `IWechatPayClient` 实际存在再开始（见下"特殊约束"）。
+- GACHA-104 依赖 **PAY-101**（D08 业务支付建单 + SPI 回调，**已交付**）。**不依赖 PAY-103 退款**（扭蛋域无系统自动退款；开盒失败走重抽）。GACHA-104 §0 自检 `grep` 出 `IGzPayTransactionService.createBusinessOrder` / SPI `PayCallbackHandler`+`PayCallbackDispatcher` / `IWechatPayClient` 实际存在再开始（见下"特殊约束"）。
 
 ## 派单方式
 
@@ -66,7 +66,7 @@
 主线程动作：
 1. 读 D09/README.md（本文件）+ 依赖图。
 2. **第一波串行**：先派 GZ-GACHA-101（数据底座 + admin CRUD）。
-3. **GACHA-101 完工** → 并行 spawn **GACHA-102** + **GACHA-104 ⭐**（104 最长，越早起跑越好；起跑前确认 PAY-101 已完工，否则挂起等 D08）。
+3. **GACHA-101 完工** → 并行 spawn **GACHA-102** + **GACHA-104 ⭐**（104 最长，越早起跑越好；PAY-101/103 已交付，§0 grep 确认接口名后即可起）。
 4. **GACHA-102 完工** → spawn GACHA-103。
 5. **GACHA-104 ⭐ 完工** → 并行 spawn **GACHA-105** + **GACHA-106**。
 6. **GACHA-105 完工** → spawn GACHA-107（图鉴依赖揭晓页 N9 埋的"集齐进度 +1"入口）。
@@ -74,27 +74,29 @@
 
 ## 今日特殊约束
 
-### A. GZ-GACHA-104 是 V1.1 最复杂 ticket ⭐（L 级，禁止快速过 §0 自检）
+### A. GZ-GACHA-104 是 V1.1 最硬 ticket ⭐（M 级，并发正确性密度最高，禁止快速过 §0 自检）
 
-引用 **doc/10 §8 扭蛋机抽奖全流程 N6**（不是 §7 = 预购）+ A.6 状态枚举：
+> **业务模型钉死**：扭蛋 = 随机方式买东西，**付款必出 1 件实物**。**不存在"抽空 → 退款"**：缺货在付款前拦截（不收款），付款后必有货；并发扣减失败 = **重抽改派其他商品（绝不退款）**。扭蛋域**无系统自动退款**。
 
-- **事务流程（doc/10 §8 N6，4 表原子）**：
+引用 **doc/10 §8 扭蛋机开盒全流程 N4 / N6**（不是 §7 = 预购）+ A.6 状态枚举：
+
+- **付款前缺货拦截（N4）**：mp 投币时后端校验机器 `status=on_shelf` 且至少 1 个 prize `stock_remain>0`；整机无货 → 返回 `MACHINE_EMPTY` **不收款**，文案「该扭蛋机暂时缺货」。**掏钱之前拦缺货，掏钱之后必有货。**
+- **开盒事务（doc/10 §8 N6，4 表原子，失败重抽不退款）**：
   1. `BEGIN TRANSACTION`
-  2. `SELECT ... FROM gz_gacha_prize WHERE machine_id=? AND stock_remain > 0 FOR UPDATE` 锁所有候选奖品行
-  3. 校验至少 1 个有库存（否则 → ROLLBACK）
-  4. **按当前剩余库存的奖品权重一次性归一化**（事务内不重读，与概率公示口径一致）
-  5. 随机抽 1 个
-  6. `UPDATE gz_gacha_prize SET stock_remain = stock_remain - 1, version = version + 1 WHERE id=? AND version=?`（**乐观锁 version**）
-  7. `INSERT gz_gacha_draw`（含中奖物 **snapshot_json**：名称 / image_id / 稀有度 / 公示价值；幂等基于 transaction_id 唯一索引）
-  8. **事务内** `INSERT/UPSERT gz_user_gacha_collection`（用户 × 机器 × 奖品 已得 +1，支持重复）
-  9. `INSERT gz_gacha_order`（衍生订单，`business_status = pending_ship`）
-  10. `COMMIT`
-- **库存空整事务回滚**：N6.③ 校验失败 → ROLLBACK（`gz_gacha_draw` **不落**）→ 仅写 `gz_pay_refund` 退款（全额，一笔对一单）→ 用户视感「奖品已抽完，已为您退款」。
-- **自动下架**：某奖品 `stock_remain` 扣到 0 或整机所有奖品抽空 → 机器 `status = auto_off`（**不用 off_shelf/archived**）。
-- **不做保底**（doc/10 §8 业务规则 + PRD §4.1）— 概率纯随机，不强制 N 抽必中 SR。
-- **调 PAY-101（微信支付 V3）**：`IGzPayService.unifiedOrder()` → 业务回调按 `out_trade_no` 前缀 `GACHA-` 分发到抽奖事务（doc/10 §6.N6 / §8.N6）；退款走 `gz_pay_refund`。**禁止** V2 / XML / api-key / 新建 gz_pay_order / amount_fen / /api/wxpay/pay-notify。
-- **reports 必须包含并发压测 raw output**：多线程同时抢同一机器最后 1 个 SSR → **仅 1 个用户拿到**，其余整事务回滚 + 退款（证伪超卖）。
-- **退款 V1.1 仅全额**：一笔对一单，无金额 input；C 端无退款入口（仅文案"如需退款请联系客服"）；权限 `@SaCheckPermission("gz:pay:refund:apply")`，不用 `@SaCheckRole`。
+  2. `SELECT ... FROM gz_gacha_prize WHERE machine_id=? AND enabled=1 AND stock_remain > 0 FOR UPDATE` 锁所有在售有货候选行
+  3. **按候选权重一次性归一化**（事务内，与概率公示口径一致）
+  4. 随机出 1 个
+  5. `UPDATE gz_gacha_prize SET stock_remain = stock_remain - 1, version = version + 1 WHERE id=? AND version=? AND stock_remain > 0`（**乐观锁 version**）；**affected=0（被并发抢空）→ 把该商品移出候选 + 回到步骤 3 重新归一化重抽（有界重试，绝不退款）**
+  6. `INSERT gz_gacha_draw`（含获得物 **snapshot_json**：名称 / image_id / 稀有度 / 公示价值；幂等基于 pay_transaction_id 唯一索引）
+  7. **事务内** `INSERT/UPSERT gz_user_gacha_collection`（用户 × 机器 × 商品 已得 +1，支持重复）
+  8. `INSERT gz_gacha_order`（衍生订单，`business_status = pending_ship`）
+  9. `COMMIT`
+  - **付款前已拦缺货（N4）→ 步骤 2 候选恒非空；运营保证整机不全空**。无"库存空整事务回滚 + 退款"分支。
+- **自动下架**：某商品 `stock_remain` 扣到 0 从随机池剔除（其他有货商品照常出）；整机所有商品售罄（运营保证不发生）→ 防御性置机器 `status = auto_off`（**不用 off_shelf/archived**），**无用户侧退款**。
+- **必出 1 件 + 不做保底**（doc/10 §8 业务规则 + PRD §4.1）— 概率纯随机，不强制 N 抽必中 SR；成功路径必出实物。
+- **调 PAY-101（微信支付 V3，D08 已交付实证）**：建单 `IGzPayTransactionService.createBusinessOrder(CreateOrderBo{businessType='gacha', businessOrderNo, amountCent, openid, userId, description})` → `MpPayParamsVO`；支付成功回调走 **SPI `PayCallbackHandler`（key=`business_type='gacha'`），由 `PayCallbackDispatcher` 自动路由**到本域 `onPaid`（**非 out_trade_no 前缀**；doc/10 §6.N6 的前缀分发是设计期表述，落地以 business_type SPI 为准）。**处理器下沉 gz-gacha 实现 SPI 接口**（gz-common 不可依赖 gz-gacha，循环）。**禁止** V2 / XML / api-key / 新建 gz_pay_order / amount_fen / /api/wxpay/pay-notify。
+- **本域不建退款 handler / 退款 service / 死信 / 报警机器**：扭蛋域无系统自动退款，**不实现** `GachaRefundService` / `GachaRefundCallbackHandler`；`gz_gacha_order.business_status` 保留可达 `refunded` 态供未来 admin 人工特例退款 ticket（合同 §4.5）使用，本 ticket 不写。
+- **reports 必须包含并发压测 raw output**：多线程同时抢同一机器最后 1 个 SSR → **恰好 1 个用户拿到 SSR，其余各得其他有货商品（非退款、无 gz_pay_refund）**，证伪超卖。
 
 ### B. 盲盒语义纪律（仅 gacha 域，硬约束）
 
@@ -124,7 +126,7 @@
 - `tenant_id VARCHAR(20) NOT NULL DEFAULT '1001'`；INSERT 不显式赋（走自动填充）；UNIQUE 约束**必含 tenant_id**。
 - 包名 `org.dromara.gz.gacha.{controller,service,mapper,domain,dto}`。
 - **menu_id 段**：GACHA 业务菜单 **10000-10099**；扭蛋池 admin **10100 段**。
-- DDL 命名 `V<yyyyMMddHHmm>__GZ-GACHA-101-<desc>.sql` 放 `ruoyi-admin/src/main/resources/db/migration/`（时间戳 > 当前最大 `V202606051200`；已应用迁移不可改）。
+- DDL 命名 `V<yyyyMMddHHmm>__GZ-GACHA-101-<desc>.sql` 放 `ruoyi-admin/src/main/resources/db/migration/`（时间戳 > 当前最大 **`V202606061500`**；已应用迁移不可改）。
 
 ### E. 调度（如有 cron）
 
@@ -135,16 +137,16 @@
 
 - **API 路径前缀**：admin `/system/gz/gacha/...` ｜ mp `/app/gz/gacha/...`。
 - **i18n 强制**：mp 端字符串全走 `t('gacha.xxx')` + zh-CN 默认；admin 同；**不混 emoji**。
-- **mp 管理权限复用 ADR-0004 底座**（GACHA-104 退款等 mp 管理动作）：加一行 `@SaCheckPermission(<perm key>)` + admin 授权 + 同租户 1001，**不另造平行 RBAC**。
+- **mp 管理权限复用 ADR-0004 底座**（如 GACHA 域后续出现 mp 管理动作）：加一行 `@SaCheckPermission(<perm key>)` + admin 授权 + 同租户 1001，**不另造平行 RBAC**。（GACHA-104 本身无退款 mp 管理动作 — 扭蛋域无系统退款）
 - **图鉴 V1.1 简版**（doc/02 §3.3）：按机器分组 + 已得高亮 + 集齐徽章 + 重复角标足够；**不做**炫耀分享 / NFT / 跨机器套装 / 发实物。
 - **不要 commit**：7 个 ticket 全部 ✅（+ mp ticket 进人验列）后再统一 commit。
 
 ## 与上游对账（D08 GZ-PAY-101）
 
 GACHA-104 起跑前主线程确认 D08 `summary.md` 抓"对下游 ticket 的提示"段：
-- ⏳ **PAY-101 待 D08 完工（pending）** — 不假设已 ✅。GACHA-104 §0 自检 `grep -r "interface IGzPayService" ruoyi-gz-common` + `grep -r "IWechatPayClient" .` 确认接口实际存在再实现；不存在 → STOP，挂起等 D08。
+- ✅ **PAY-101/103 已完工（D08 交付实证）** — GACHA-104 §0 自检 `grep -rn "createBusinessOrder\|interface PayCallbackHandler\|class PayCallbackDispatcher\|interface IRefundCallbackHandler\|IWechatPayClient" ruoyi-modules/ruoyi-gz-common` 确认接口实际存在再实现（**不是 `IGzPayService.unifiedOrder`，该接口不存在**）；缺失 → STOP 报 Kevin。
 - PAY-101 是**微信支付 V3**：复用 `IWechatPayClient`（`WechatPayV3ClientImpl` / `MockWechatPayClient`）+ apiV3Key + V3 `NotificationParser`(AES-GCM) + 回调 `/api/pay/v3/notify`；支付流水表 `gz_pay_transaction` / `gz_pay_callback_log`（已落地）。
-- **推进姿态 = Mock 全链路自测**：dev/staging 用 `gz.pay.client.mode=mock` 跑通"统一下单 → 回调 → 抽奖事务 → 退款"全链路；真实商户号 / 0.01 元端到端列为**外部前置风险**（备注段标注），不当默认就绪。
+- **推进姿态 = Mock 全链路自测**：dev/staging 用 `gz.pay.client.mode=mock` 跑通"统一下单 → 回调 → 开盒事务（必出 1 件，并发失败重抽）"全链路；真实商户号 / 0.01 元端到端列为**外部前置风险**（备注段标注），不当默认就绪。
 - `ruoyi-gz-gacha` 模块结构由 D01 GZ-SYS-001 建空壳（仅 HelloController），GACHA-101 起填血肉。
 
 ## §0 自检口径（本域全卡，对齐"已交付真相"）
@@ -152,15 +154,15 @@ GACHA-104 起跑前主线程确认 D08 `summary.md` 抓"对下游 ticket 的提�
 - §0 自检**改为 grep migration 目录实际存在的表**，**不假设上游已建**：
   - GACHA-101：`grep` 确认 `gz_gacha_*` 表**尚不存在**（本卡新建），`gz_file_object` 存在（FK 依赖）。
   - GACHA-102/103/106/107：`grep migration` 确认 `gz_gacha_machine` / `gz_gacha_prize` / `gz_gacha_draw` / `gz_user_gacha_collection` 已建（GACHA-101 落地后）。
-  - GACHA-104：`grep` 出 `IGzPayService` / `IWechatPayClient` / `gz_pay_transaction` 实际存在 + `gz_gacha_prize` 已建，再开始。
+  - GACHA-104：`grep` 出 `IGzPayTransactionService.createBusinessOrder` / SPI `PayCallbackHandler`+`PayCallbackDispatcher` / `IWechatPayClient` / `gz_pay_transaction` 实际存在 + `gz_gacha_prize` 已建，再开始。（**不依赖 `IPayRefundService`** — 扭蛋域无系统退款）
 - **不引 phantom ticket**：本域无 `GZ-USER-201`（已删）；图鉴衍生订单写入对接的是 GACHA-104 建的 `gz_gacha_order`（本域自有衍生订单表），不依赖未存在的 USER 订单表。
 
 ## 完成判定（DoD）
 
 - [ ] 7 个 ticket 任务卡 §revision 段空（无未闭环问题）
 - [ ] 7 个 reports/<T>.md 写完（含 §0 自检表 + §N 完工 + ≥ 3 个代码 block 自测 raw output）
-- [ ] **GACHA-104 reports 必含并发压测 raw output**（多线程同抢最后 1 个 SSR → 仅 1 个拿到，其余整事务回滚 + 全额退款；snapshot_json 落库；订单号 `GACHA-yyyyMMdd-NNNNNN` 唯一）
-- [ ] GACHA-104 mock client 全链路自测 raw output（`gz.pay.client.mode=mock`：统一下单 → 回调 → 抽奖事务 → 库存扣减 / 图鉴 +1 / 衍生订单 / 退款分支）
+- [ ] **GACHA-104 reports 必含并发压测 raw output**（多线程同抢最后 1 个 SSR → 恰好 1 个拿到 SSR，其余各得其他有货商品（**非退款、无 gz_pay_refund**）；snapshot_json 落库；订单号 `GACHA-yyyyMMdd-NNNNNN` 唯一）
+- [ ] GACHA-104 mock client 全链路自测 raw output（`gz.pay.client.mode=mock`：统一下单 → 回调 → 开盒事务 → 库存扣减 / 图鉴 +1 / 衍生订单 / **付款前缺货拦截 MACHINE_EMPTY 不收款**；**无系统退款分支**）
 - [ ] mvn install（含 `ruoyi-gz-gacha`）+ plus-ui build:prod + miniapp dev:mp-weixin 三端全绿
 - [ ] 盲盒语义自查：mp 可见文案 + `t('gacha.xxx')` 无"抽奖/中奖/开奖"（grep 验证）
 - [ ] mp ticket（102/103/105/106/107）进 progress.md「人验」列（Tier 2 批量人验待批）
@@ -171,14 +173,14 @@ GACHA-104 起跑前主线程确认 D08 `summary.md` 抓"对下游 ticket 的提�
 
 | # | 风险 | 缓解 |
 |---|---|---|
-| R1 ⭐ | GACHA-104 并发抢最后 1 个 SSR 超卖（2 用户同中一物） | `SELECT ... FOR UPDATE` 事务内锁奖品行 + 乐观锁 `version`；reports 必含并发压测 raw output 证伪超卖 |
-| R2 ⭐ | 退款分支与库存已扣不一致（钱扣了无货 / 货扣了未退） | 库存抢空走 ROLLBACK（draw 不落、库存自动归还），仅写 `gz_pay_refund`；成功路径 4 表同一事务原子（库存 + draw + 图鉴 + 衍生订单）COMMIT |
+| R1 ⭐ | GACHA-104 并发抢最后 1 个 SSR 超卖（2 用户同中一物） | `SELECT ... FOR UPDATE` 事务内锁商品行 + 乐观锁 `version`；reports 必含并发压测 raw output 证伪超卖（恰好 1 人得 SSR，其余得其他有货商品）|
+| R2 ⭐ | 并发扣减失败处理错（误退款 / 钱扣了无货） | **失败 = 重抽改派其他商品（非退款）**：affected=0 → 移出候选 + 重新归一化重抽（有界），必出 1 件；缺货已在付款前 N4 拦截（不收款）。扭蛋域无系统退款，**不写 gz_pay_refund**。成功路径 4 表同一事务原子 COMMIT |
 | R3 | 概率归一化在库存动态变化时不一致 | 进事务后立即 `SELECT FOR UPDATE` 抓快照 + 一次性归一化，事务内不重读（doc/10 §8 E3 一致性优先）|
-| R4 | PAY-101 未完工 GACHA-104 无法实施 | §0 自检 grep `IGzPayService` 实际存在；不存在 → STOP 挂起等 D08；自测用 `gz.pay.client.mode=mock` |
+| R4 | 支付契约对接错（误用不存在的 `IGzPayService.unifiedOrder`）| §0 自检 grep `IGzPayTransactionService.createBusinessOrder` + SPI `PayCallbackHandler`/`PayCallbackDispatcher`（D08 已交付）；自测用 `gz.pay.client.mode=mock` |
 | R5 | 真实微信商户号 / 0.01 元端到端未就绪 | **外部前置风险**：dev/staging 仅 mock 全链路自测；真实端到端备注段标注，不当默认就绪，并行催甲方验收 V1.0 |
 | R6 | 三段分镜动画在低端机卡顿 | CSS `transform`/`opacity`（GPU），不用 `setInterval` 重绘；低端机 fallback 直接揭晓 + 渐入 |
 | R7 | 盲盒语义在旧 mockup（gacha-draw.html）仍写"抽奖" | mp 实施改 `t()` 文案（扭蛋/开盒/获得/出现概率），不动 mockup（mockup 是历史快照，文案以盲盒语义纪律为准）|
-| R8 | 历史 / 图鉴误显示已退款记录 | GACHA-106 历史**不含 refunded**；GACHA-107 图鉴查 `gz_user_gacha_collection`（事务内 +1，退款分支事务回滚不落）|
+| R8 | 历史 / 图鉴误显示已退款记录 | 扭蛋域无系统退款 → 正常路径无 refunded 记录；GACHA-106 历史 / GACHA-107 图鉴查 `gz_user_gacha_collection`（开盒事务内 +1，必出必落）|
 
 ---
 

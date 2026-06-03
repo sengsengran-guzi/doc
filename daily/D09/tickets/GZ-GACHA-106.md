@@ -12,7 +12,7 @@
 
 ## 必读权威文档（缺一不可 — kevin-coder §0 自检会卡）
 
-- **业务流**：doc/10-业务流权威图.md **§8 扭蛋机抽奖全流程**（**不是 §7 = 预购**）— N6 落 `gz_gacha_draw` 的 snapshot 口径 / E1 库存抢空整事务回滚（draw 不落）/ E7 改奖品名后 snapshot 历史不受影响
+- **业务流**：doc/10-业务流权威图.md **§8 扭蛋机开盒全流程**（**不是 §7 = 预购**；**§8 业务本质：付款必出 1 件 / 失败重抽不退款**）— N6 落 `gz_gacha_draw` 的 snapshot 口径（每行即一次成功开盒）/ E5 并发扣减失败走重抽改派（不退款、draw 正常落）/ E7 改商品名后 snapshot 历史不受影响
 - **字段表**：doc/11-字段权威表.md **§7.3 `gz_gacha_draw`**（`machine_snapshot_json` / `prize_snapshot_json` JSON 结构、`drawn_time`、索引 `(tenant_id, user_id, drawn_time DESC)`）+ §7.4 `gz_gacha_order.business_status`（待发货跳转判定）
 - **UI 参考**（mp）：doc/12-UI-权威索引.md §MP-GACHA-HISTORY（列表布局 / 机器筛选 / 详情联动）+ `design/mockup/gacha-history.html`（视觉参考，不逐像素还原）
 - **稀有度 token**：doc/tokens.md §1.4（SSR `var(--c-r-ssr)` / SR `var(--c-r-sr)` / R `var(--c-r-r)` / N `var(--c-r-n)`，四档，不引第五档）
@@ -26,7 +26,7 @@ mp 端"我开过的"历史列表：查当前用户 `gz_gacha_draw`（每行 = �
 
 - [ ] **AC 1**：mp 端 `GET /app/gz/gacha/draw/my?machineId=&pageNum=&pageSize=`
   - sa-token mp-client 解析当前 `user_id`，仅查本人记录
-  - 查 `gz_gacha_draw` 全部记录（**该表每行即一次成功开盒** — 库存抢空 / 退款分支整事务回滚不落 draw，doc/10 §8.E1 + doc/11 F7.3，**故天然不含 refunded / pending_pay**，无需也无 `draw_status` 列可过滤）
+  - 查 `gz_gacha_draw` 全部记录（**该表每行即一次成功开盒** — 每次付款必出 1 件（开盒事务失败走重抽改派、无系统退款，doc/10 §8 + doc/11 F7.3），故 `gz_gacha_draw` 每行都是一次成功开盒，**历史天然全部成功、无退款记录**，无需也无 `draw_status` 列可过滤）
   - 走索引 `(tenant_id, user_id, drawn_time DESC)`，按 `drawn_time` DESC 分页
   - `machineId` 非空 → 追加 `machine_id = ?` 过滤
 - [ ] **AC 2**：返回 VO 字段从 snapshot 解析为扁平字段（**不在 mp 端解 JSON**）
@@ -70,7 +70,7 @@ mp 端"我开过的"历史列表：查当前用户 `gz_gacha_draw`（每行 = �
 
 ### 强约束
 
-1. **`gz_gacha_draw` 每行即成功开盒** — 库存抢空 / 退款分支整事务 ROLLBACK（draw 不落，doc/10 §8.E1 + doc/11 §7.3 F7.3）。**故历史天然不含 refunded / pending_pay**，与库存空回滚模型自洽；**不要臆造 `draw_status` 列做过滤**（该列不存在）。
+1. **`gz_gacha_draw` 每行即成功开盒** — 每次付款必出 1 件（开盒事务失败走重抽改派、扭蛋域无系统退款，doc/10 §8 + doc/11 §7.3 F7.3），每行都是一次成功开盒。**故历史天然全部成功、无退款记录、不含 pending_pay**；**不要臆造 `draw_status` 列做过滤**（该列不存在）。
 2. **prize / machine 信息一律读 snapshot**（`prize_snapshot_json` / `machine_snapshot_json`），**不 join `gz_gacha_prize` / `gz_gacha_machine` 实时表** — snapshot 保证历史不受后台改奖品 / 机器下架影响（doc/10 §8.E7）。
 3. **机器筛选用本人历史 distinct machine**，不全量拉 `gz_gacha_machine`（用户只关心自己开过的）。
 4. **图片走 `image_id → gz_file_object → url`**，后端解析为 url 返回，**不返回裸 url、不返回裸 image_id 给前端拼**（D09 字段硬约束）。
@@ -83,7 +83,7 @@ mp 端"我开过的"历史列表：查当前用户 `gz_gacha_draw`（每行 = �
 | # | 决策 | 理由 |
 |---|---|---|
 | D1 | prize / machine 信息读 snapshot 而非 join 实时表 | snapshot 保证历史不受后台改奖品 / 机器下架影响（doc/10 §8.E7，GACHA-104 N6.⑦ 同源决策）|
-| D2 | 历史"不含 refunded"靠**回滚模型**实现，不靠状态过滤 | `gz_gacha_draw` 仅成功事务落行（doc/11 F7.3）；查全表即"我开过的"，无需 `draw_status` |
+| D2 | 历史"全部成功、无退款"靠**必出模型**实现，不靠状态过滤 | 每次付款必出 1 件（失败重抽、无退款，doc/11 F7.3）→ `gz_gacha_draw` 每行即一次成功开盒；查全表即"我开过的"，无需 `draw_status` |
 | D3 | 筛选机器列表用本人历史 distinct | 用户只关心自己开过的机器；查全量浪费 + 含未开过机器无意义 |
 | D4 | `pending_ship`/`in_logistics` 点跳订单详情走路由，不耦合 order schema | 跳转 `/pages/me/order/detail?orderType=gacha&orderId=`，下游订单详情未上线则降级本页 popup |
 | D5 | 时间显示"相对 + 完整"双格式 | 相对时间易读 / 完整时间便于复核 |

@@ -54,7 +54,7 @@ mp 端单台扭蛋机详情页（只读浏览）：拟物扭蛋机视觉 + 全�
   - `service/impl/GzGachaMachineServiceImpl.java` 加 `getDetailForMp(machineId)`：查机器 + 该机器全部奖品（不过滤库存）+ 调归一化器算每条概率
   - `service/internal/ProbabilityNormalizer.java`（独立 Bean）：入参奖品列表，对 `enabled=1 AND stock_remain>0` 子集 `weight` 归一化，返回 `Map<prizeId, BigDecimal>`（不在池的不入 map / 返回 null）。**GACHA-104 抽奖事务内复用同一 Bean** 保证概率口径一致
   - 新增 VO `GzGachaMachineDetailVO`（机器主体 + `List<GzGachaPrizeVO>`，每条含 `normalizedProbability`）
-  - **DDL**：本卡为只读详情接口，**无新表 / 无 schema 变更**，不产生 migration 文件（上游表 `gz_gacha_machine` / `gz_gacha_prize` 由 GACHA-101 建）。若实施中确需加索引等 schema 变更，DDL 命名 `V<yyyyMMddHHmm>__GZ-GACHA-103-<desc>.sql`（时间戳 > 当前最大 `V202606051200`；已应用迁移不可改）
+  - **DDL**：本卡为只读详情接口，**无新表 / 无 schema 变更**，不产生 migration 文件（上游表 `gz_gacha_machine` / `gz_gacha_prize` 由 GACHA-101 建）。若实施中确需加索引等 schema 变更，DDL 命名 `V<yyyyMMddHHmm>__GZ-GACHA-103-<desc>.sql`（时间戳 > 当前最大 `V202606061500`；已应用迁移不可改）
 - **小程序**：`code/main/miniapp/`
   - `src/pages/gacha/detail.vue`
   - `src/components/biz/BizGachaMachineHero.vue` + `BizPrizeGridCard.vue` + `BizProbBar.vue`（+ 复用 `RarityBadge` 占位件）

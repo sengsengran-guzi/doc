@@ -52,7 +52,7 @@ mp 端展示在售扭蛋机卡片列表（双列网格，立体迷你机器视�
   - service 复用 GACHA-101 的 `IGzGachaMachineService`，新增 `listOnShelfForMp(PageQuery)`（带 `SUM(gz_gacha_prize.stock_remain)` 子查询，过滤 `status='on_shelf'` + `del_flag=0` + prize `enabled=1`）
   - DTO：`GzGachaMachineMpVo`（仅 mp 列表字段，不暴露 admin 内部字段如 weight / version）
   - 包名 `org.dromara.gz.gacha.{controller.applet,service,domain.vo}`
-  - **本卡无新建表 / 无 DDL**（machine / prize 表由 GACHA-101 建）；如需补 mp 查询索引 `idx_machine_status_online`，DDL 命名 `V<yyyyMMddHHmm>__GZ-GACHA-102-add-mp-list-idx.sql`（时间戳 > 当前最大 `V202606051200`；已应用迁移不可改）
+  - **本卡无新建表 / 无 DDL**（machine / prize 表由 GACHA-101 建）；如需补 mp 查询索引 `idx_machine_status_online`，DDL 命名 `V<yyyyMMddHHmm>__GZ-GACHA-102-add-mp-list-idx.sql`（时间戳 > 当前最大 `V202606061500`；已应用迁移不可改）
 - **小程序**：
   - `pages/gacha/index.vue`（占位 ComingSoon → 真列表）
   - `components/biz/BizGachaMachineCard.vue`
