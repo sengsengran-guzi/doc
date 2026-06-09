@@ -194,4 +194,4 @@ ls code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/ | grep 
 
 <!-- 纯 admin/后端 ticket，AI Tier 1A + 1B 全 ✅ 即终态，无 mp 人验；如对账金额复核发现问题在此写：
 - 问题 1：<现象> / 期望：<期望>
-@coder 修 D11/GZ-ADMIN-105 revision 段 -->
+@coder 修 D15/GZ-ADMIN-105 revision 段 -->

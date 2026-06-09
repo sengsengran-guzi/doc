@@ -118,7 +118,7 @@ admin 端「首页 → 数据看板」V1.1 扩展 — 在 V1.0 已有基础看�
 ## §revision（Kevin 批量人验后填，初始空 —— ticket 已 close 也可回填）
 
 <!--
-当 Kevin 测试不过时，在这里写问题清单，然后 `@coder 修 D11/GZ-ADMIN-106 revision 段`：
+当 Kevin 测试不过时，在这里写问题清单，然后 `@coder 修 D15/GZ-ADMIN-106 revision 段`：
 
 - 问题 1：<现象> / 期望：<期望>
 - 问题 2：...

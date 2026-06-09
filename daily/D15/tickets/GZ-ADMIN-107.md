@@ -29,7 +29,7 @@
 - [ ] AC 1：本卡状态标 `deferred (v2)`，正文明确"V1.0 / V1.1 都不实施代码"，不含任何待实现的功能 AC / DDL / 接口。
 - [ ] AC 2：mockup `design/mockup/gacha-spark-shop.html` 文件保留在仓库（作 V2 视觉参考），本卡不删、不实施、不还原。
 - [ ] AC 3：doc/11 附录 X.1 火花券店占位记录存在且本卡正确引用（5 个 `gz_gacha_spark_*` 占位实体 + `gz_spark_change_type` 字典）。
-- [ ] AC 4：本卡不产出 migration 文件、不产出 `org.dromara.gz.gacha.spark.*` 代码、不进 D11 依赖图波次，不阻塞 ADMIN-104 / 105 / 106 / 108 四张实做卡。
+- [ ] AC 4：本卡不产出 migration 文件、不产出 `org.dromara.gz.gacha.spark.*` 代码、不进 D15 依赖图波次，不阻塞 ADMIN-104 / 105 / 106 / 108 四张实做卡。
 
 ## Tech（端 + 范围）
 
@@ -49,7 +49,7 @@
 
 ### 强约束
 
-1. 本卡**不阻塞 D11 其余 4 卡**（ADMIN-104 物流 2 态推进 / ADMIN-105 对账中心 / ADMIN-106 看板 / ADMIN-108 回收站），不进依赖图波次。
+1. 本卡**不阻塞 D15 其余 4 卡**（ADMIN-104 物流 2 态推进 / ADMIN-105 对账中心 / ADMIN-106 看板 / ADMIN-108 回收站），不进依赖图波次。
 2. 不动 PRD §5.2（保持"不做火花券兑换"）；不动 doc/11 附录 X.1（保持 V2 占位）；不新建 ADR / migration / 代码。
 3. mockup `gacha-spark-shop.html` 保留不删（V2 视觉参考）。
 
@@ -57,7 +57,7 @@
 
 | # | 风险 | 缓解 |
 |---|---|---|
-| R1 | 误把本卡当实做卡纳入 D11 波次 | D11/README.md 已标 `deferred (v2)`、不进依赖图；本卡 AC 4 客观核验"不产出代码 / 不进波次" |
+| R1 | 误把本卡当实做卡纳入 D15 波次 | D15/README.md 已标 `deferred (v2)`、不进依赖图；本卡 AC 4 客观核验"不产出代码 / 不进波次" |
 | R2 | 未来 §0 自检误判仓库"已有火花券表" | §0 自检 **grep migration 目录确认上游表实际存在**（不假设）；火花券 `gz_gacha_spark_*` 表当前**应查不到 = 正常**（v2 候选未实施） |
 | R3 | 甲方看 mockup 误以为 V1.1 含火花券店 | 甲方 V1.0 验收沟通时明确告知此为 v2 候选；如要做走合同 §8.5 另议 |
 

@@ -125,11 +125,16 @@
 
 ## §revision（Kevin 批量人验后填，初始空 —— ticket 已 close 也可回填）
 
-<!--
-当 Kevin 测试不过时，在这里写问题清单，然后 `@coder 修 D09/GZ-GACHA-101 revision 段`：
+### R1（Tier 1B kevin-qa 发现，主线程当场闭环修，2026-06-03）
 
-- 问题 1：<现象> / 期望：<期望>
-- 问题 2：...
+- **问题**：admin 新建扭蛋机/奖品 `POST /system/gz/gacha/machine` → 500 `Unknown column 'create_dept' in 'field list'`。
+- **根因**：`V202606171000` 建 `gz_gacha_machine` / `gz_gacha_prize` 时漏建 `create_dept` 列，且 `create_by`/`update_by` 误用 `VARCHAR(64)`（应 `BIGINT`）。实体 extends `TenantEntity`（含 `createDept:Long`），mybatis-plus INSERT 字段列表含 `create_dept` → 缺列即 500。**与 D04 GZ-NEWS-001 同型 bug**（已有 `V202606041500` fix 先例）。
+- **已修**：新建 `V202606171002__GZ-GACHA-101-fix-base-columns.sql`（ALTER 两表补 `create_dept BIGINT` + 改 `create_by`/`update_by` 为 `BIGINT`，对齐 canonical `gz_bean_store`）。**未编辑已应用的 171000**（CLAUDE.md §5 迁移不可改）。Flyway 重启已应用（now at v202606171002），三列均 bigint，app 启动绿。
+- **同源潜伏 bug（已 flag Kevin，非 D09 范围）**：`gz_ord_product`/`gz_ord_sku`/`gz_ord_order`（D06）同样漏 `create_dept`（从未对真实 MySQL 跑过 admin E2E），将来 ORD admin CRUD 会同样 500，建议补一支同型 ALTER fix。
+- **复盘（§9.5 #2）**：ticket AC1 只校了业务字段对 doc/11 §7.1/§7.2，没校 §1 公共字段对 canonical ruoyi 基类 → kevin-coder §0 自检 / ticket 模板应加"新建表公共字段块逐列比对最近一张 gz 表（create_dept/create_by/update_by 必 BIGINT）"。**注**：此坑 `.claude/memory/kevin-coder/learnings.md` 2026-06-01 条已记录（明确点名 gz-gacha），仍复发 → 是**执行/enforcement gap 非知识 gap**，需进 ticket 模板/§0 硬 gate（不只留 learning）。
 
-AI 修完会在每条后追加"已修 / 改了 <文件>"。
--->
+### R2（Tier 1B kevin-qa 复测时附带发现，主线程当场修，2026-06-04）
+
+- **问题**：admin 点机器列表「管理奖品池」按钮跳 404。
+- **根因**：`machine/index.vue:341` `router.push({path:'/gz-gacha/prize'})` 漏父菜单 5000（path=`gz`）前缀；真实路由 = `/gz/gz-gacha/prize`（dir 5000 `gz` → 10000 `gz-gacha` → 10002 `prize`）。`prize/index.vue:225` 返回机器列表同样漏前缀。
+- **已修**：两处 `router.push` 改为 `/gz/gz-gacha/prize` 与 `/gz/gz-gacha/machine`（纯前端，plus-ui 热更新，无需重启后端）。

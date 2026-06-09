@@ -125,7 +125,7 @@
 - 订单号格式：**`GACHA-yyyyMMdd-6位序号`**，全局唯一 DB 约束（与 D07 已发的 `TEST-20260604-` 单一致口径）。
 - `tenant_id VARCHAR(20) NOT NULL DEFAULT '1001'`；INSERT 不显式赋（走自动填充）；UNIQUE 约束**必含 tenant_id**。
 - 包名 `org.dromara.gz.gacha.{controller,service,mapper,domain,dto}`。
-- **menu_id 段**：GACHA 业务菜单 **10000-10099**；扭蛋池 admin **10100 段**。
+- **menu_id 段**：GACHA 业务菜单 **10000-10099**（对齐 doc/11 §10.3：`10000` 目录 / `10001` 机器 / `10002` 奖品池 / `10003` 抽奖记录 / `10004` 图鉴）。
 - DDL 命名 `V<yyyyMMddHHmm>__GZ-GACHA-101-<desc>.sql` 放 `ruoyi-admin/src/main/resources/db/migration/`（时间戳 > 当前最大 **`V202606061500`**；已应用迁移不可改）。
 
 ### E. 调度（如有 cron）
