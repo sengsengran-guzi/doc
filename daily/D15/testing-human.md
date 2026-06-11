@@ -69,3 +69,39 @@
 - 小程序首页打开秒开？✅ / 卡
 - API 响应 < 1s？✅ / 慢（哪个接口）
 - DB 数据量级符合预期？✅ / 异常（如本该 10 条结果出来 1000 条）
+
+---
+
+## 5. GZ-ADMIN-105 对账中心 — SnailJob 任务注册（Kevin 控制台手动一次性操作）
+
+> 纯 admin/后端 ticket，AI Tier 1A+1B 全 ✅ 即终态、**无人验**；本节仅为「跑批任务需人在 SnailJob 控制台注册」的运维提醒（禁 Flyway INSERT sys_job）。
+
+在 SnailJob 控制台「任务管理」新建 3 个 Java 注解式任务（执行器名 = `@JobExecutor(name)`，组 `ruoyi_group`，阻塞 DISCARD）：
+
+| 任务名 | 执行器路由 name | CRON | 含义 |
+|---|---|---|---|
+| 对账每日跑批 | `gzReconDailyJob` | `0 0 2 * * ?` | 每日 02:00 跑前一日 |
+| 对账月度跑批 | `gzReconMonthlyJob` | `0 0 3 1 * ?` | 每月 1 日 03:00 跑前月 |
+| 对账季度结算 | `gzReconSettleJob` | `0 0 4 15 3,6,9,12 ?` | 季度末月 15 日 04:00 |
+
+注册后可在控制台「手动执行一次」验证：跑完查 `gz_recon_daily/monthly/settle` 落表。对账金额三层比对（误差=0）已由 AI 在 reports/GZ-ADMIN-105.md §AI 自测 3 完成。
+
+---
+
+## 6. GZ-ADMIN-104 物流 2 态推进 — mp 店员端真机人验（批量验，Tier 2）
+
+> 唯一进人验的 D15 ticket（其余纯 admin/后端 AI ✅ 即终态）。可达路径全程走现成真入口（GZ-ADMIN-201 已建），无临时入口。
+
+**可达路径**（≤4 次点击）：店员账号登 mp → 个人中心「门店管理」区块 →「订单查看」→ 选一个 preorder/gacha 订单进详情 → 页面下方「物流推进」操作区。
+
+**测试动作**：
+1. 选一个 `logistics_status=in_japan` 的订单 → 点「发往中国」→ 表单出现快递 9 选 1（圆通/顺丰/中通/韵达/京东/EMS/德邦/极兔/其他）+ 单号输入
+   - ⬜ **不选快递 或 不填单号 → 「确认」按钮 disabled**（doc/10 §9.E5）
+   - ⬜ 选顺丰 + 填单号 SF123 → 确认 → toast「操作成功」→ 物流卡变「已发往中国 + 顺丰 + SF123」
+2. ⬜ 点「改单号」→ 改成中通 + ZT999 → 确认 → 物流卡更新（不重置签收倒计时）
+3. ⬜ 点「推到已签收」→ 物流卡变「已签收」终态，推进操作区消失
+4. ⬜ owner 在 **plus-ui** 订单详情（订单管理 → 详情）点「回退」→ reason 必填（空则 disabled）→ 填原因确认 → 物流态回退一级；店员端 mp **无回退入口**
+5. ⬜ 停用该店员 sys_user → mp 再点推进 → 401/403 即踢（ADR-0004）
+6. ⬜ 退款订单（business_status=refunded）→ 推进物流报错「该订单已退款，当前状态不可推进物流」
+
+**验完**：OK → progress.md「人验」列标 ✅；NOT OK → 写回 ticket §revision 段 → `@coder 修 D15/GZ-ADMIN-104 revision 段`。
