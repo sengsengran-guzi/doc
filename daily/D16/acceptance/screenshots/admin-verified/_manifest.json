@@ -1,0 +1,76 @@
+[
+  {
+    "n": "31-pay-transaction",
+    "p": "/gz-pay/transaction",
+    "t": "支付-交易流水",
+    "ok": true,
+    "url": "http://localhost/gz-pay/transaction",
+    "isLogin": false,
+    "rows": 7,
+    "shot": "31-pay-transaction.png",
+    "dialogShot": "",
+    "err": ""
+  },
+  {
+    "n": "32-pay-refund",
+    "p": "/gz-pay/refund",
+    "t": "支付-退款管理",
+    "ok": true,
+    "url": "http://localhost/gz-pay/refund",
+    "isLogin": false,
+    "rows": 0,
+    "shot": "32-pay-refund.png",
+    "dialogShot": "",
+    "err": ""
+  },
+  {
+    "n": "33-pay-payout",
+    "p": "/gz-pay/payout",
+    "t": "支付-反向打款单",
+    "ok": false,
+    "url": "http://localhost/gz-pay/payout",
+    "isLogin": false,
+    "rows": 0,
+    "shot": "33-pay-payout.png",
+    "dialogShot": "",
+    "err": ""
+  },
+  {
+    "n": "70-recycle-pricerule",
+    "p": "/gz-recycle/price-rule",
+    "t": "回收-价目表",
+    "dialog": true,
+    "ok": true,
+    "url": "http://localhost/gz-recycle/price-rule",
+    "isLogin": false,
+    "rows": 4,
+    "shot": "70-recycle-pricerule.png",
+    "dialogShot": "70-recycle-pricerule-dialog.png",
+    "err": ""
+  },
+  {
+    "n": "71-recycle-appointment",
+    "p": "/gz-recycle/appointment",
+    "t": "回收-预约单",
+    "ok": true,
+    "url": "http://localhost/gz-recycle/appointment",
+    "isLogin": false,
+    "rows": 1,
+    "shot": "71-recycle-appointment.png",
+    "dialogShot": "",
+    "err": ""
+  },
+  {
+    "n": "90-admin-user",
+    "p": "/gz/gz-admin-user",
+    "t": "谷子管理员",
+    "dialog": true,
+    "ok": true,
+    "url": "http://localhost/gz/gz-admin-user",
+    "isLogin": false,
+    "rows": 0,
+    "shot": "90-admin-user.png",
+    "dialogShot": "90-admin-user-dialog.png",
+    "err": ""
+  }
+]

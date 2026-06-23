@@ -1,0 +1,263 @@
+[
+  {
+    "p": "/pages/index/index",
+    "t": "首页",
+    "auth": false,
+    "landed": "pages/bean/index",
+    "views": 39,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_index_index.png"
+  },
+  {
+    "p": "/pages/bean/index",
+    "t": "拼豆预约(tab)",
+    "auth": false,
+    "landed": "pages/bean/index",
+    "views": 39,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_bean_index.png"
+  },
+  {
+    "p": "/pages/bean/detail?id=1",
+    "t": "拼豆预约详情",
+    "auth": true,
+    "landed": "pages/bean/detail",
+    "views": 24,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_bean_detail_id_1.png"
+  },
+  {
+    "p": "/pages/bean/my-list",
+    "t": "我的拼豆预约",
+    "auth": true,
+    "landed": "pages/bean/my-list",
+    "views": 14,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_bean_my-list.png"
+  },
+  {
+    "p": "/pages/news/list",
+    "t": "资讯列表",
+    "auth": false,
+    "landed": "pages/news/list",
+    "views": 47,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_news_list.png"
+  },
+  {
+    "p": "/pages/news/index",
+    "t": "资讯首页",
+    "auth": false,
+    "landed": "pages/news/list",
+    "views": 47,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_news_index.png"
+  },
+  {
+    "p": "/pages/news/detail?id=1",
+    "t": "资讯详情",
+    "auth": false,
+    "landed": "pages/news/detail",
+    "views": 19,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_news_detail_id_1.png"
+  },
+  {
+    "p": "/pages/gacha/index",
+    "t": "扭蛋机列表",
+    "auth": false,
+    "landed": "pages/gacha/index",
+    "views": 24,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_gacha_index.png"
+  },
+  {
+    "p": "/pages/gacha/detail?id=1",
+    "t": "扭蛋机详情",
+    "auth": false,
+    "landed": "pages/gacha/detail",
+    "views": 7,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_gacha_detail_id_1.png"
+  },
+  {
+    "p": "/pages/gacha/draw?id=1",
+    "t": "扭蛋抽奖",
+    "auth": true,
+    "landed": "pages/gacha/draw",
+    "views": 16,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_gacha_draw_id_1.png"
+  },
+  {
+    "p": "/pages/gacha/history",
+    "t": "扭蛋记录",
+    "auth": true,
+    "landed": "pages/gacha/history",
+    "views": 9,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_gacha_history.png"
+  },
+  {
+    "p": "/pages/recycle/form",
+    "t": "回收预约(tab)",
+    "auth": true,
+    "landed": "pages/recycle/form",
+    "views": 54,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_recycle_form.png"
+  },
+  {
+    "p": "/pages/recycle/my-list",
+    "t": "我的回收",
+    "auth": true,
+    "landed": "pages/recycle/my-list",
+    "views": 9,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_recycle_my-list.png"
+  },
+  {
+    "p": "/pages/ord/index",
+    "t": "预购首页",
+    "auth": false,
+    "landed": "pages/ord/index",
+    "views": 15,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_ord_index.png"
+  },
+  {
+    "p": "/pages/ord/list",
+    "t": "预购列表",
+    "auth": false,
+    "landed": "pages/ord/list",
+    "views": 11,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_ord_list.png"
+  },
+  {
+    "p": "/pages/ord/preorder-detail?id=1",
+    "t": "预购详情",
+    "auth": false,
+    "landed": "pages/ord/preorder-detail",
+    "views": 9,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_ord_preorder-detail_id_1.png"
+  },
+  {
+    "p": "/pages/me/index",
+    "t": "我的(tab)",
+    "auth": true,
+    "landed": "pages/me/index",
+    "views": 46,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_me_index.png"
+  },
+  {
+    "p": "/pages/me/orders",
+    "t": "我的订单",
+    "auth": true,
+    "landed": "pages/me/orders",
+    "views": 6,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_me_orders.png"
+  },
+  {
+    "p": "/pages/me/order-detail?id=1",
+    "t": "订单详情",
+    "auth": true,
+    "landed": "pages/me/order-detail",
+    "views": 9,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_me_order-detail_id_1.png"
+  },
+  {
+    "p": "/pages/me/collection",
+    "t": "我的图鉴",
+    "auth": true,
+    "landed": "pages/me/collection",
+    "views": 8,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_me_collection.png"
+  },
+  {
+    "p": "/pages/me/coupons",
+    "t": "我的优惠券",
+    "auth": true,
+    "landed": "pages/me/coupons",
+    "views": 13,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_me_coupons.png"
+  },
+  {
+    "p": "/pages/me/profile",
+    "t": "个人资料",
+    "auth": true,
+    "landed": "pages/me/profile",
+    "views": 21,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_me_profile.png"
+  },
+  {
+    "p": "/pages/me/about",
+    "t": "关于谷子宇宙",
+    "auth": false,
+    "landed": "pages/me/about",
+    "views": 12,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_me_about.png"
+  },
+  {
+    "p": "/pages/me/address/list",
+    "t": "地址簿",
+    "auth": true,
+    "landed": "pages/me/address/list",
+    "views": 8,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_me_address_list.png"
+  },
+  {
+    "p": "/pages/pay/test",
+    "t": "支付测试页",
+    "auth": true,
+    "landed": "pages/pay/test",
+    "views": 9,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_pay_test.png"
+  },
+  {
+    "p": "/pages/bean/staff-board",
+    "t": "店员看板",
+    "auth": "staff",
+    "landed": "pages/bean/staff-board",
+    "views": 34,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_bean_staff-board.png"
+  },
+  {
+    "p": "/pages/bean/verify-scan",
+    "t": "店员核销扫码",
+    "auth": "staff",
+    "landed": "pages/bean/verify-scan",
+    "views": 6,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_bean_verify-scan.png"
+  },
+  {
+    "p": "/pages/recycle/staff-verify",
+    "t": "店员回收核对",
+    "auth": "staff",
+    "landed": "pages/recycle/staff-verify",
+    "views": 10,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_recycle_staff-verify.png"
+  },
+  {
+    "p": "/pages/me/staff-orders/index",
+    "t": "店员订单",
+    "auth": "staff",
+    "landed": "pages/me/staff-orders/index",
+    "views": 50,
+    "redirLogin": false,
+    "shot": "/tmp/gz-e2e-shots/tour_pages_me_staff-orders_index.png"
+  }
+]

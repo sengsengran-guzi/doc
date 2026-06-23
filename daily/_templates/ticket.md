@@ -30,10 +30,13 @@
 - [ ] AC 1：（可测试的具体描述，禁止"做得好""体验流畅"这种主观）
 - [ ] AC 2：...
 - [ ] AC 3：...
-- [ ] **AC N: Tier 2 入口可达**（**mp ticket 强制**，CLAUDE.md §8.3）— Kevin 从 `<已有入口页>` 点 N 次能到达本 ticket 新页 / 触发本流程。
+- [ ] **AC N(a): AI 模拟器可达**（**mp ticket 强制**，CLAUDE.md §8.3）— kevin-qa 用 `node test/e2e/run.mjs <flow>` 程序化导航（reLaunch / navigateTo / tap）到本 ticket 新页并断言渲染。
+  - 纯功能（纯导航 / 表单 / 列表）mp ticket：AI ✅ 即 close，**无人验行**（同 admin / 纯后端）
+- [ ] **AC N(b): 真机可达**（**仅当本 ticket 碰真机微信原生能力**：真实支付 / getPhoneNumber / 客服 / 真机扫码 / 登录头像昵称授权 / 真机性能）— Kevin 从 `<已有页 / 临时入口>` 点 N 次能到达本页触发原生流程。
   - 如业务主线入口已建（如 5 tab / 会员中心首页 / 拼豆首页）→ 列出现成路径
   - 如业务主线入口还没建（下游 ticket 才建）→ **本 ticket 加临时入口**到 `pages/index/index.vue` 或最近相关已上线页 + 注释 `<!-- TODO(Tier2-entry-temp): <本 ticket id>, remove when <清理者 ticket id> merged -->`
-  - 纯 admin / 纯后端 ticket 无需此 AC（跳过 Tier 2，CLAUDE.md §8.2）
+  - 不碰真机原生 → 无 AC N(b)，无人验行
+- 纯 admin / 纯后端 ticket 无需 AC N（CLAUDE.md §8.2）
 
 ## Tech（端 + 范围）
 
@@ -50,7 +53,7 @@
 
 ---
 
-## §revision（Kevin 批量人验后填，初始空 —— ticket 已 close 也可回填）
+## §revision（Kevin 节点触发残留人验不过时填，初始空 —— ticket 已 close 也可回填）
 
 <!--
 当 Kevin 测试不过时，在这里写问题清单，然后 `@coder 修 D<N>/<TICKET-ID> revision 段`：

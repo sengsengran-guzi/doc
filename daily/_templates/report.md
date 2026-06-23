@@ -77,10 +77,47 @@ mysql> SELECT COUNT(*) FROM gz_xxx WHERE ...;
 +----------+
 ```
 
+## §AI 测试段（kevin-qa Tier 1B：admin Playwright + mp 模拟器 E2E + 后端集成）
+
+> 由 kevin-qa agent 接管追加（主线程统一派单串行，子 agent 不能 spawn 孙 agent）。**硬 gate 无降级**：mp ticket 的模拟器 E2E 必须真跑过；preflight 环境（devtools 开 + wxMOCK 登录 / 后端 8080 / dist 完整）起不来 → 阻塞回修，不静默降级。
+
+### admin Playwright E2E（admin ticket）
+
+```
+（登录 / CRUD / 表单 / 列表 / perm 权限 的 raw output；纯 mp / 纯后端 ticket 写 "N/A"）
+```
+
+截图：`D<N>/testing/<T>/admin-*.png`
+
+### mp 模拟器 E2E（mp ticket）
+
+```
+（node test/e2e/run.mjs <flow|all> 的 raw output：导航可达 reLaunch/navigateTo/tap / 渲染 / 表单提交打真后端 / 列表 / 条件 UI / wxMOCK 登录；纯 admin / 纯后端 ticket 写 "N/A"）
+```
+
+截图：`code/main/miniapp/test/e2e/__screenshots__/<T>-*.png`（视觉 diff advisory，回归守门，非 gate）
+
+### 后端集成 / API 契约 / vitest
+
+```
+（集成测试 + API 契约回归 + mp vitest unit 的 raw output）
+```
+
+### Tier 1B 结论
+
+| 项 | 结果 |
+|---|---|
+| admin Playwright | ✅ / N/A |
+| mp 模拟器 E2E | ✅ / N/A |
+| 后端集成 / API 契约 | ✅ / N/A |
+| vitest unit | ✅ / N/A |
+
+全 ✅ → ticket close（解锁下游）；任一 ❌ → 闭环回 kevin-coder 修，不打扰 Kevin。
+
 ## 风险提示 / 已知 issue
 
 - 风险 1：xxx（说明应对方案 / 推迟到哪个 ticket）
-- 待 Kevin 批量人验关注（仅 mp 端）：（如视觉 / 文案 / 微信侧需要真机的部分；纯 admin/后端写 "N/A — 无人验"）
+- 待 Kevin 残留人验关注（仅碰真机微信原生能力 + 首版主观 sense）：（真实支付 / getPhoneNumber / 客服 / 真机扫码 / 登录头像昵称授权 / 真机性能 6 类，或新页首版视觉拍板；mp 非原生功能流 —— 导航 / CRUD / 表单 / 列表 —— 已由 Tier 1B 模拟器 E2E 覆盖，不请 Kevin 复看；纯 admin/后端/纯功能 mp 写 "N/A — 无人验"）
 
 ## 对下游 ticket 的提示
 
@@ -89,7 +126,7 @@ mysql> SELECT COUNT(*) FROM gz_xxx WHERE ...;
 
 ---
 
-<!-- 如果 Kevin 批量人验失败 + AI revision 修复，下面追加 §revision-1 / §revision-2 等段 -->
+<!-- 如果 Kevin 节点触发残留人验失败 + AI revision 修复，下面追加 §revision-1 / §revision-2 等段 -->
 
 ## §revision-N（每轮闭环修复后追加）
 
