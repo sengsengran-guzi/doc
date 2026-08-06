@@ -16,13 +16,13 @@ accept:
     form: MENU
     run: |
       docker exec sensenran-dev-mysql mysql -uroot -proot ry-vue -N -e "
-        SELECT COUNT(*) FROM sys_menu m WHERE m.menu_id BETWEEN 14020 AND 14029 AND m.del_flag='0'
+        SELECT COUNT(*) FROM sys_menu m WHERE m.menu_id BETWEEN 14020 AND 14029
         AND ( (m.menu_type IN ('M','C') AND (m.path IS NULL OR m.path=''))
            OR (m.menu_type='C' AND (m.component IS NULL OR m.component=''))
            OR (m.parent_id<>0 AND NOT EXISTS
-               (SELECT 1 FROM sys_menu p WHERE p.menu_id=m.parent_id AND p.del_flag='0')) )" | grep -qx 0 &&
+               (SELECT 1 FROM sys_menu p WHERE p.menu_id=m.parent_id)) )" | grep -qx 0 &&
       docker exec sensenran-dev-mysql mysql -uroot -proot ry-vue -N -e "
-        SELECT COUNT(*) FROM sys_menu WHERE menu_id BETWEEN 14020 AND 14029 AND del_flag='0'" | grep -qE '^[1-9]'
+        SELECT COUNT(*) FROM sys_menu WHERE menu_id BETWEEN 14020 AND 14029" | grep -qE '^[1-9]'
   - name: 订单列表返回行内容完整
     form: API
     run: |
