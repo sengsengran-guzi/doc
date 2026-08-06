@@ -33,7 +33,7 @@ tables:
   - table: gz_jp_event
     comment: "拼团场（一个时间段的一次快闪活动）"
     module: ruoyi-gz-jp
-    id_range: "menu 14001-14009"
+    id_range: "menu 14001 场管理 + 14002-14009 按钮"
     migration: "V<yyyyMMddHHmm>__GZ-JP-101-create-gz_jp_event.sql"
     common_fields: [audit, tenant]
     fields:
@@ -54,7 +54,7 @@ tables:
   - table: gz_jp_product
     comment: "拼团商品（挂在场下）"
     module: ruoyi-gz-jp
-    id_range: "menu 14011-14019"
+    id_range: "menu 14010 商品管理 + 14011-14019 按钮"
     migration: "V<yyyyMMddHHmm>__GZ-JP-102-create-gz_jp_product.sql"
     common_fields: [audit, tenant]
     fields:
@@ -92,7 +92,7 @@ tables:
   - table: gz_jp_order
     comment: "拼团订单（订单级只管钱，履约状态在商品行上）"
     module: ruoyi-gz-jp
-    id_range: "menu 14021-14029"
+    id_range: "menu 14020 订单管理 + 14021-14029 按钮"
     migration: "V<yyyyMMddHHmm>__GZ-JP-103-create-gz_jp_order.sql"
     common_fields: [audit, tenant]
     fields:
@@ -115,7 +115,7 @@ tables:
   - table: gz_jp_order_item
     comment: "订单商品行 —— ★ 本域核心表：履约状态、运单号、退款全在这一层"
     module: ruoyi-gz-jp
-    id_range: "menu 14031-14039"
+    id_range: "无独立菜单（展示在履约看板 14030 段内）"
     migration: "V<yyyyMMddHHmm>__GZ-JP-103-create-gz_jp_order_item.sql"
     common_fields: [audit, tenant]
     fields:

@@ -30,7 +30,18 @@ accept:
 
 ## §0 状态自检（实现前必做，不通过 STOP 报 Kevin）
 
-1. `grep -rn "ConditionalOnExpression\|ConditionalOnProperty" ruoyi-modules/ruoyi-gz-common/src/main/java/org/dromara/gz/common/wechat/` —— 确认 real/mock 互斥点**恰好 8 处**（login/phone/accessToken/shipping 各 real+mock）。数量对不上说明代码已变，先报。
+1. ★ **grep 路径必须覆盖两处**（8 处里有 2 处不在 `wechat/` 下）：
+   ```bash
+   # ★ 只数注解位，别用宽 grep —— 宽 grep 会连 import 和 javadoc 一起数出 24 行
+   grep -rn '^@Conditional' \
+     ruoyi-modules/ruoyi-gz-common/src/main/java/org/dromara/gz/common/wechat/ \
+     ruoyi-modules/ruoyi-gz-common/src/main/java/org/dromara/gz/common/pay/shipping/ | wc -l
+   # 期望输出：8
+   ```
+   —— `wechat/` 下 6 处（Login / Phone / AccessToken 各一对），**`pay/shipping/impl/` 下 2 处**（`WxMockShippingClient` / `WxRealShippingClient`）。只 grep `wechat/` 会数到 6 → 触发假 STOP。
+   确认 real/mock 互斥点**恰好 8 处**：
+   **real 侧 4 处 `@ConditionalOnExpression`**（SpEL `"'${wx.miniapp.appid:wxMOCK}' != 'wxMOCK'"`）+ **mock 侧 4 处 `@ConditionalOnProperty`**（`havingValue=wxMOCK, matchIfMissing=true`），
+   对应 Login / Phone / AccessToken / Shipping 四种能力各一对（`@ConditionalOnProperty` 不支持 NOT 语义，所以 real 侧才用 SpEL）。数量或构成对不上说明代码已变，先报。
 2. `grep -rn "properties.getAppid()" ruoyi-modules/ruoyi-gz-common/` —— 列全部读点，改造要覆盖。
 3. 现有 miniapp 能正常登录（改造前基线）。
 

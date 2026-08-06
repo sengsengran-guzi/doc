@@ -29,7 +29,8 @@ accept:
 ## §0 状态自检
 
 1. `sed -n '85,130p'` 看 `WechatPayV3ClientImpl` —— 确认 `:93` 统一下单、`:125` 调起签名两处 appid 读点仍在原位。
-2. `docker exec sensenran-dev-mysql mysql -uroot -proot ry-vue -N -e "DESC gz_pay_channel"` —— 确认 `appid` 列存在（该列已有但目前是死数据）。
+2. `docker exec sensenran-dev-mysql mysql -uroot -proot ry-vue -N -e "DESC \`gz_pay_channel\`"` —— 确认 `appid` 列存在（该列已有但 seed 值是 `'wx_placeholder_appid'`，建了从未被读过）。
+3. ★ **别把 `gz.pay.client-mode` 一起 Map 化**：那是**进程级全局** mock/real 开关，与 `wx.miniapp.appid` 无关。同一环境下两个小程序的 mock/real 状态必然相同（dev 全 mock、prod 全 real），一期保持全局不动。本卡只把 **appid** 做成 per-app。
 
 ## What
 

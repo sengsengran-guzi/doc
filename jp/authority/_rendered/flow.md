@@ -15,11 +15,11 @@
 |---|---|---|---|---|
 | `FLOW:F-JP-00.step1` | 系统 | 小程序请求带 clientid header（新小程序 = mp-applet-gz-jp） |  | clientid 校验是纯字符串比对不查 sys_client 表（SecurityConfig:66-74），新客户端零成本
  |
-| `FLOW:F-JP-00.step2` | 后端 | 按 clientid 解析出该小程序的 appid / secret / real-or-mock 模式 | FIELD:gz_user.app_id | wx.miniapp 配置由标量改 Map<clientid, app>；8 处 @ConditionalOnExpression 的 real/mock 全局互斥改为运行时按 app 分派
+| `FLOW:F-JP-00.step2` | 后端 | 按 clientid 解析出该小程序的 appid / secret / real-or-mock 模式 | FIELD:gz_user.app_id | wx.miniapp 配置由标量改 Map<clientid, app>；8 处启动期条件 Bean 的 real/mock 全局互斥 改为运行时按 app 分派。★ 这 8 处是**两种注解**：real 侧 4 处 @ConditionalOnExpression （SpEL 表达式 "'${wx.miniapp.appid:wxMOCK}' != 'wxMOCK'"），mock 侧 4 处 @ConditionalOnProperty（havingValue=wxMOCK, matchIfMissing=true）—— @ConditionalOnProperty 不支持 NOT 语义所以 real 侧才用 SpEL。 对应 Login / Phone / AccessToken / Shipping 四种能力各一对。
  |
 | `FLOW:F-JP-00.step3` | 后端 | 微信登录 —— 按 app_id + openid upsert 用户 | FIELD:gz_user.app_id, FIELD:gz_user.openid | 唯一键 (tenant_id, app_id, openid)。同一自然人在两个小程序 = 两条独立记录， 互不干扰（不做 unionid 合并，列为后续增强）
  |
-| `FLOW:F-JP-00.step4` | 后端 | 调起支付 —— 用当前小程序的 appid 做统一下单与 5 参签名 |  | ★ WechatPayV3ClientImpl:125 的签名 appid 必须来自下单上下文。 写死则新小程序 uni.requestPayment 必失败。落点：激活 gz_pay_channel.appid 列做真源
+| `FLOW:F-JP-00.step4` | 后端 | 调起支付 —— 用当前小程序的 appid 做统一下单与 5 参签名 |  | ★ WechatPayV3ClientImpl:125 的签名 appid 必须来自下单上下文。 写死则新小程序 uni.requestPayment 必失败。落点：激活 gz_pay_channel.appid 列做真源 （该列已存在但 seed 值是 'wx_placeholder_appid'，建了从未被读过）。 ★ **支付另有一套独立开关 gz.pay.client-mode（mock/real），与 wx.miniapp.appid 无关**， 它是**进程级全局**、不是 per-app：同一环境下两个小程序 mock/real 状态必然相同 （dev 全 mock、prod 全 real），一期无需 Map 化。仅当将来要「一个小程序 mock 收款、 另一个 real 收款」时才需拆开——那时才动它。
  |
 
 ## 开场与上架
@@ -90,7 +90,7 @@
 | 步 | 谁 | 做什么 | 写什么 | 产出 |
 |---|---|---|---|---|
 | `FLOW:F-JP-04.step1` | 店员(admin) | 勾选没买到的商品行 → 标记购买失败（可批量） | FIELD:gz_jp_order_item.fulfill_status | 该行 fulfill_status=purchase_failed（分支终态，不再往下走） |
-| `FLOW:F-JP-04.step2` | 系统 | 按行金额发起微信部分退款 | FIELD:gz_jp_order_item.refund_status, FIELD:gz_jp_order_item.refund_amount_cent | ★ 退款金额 = 该 order_item 的 amount_cent，不是整单。 复用现有 PayRefundController；**实施前须硬查该接口支持指定金额**（见 ticket §0 自检）
+| `FLOW:F-JP-04.step2` | 系统 | 按行金额发起微信部分退款 | FIELD:gz_jp_order_item.refund_status, FIELD:gz_jp_order_item.refund_amount_cent | ★ 退款金额 = 该 order_item 的 amount_cent，不是整单。 ⚠️ **现有 GZ-PAY 退款链路只支持「一单一次全额」，不支持部分退款**（D0 实测，2026-08-06）： `RefundApplyBo` 无金额入参（javadoc「仅全额退款」）、`PayRefundServiceImpl.apply` 两个金额位 都传全额、`PayRefundTxService.createRefunding` 的 countActiveByTransactionId>0 即拒 （一笔支付只允许一条退款单）、`gz_pay_transaction` 的 refunded 是终态。 **通道层 `IWechatPayClient.refund` 本身支持**（record 已含 refundAmountCent + totalAmountCent）。 ⇒ 行级退款 = **支付域实质改造**，不是复用现成接口。且拼豆/回收共用同一条链路， 放宽重复退款闸门须同步补金额校验（已退总额+本次 ≤ 原单总额）并回归既有业务。 **路线已定（Kevin 2026-08-06）：jp 域开独立退款入口，只共用通道层** ——  新建 jp 专用退款 Service + 退款单表，直接调 `IWechatPayClient.refund`（它本就支持指定金额）。 **拼豆/回收的资金链路一行不动**，风险物理隔离。代价：退款逻辑两套、对账中心要兼容两个来源。
  |
 | `FLOW:F-JP-04.step3` | 系统 | 退款回调 —— 该行转已退款，订单状态按剩余行重算 | FIELD:gz_jp_order_item.refund_status, FIELD:gz_jp_order.business_status | 有失败行且非全部 → 订单 partial_refunded；全部行失败 → 订单 refunded。 退款回调走 GZ-PAY 现有 RefundCallbackDispatcher，business_type='jp'
  |

@@ -36,13 +36,24 @@ accept:
 
 ## §0 状态自检（★ 本卡最关键的一步）
 
-1. **硬查 `PayRefundController` 的 apply 接口是否支持指定退款金额**：
-   `grep -n "refund" -r ruoyi-modules/ruoyi-gz-common/src/main/java/org/dromara/gz/common/pay/controller/PayRefundController.java`
-   以及其 BO 的字段。
-   - 支持指定金额 → 按本卡设计做
-   - **不支持（只能整单退）→ 立刻 STOP 报 Kevin**，改走「整单退 + 人工补差」或先扩展 PAY 侧能力。
-     不要闷头实现，这是 doc/17 §6 R3 明确标出的风险点。
-2. 确认 `RefundCallbackDispatcher` 的 SPI 签名，照现有 `PreorderRefundCallbackHandler` 范式写。
+1. ~~硬查 `PayRefundController` 是否支持指定金额~~ —— **D0 已查完，结论：不支持**。
+   四道闸：`RefundApplyBo` 无金额入参（javadoc「仅全额退款」）、`PayRefundServiceImpl.apply` 两个金额位都传全额、
+   **`PayRefundTxService.createRefunding` 的 `countActiveByTransactionId>0` 即拒（一笔支付只允许一条退款单）**、
+   `gz_pay_transaction.refunded` 是终态。但**通道层 `IWechatPayClient.refund` 本就支持**
+   （record 已含 `refundAmountCent` + `totalAmountCent`）。
+
+   ★ **路线已定（Kevin 2026-08-06）：走 jp 域独立退款入口，只共用通道层。**
+   新建 jp 专用退款 Service + 退款单表，直接调 `IWechatPayClient.refund`；
+   **不要去动 `PayRefundController` / `PayRefundTxService`** —— 那是拼豆与回收在用的线上资金链路。
+   详见 ADR-0020 §3。
+
+2. 确认 `IWechatPayClient.refund(RefundRequest)` 的 record 字段与 mock 实现（照 `MockWechatPayClient` 的形态写 jp 侧调用）：
+   `grep -rn "record RefundRequest\|class MockWechatPayClient" ruoyi-modules/ruoyi-gz-common/src/main/java/org/dromara/gz/common/pay/service/internal/`
+   —— 确认 `refundAmountCent` 与 `totalAmountCent` 是两个独立参数（这是走路线②的前提）。
+3. 确认 `RefundCallbackDispatcher` 的 SPI 签名，照现有 `PreorderRefundCallbackHandler` 范式写。
+4. ★ 开工前 `git -C code/main/RuoYi-Vue-Plus status --porcelain` 记下基线 —— 完工时要能用 `git diff`
+   证明 `pay/controller/PayRefundController.java`、`pay/service/impl/PayRefundServiceImpl.java`、
+   `pay/service/PayRefundTxService.java` **一行没动**。这是本卡的硬验收条件之一。
 
 ## What
 

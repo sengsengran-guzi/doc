@@ -143,8 +143,13 @@
 - admin E2E：按客人聚合视图 + 跨订单勾选发货 + 批量标记失败的二次确认
 - mp E2E：30 款订单详情分组渲染，同一运单号只出现一次，全页无「包裹」字样
 
-> ★ **GZ-JP-107 开工第一步是硬查** `PayRefundController` 是否支持指定退款金额。
-> 不支持 → STOP 报 Kevin，不要闷头实现（doc/17 §6 R3）。
+> ★ **该硬查已于 D0 执行完毕（2026-08-06），结论：不支持。** 现有 GZ-PAY 退款链路只支持
+> 「一单一次全额」（`RefundApplyBo` 无金额入参、`createRefunding` 的 `countActiveByTransactionId>0` 即拒、
+> `gz_pay_transaction.refunded` 是终态），但通道层 `IWechatPayClient.refund` 本就支持指定金额。
+>
+> **路线已定（Kevin 拍板）：jp 域开独立退款入口，只共用通道层** —— 新建 jp 专用退款 Service + 退款单表，
+> **拼豆/回收的资金链路一行不动**。GZ-JP-107 工作量按「新建一套退款链路」估，不是调现成接口。
+> 详见 ADR-0020 §3。
 
 ---
 

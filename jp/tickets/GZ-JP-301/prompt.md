@@ -40,7 +40,7 @@ accept:
 - 真机 1 分钱支付：**新旧各跑一遍**（GZ-SYS-022 动了收款链路）
 - 微信发货信息上报验证（`upload_shipping_info`，拼团属实物商品）
 - staging 双小程序并跑观察，再灰度 prod
-- 补 `doc/` 收尾：`.claude/CLAUDE.md` 加 menu 段 14000-14999、代码位置 `miniapp-jp/` + `ruoyi-gz-jp`
+- ~~补 `.claude/CLAUDE.md`~~ —— **已由 D0 的 GZ-DOC-003 完成**（menu 段 14000-14999 / 代码位置 / git 仓布局），本卡不再重复
 
 ## AC
 
