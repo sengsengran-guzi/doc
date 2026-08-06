@@ -1,0 +1,523 @@
+# 需求点清单 —— 谷子宇宙拼团（日本代购）
+# 由 /xuqiu 从甲方三轮微信原文 + doc/16 确认单逐条抽取。
+# 铁律：一条需求一个 id；id 终身不变；需求改了改 text 不改 id；撤销标 dropped 不删行。
+
+meta:
+  project: 谷子宇宙拼团（日本代购）
+  baseline:
+    - file: 客户微信-2026-08-03
+      version: "2026-08-03"
+      note: 甲方首次提出拼团 + 代切两块业务的原始描述
+    - file: 客户微信-2026-08-04
+      version: "2026-08-04"
+      note: 对确认单 Q1-Q5 + 细节项的第一轮答复
+    - file: 客户微信-2026-08-05
+      version: "2026-08-05"
+      note: 第二轮答复；推翻运费、砍线下预定、代切降二期
+    - file: doc/16-日本代购需求确认单.md
+      version: "2026-08-05"
+      note: 与甲方往返的整理版确认单（在线飞书文档同步）
+  domains: [SYS, EVENT, PROD, ORDER, FULFILL, SNAP]
+
+requirements:
+
+  # ══════════════════════════════════════════════════════════════════
+  # SYS —— 系统底座
+  # ══════════════════════════════════════════════════════════════════
+
+  - id: REQ-SYS-001
+    source: 客户微信-2026-08-04#细节项答复
+    module: 系统
+    text: >
+      新小程序叫什么、要不要独立的品牌视觉 —— 谷子宇宙拼团
+    domain: SYS
+    priority: P0
+    status: pending
+    note: 小程序名称与品牌。视觉一期沿用现有清爽风 c-tokens，甲方未要求独立视觉。
+    tickets: [GZ-DOC-003, GZ-JP-001, GZ-JP-201, GZ-JP-301]
+
+  - id: REQ-SYS-002
+    source: 客户微信-2026-08-04#细节项答复
+    module: 系统
+    text: >
+      现在小程序里隐藏掉的「预购」还要不要放出来 —— 这个没看懂
+    domain: SYS
+    priority: P2
+    status: pending
+    note: >
+      甲方不知道旧 miniapp 存在已隐藏的 GZ-ORD 预购模块，说明无需求。
+      结论：保持隐藏，新小程序完全接管。本期不做任何动作，仅在文档中记录该判定。
+    tickets: [GZ-JP-301]
+
+  - id: REQ-SYS-003
+    source: 客户微信-2026-08-05#排期
+    module: 系统
+    text: >
+      拼团的项目先做 代切的项目是我最近在想 后续加的 增加粘性 不一定能做的很大
+      因为现在他们已经比较成熟了 而且是存量市场了
+    domain: SYS
+    priority: P0
+    status: pending
+    note: 排期约束：一期只做拼团，代切全部 SNAP 域 defer 到二期。
+    tickets: [GZ-JP-301]
+
+  - id: REQ-SYS-004
+    source: Kevin决策-2026-08-03#方案确认
+    module: 系统
+    text: >
+      新建独立小程序（新 appid），后端共用现有 admin，新增业务模块即可
+    domain: SYS
+    priority: P0
+    status: pending
+    note: >
+      新 appid 触发后端多 appid 改造（现有代码 wx.miniapp.appid / gz.pay.appid 均为单值标量，
+      WechatPayV3ClientImpl:125 支付签名写死 appid）。这是一期最大的隐藏工作量与唯一硬阻塞。
+    tickets: [GZ-DOC-001, GZ-JP-002, GZ-SYS-020, GZ-SYS-021, GZ-SYS-022, GZ-SYS-023]
+
+  - id: REQ-SYS-005
+    source: Kevin决策-2026-08-05#仓库位置
+    module: 系统
+    text: >
+      新小程序工程放 code/main/miniapp-jp/，与现有三个工程并列
+    domain: SYS
+    priority: P0
+    status: pending
+    note: >
+      ★ 本项目是**多仓结构**（doc / RuoYi-Vue-Plus / plus-ui / miniapp 各自独立 git 仓，
+      三个代码仓远程在 github:sengsengran-guzi，均在 staging 分支）。
+      所以 miniapp-jp 物理上放 code/main/ 下与兄弟工程并列，git 上是**新建独立仓**
+      （建议 github:sengsengran-guzi/miniapp-jp）。
+      跨仓影响：一个 ticket 常同时改后端与前端两仓，分支/合流要按仓各做一套。
+    tickets: [GZ-DOC-003, GZ-JP-001, GZ-JP-002]
+
+  # ══════════════════════════════════════════════════════════════════
+  # EVENT —— 场（快闪活动）
+  # ══════════════════════════════════════════════════════════════════
+
+  - id: REQ-EVENT-001
+    source: 客户微信-2026-08-04#细节项答复
+    module: 商品组织
+    text: >
+      你要问拼团的商品分类吗 拼团的商品分类 按照场来分
+      一个场=一个时间段的一次快闪活动 里面我们上架具体商品就行
+    domain: EVENT
+    priority: P0
+    status: pending
+    note: >
+      「分类」不是静态分类树，而是带起止时间的活动实体。取代 REQ-PROD-002。
+      一个场 = 一批集单，与「攒单预订」天然同构。
+    tickets: [GZ-JP-101, GZ-JP-103, GZ-JP-201]
+
+  - id: REQ-EVENT-002
+    source: doc/16-日本代购需求确认单.md#待您回复-4
+    module: 商品组织
+    text: >
+      拼团的货有些是线下当场拿到的现货、有些是网上预订的（三个月后才发货的周边），
+      现货应该没有「等待官方发货」这一步
+    domain: EVENT
+    priority: P1
+    status: clarify
+    clarify: 履约状态是否允许跳过中间态？现货直接跳到「日本仓库已发货」是否符合实际操作？
+    note: 我方判断做成状态可跳过。甲方未答，不阻塞——按可跳过实现，否决代价极小。
+    tickets: [GZ-JP-106]
+
+  # ══════════════════════════════════════════════════════════════════
+  # PROD —— 商品
+  # ══════════════════════════════════════════════════════════════════
+
+  - id: REQ-PROD-001
+    source: 客户微信-2026-08-03#拼团
+    module: 商品管理
+    text: >
+      我们后台需要上架货物
+    domain: PROD
+    priority: P0
+    status: pending
+    tickets: [GZ-JP-102, GZ-JP-103]
+
+  - id: REQ-PROD-002
+    source: 客户微信-2026-08-03#拼团
+    module: 商品管理
+    text: >
+      货物需要分类
+    domain: PROD
+    priority: P0
+    status: pending
+    note: 2026-08-04 甲方细化为「按场分」，实现落 REQ-EVENT-001；本条保留作原始出处。
+    depends_req: [REQ-EVENT-001]
+    tickets: [GZ-JP-102]
+
+  - id: REQ-PROD-003
+    source: 客户微信-2026-08-03#拼团
+    module: 商品管理
+    text: >
+      货物需要有价格
+    domain: PROD
+    priority: P0
+    status: pending
+    note: 因 REQ-ORDER-004 全包邮，此价 = 客人最终支付价，不再叠加运费。
+    tickets: [GZ-JP-102, GZ-JP-202]
+
+  - id: REQ-PROD-004
+    source: 客户微信-2026-08-03#拼团
+    module: 商品管理
+    text: >
+      货物需要有日期
+    domain: PROD
+    priority: P0
+    status: pending
+    note: 理解为「预计到货日期」，用文本承载（谷圈惯用「8月下旬」这类模糊表述）。
+    tickets: [GZ-JP-102, GZ-JP-202]
+
+  - id: REQ-PROD-005
+    source: 客户微信-2026-08-03#拼团
+    module: 商品管理
+    text: >
+      货物需要有一些额外的注意事项等
+    domain: PROD
+    priority: P0
+    status: pending
+    note: 独立字段 notice_text，不混进商品详情——需在下单前显著展示。
+    tickets: [GZ-JP-102, GZ-JP-202]
+
+  - id: REQ-PROD-006
+    source: 客户微信-2026-08-05#差异化
+    module: 商品管理
+    text: >
+      代切为主的那几家公司也在做拼团的项目 但是做的很差 他们拼团只能代买官网上发售的东西
+      等于是代拍日本官网的货 我拼团是可以线下买 本质上压制 线下买的是主要需求
+      网上买的 哪家都可以
+    domain: PROD
+    priority: P1
+    status: pending
+    note: >
+      产品定位约束，非独立功能：拼团商品来源以日本线下采购为主。
+      对系统的影响 = 商品无需绑定任何外部货源系统，纯人工上架；且现货无「等待官方发货」态（见 REQ-EVENT-002）。
+    tickets: [GZ-JP-102]
+
+  - id: REQ-PROD-007
+    source: doc/16-日本代购需求确认单.md#我方判断-A1
+    module: 商品管理
+    text: >
+      商品是否需要多规格（SKU）—— 例如同一款吧唧的不同角色/款式
+    domain: PROD
+    priority: P1
+    status: deferred
+    defer_to: 待甲方明确提出后另议
+    note: >
+      2026-08-06 Kevin 拍板：**一期暂不做多规格**，不同规格各上架一个商品。
+      ★ 注意这是 Kevin 暂定、**甲方未表态**（甲方原话只有「上架具体商品」）。
+      若甲方后续提出要多规格：订单行需加 sku_id 并改 product_snapshot_json 结构，
+      波及 GZ-JP-102（商品表）与 GZ-JP-105（订单行），属结构性返工，需重新排期。
+    tickets: [GZ-JP-102]
+
+  # ══════════════════════════════════════════════════════════════════
+  # ORDER —— 购物车 / 下单 / 支付
+  # ══════════════════════════════════════════════════════════════════
+
+  - id: REQ-ORDER-001
+    source: 客户微信-2026-08-03#拼团
+    module: 下单
+    text: >
+      我们给客人线下+线上预定货品
+    domain: ORDER
+    priority: P0
+    status: dropped
+    note: >
+      2026-08-05 甲方改口撤销线下部分（见 REQ-ORDER-010）。保留本行不删，
+      避免历史引用悬空。线上部分由 REQ-ORDER-005/006 承接。
+    tickets: []
+
+  - id: REQ-ORDER-002
+    source: 客户微信-2026-08-04#Q1
+    module: 下单
+    text: >
+      Q1 运费怎么算 —— 前期 按照下单时店员手填 后面再看做不做重量阶梯
+    domain: ORDER
+    priority: P0
+    status: dropped
+    note: >
+      2026-08-05 甲方推翻：拼团全包邮（见 REQ-ORDER-004）。系统中不再有运费概念。
+    tickets: []
+
+  - id: REQ-ORDER-003
+    source: 客户微信-2026-08-04#细节项答复
+    module: 下单
+    text: >
+      代切全款付还是付定金 —— 行业规则都是全款
+    domain: ORDER
+    priority: P0
+    status: pending
+    note: 甲方针对代切作答，拼团同口径（原确认单拼团亦为全款下单）。无定金、无分期。
+    tickets: [GZ-JP-105, GZ-JP-204]
+
+  - id: REQ-ORDER-004
+    source: 客户微信-2026-08-05#3
+    module: 下单
+    text: >
+      拼团是包邮的 包国际邮费和国内运费 代切也是包邮的
+    domain: ORDER
+    priority: P0
+    status: pending
+    note: >
+      系统中彻底不做运费概念：商品价即最终支付价，下单页无运费行、订单无运费字段。
+      推翻 REQ-ORDER-002。
+    tickets: [GZ-JP-105, GZ-JP-202, GZ-JP-203, GZ-JP-204]
+
+  - id: REQ-ORDER-005
+    source: 客户微信-2026-08-04#Q2（推导）
+    module: 下单
+    text: >
+      一个客人比如买了 30 款商品 —— 需支持一次选购多款商品后合并下单
+    domain: ORDER
+    priority: P0
+    status: pending
+    note: >
+      我方从甲方「一个客人买了 30 款」推导：逐款单独下单不可用，必须有购物车。
+      甲方未直接表述此需求，但 REQ-FULFILL-004 的场景隐含它。
+    depends_req: [REQ-FULFILL-004]
+    tickets: [GZ-JP-104, GZ-JP-203]
+
+  - id: REQ-ORDER-006
+    source: 客户微信-2026-08-03#拼团
+    module: 下单
+    text: >
+      后台客人付款过后（要可以看到货品的状态）—— 客人需在小程序内完成付款
+    domain: ORDER
+    priority: P0
+    status: pending
+    note: 微信支付，复用现有 GZ-PAY 统一建单与回调 SPI，新增 business_type='jp'。
+    tickets: [GZ-JP-105, GZ-JP-109, GZ-JP-204]
+
+  - id: REQ-ORDER-010
+    source: 客户微信-2026-08-05#4
+    module: 下单
+    text: >
+      不接受店里的预定 店里就是零售 需要拼团的自然会在小程序上订
+      线下客人问到 也会让他去小程序上订 因为是两个系统 不然出了问题不好分责任
+    domain: ORDER
+    priority: P0
+    status: pending
+    note: >
+      明确不做店员代客下单。撤销 REQ-ORDER-001 的线下部分。
+      理由是责任边界（线下零售是另一套系统），非技术限制。
+    tickets: [GZ-JP-105]
+
+  # ══════════════════════════════════════════════════════════════════
+  # FULFILL —— 履约 / 发货 / 退款
+  # ══════════════════════════════════════════════════════════════════
+
+  - id: REQ-FULFILL-001
+    source: 客户微信-2026-08-03#拼团
+    module: 履约
+    text: >
+      后台客人付款过后 要可以看到货品的状态
+    domain: FULFILL
+    priority: P0
+    status: pending
+    note: 双向：客人在小程序看，后台店员推进。
+    tickets: [GZ-JP-106, GZ-JP-108, GZ-JP-109, GZ-JP-205]
+
+  - id: REQ-FULFILL-002
+    source: 客户微信-2026-08-03#拼团
+    module: 履约
+    text: >
+      状态分为 购买中 购买失败 等待官方发货 日本仓库已发货 清关中 国内分拣中 发货完毕
+    domain: FULFILL
+    priority: P0
+    status: pending
+    note: >
+      七态。其中「购买失败」是分支终态并触发退款（REQ-FULFILL-005）。
+      与订单支付状态正交（沿用 ADR-0007 双状态机范式）。
+    tickets: [GZ-JP-106, GZ-JP-205]
+
+  - id: REQ-FULFILL-003
+    source: 客户微信-2026-08-04#Q2
+    module: 履约
+    text: >
+      每一款商品都显示状态
+    domain: FULFILL
+    priority: P0
+    status: pending
+    note: >
+      ★ 关键粒度决策：状态挂在订单商品行上，不是订单上。一单内各款商品进度可不同。
+    tickets: [GZ-DOC-002, GZ-JP-106, GZ-JP-108, GZ-JP-205]
+
+  - id: REQ-FULFILL-004
+    source: 客户微信-2026-08-04#Q2
+    module: 履约
+    text: >
+      一个客人比如买了 30 款商品 我们发货了 20 款 那么 20 款都显示顺丰单号 xxxx
+      后台员工去填写
+    domain: FULFILL
+    priority: P0
+    status: pending
+    note: >
+      ★ 决定不建包裹表：运单号本身就是包裹标识，按 tracking_no 天然聚合。
+      后台操作 = 勾选一批商品行 → 填一个单号 → 一起置为发货完毕。员工手工填，不接快递 API。
+    tickets: [GZ-DOC-002, GZ-JP-106, GZ-JP-108, GZ-JP-205]
+
+  - id: REQ-FULFILL-005
+    source: 客户微信-2026-08-04#Q3
+    module: 履约
+    text: >
+      Q3 客人付了钱没抢到货 怎么办 —— 原路退回客人微信
+    domain: FULFILL
+    priority: P0
+    status: pending
+    note: >
+      因状态粒度是商品行（REQ-FULFILL-003），退款也必须是行级：
+      一单 30 款里 2 款失败只退这 2 款 → 微信部分退款。
+    depends_req: [REQ-FULFILL-003]
+    tickets: [GZ-DOC-002, GZ-JP-107, GZ-JP-205]
+
+  - id: REQ-FULFILL-006
+    source: 客户微信-2026-08-05#3
+    module: 履约
+    text: >
+      这个跟客人无关 多少包裹 单个还是多个 客人不能决定
+    domain: FULFILL
+    priority: P0
+    status: pending
+    note: >
+      客人侧无任何包裹选择/展示入口；后台自由决定怎么凑包裹，允许跨订单合并同一客人的货。
+    tickets: [GZ-JP-106, GZ-JP-108, GZ-JP-205]
+
+  - id: REQ-FULFILL-007
+    source: doc/16-日本代购需求确认单.md#待您回复-2
+    module: 履约
+    text: >
+      前面几个状态（日本仓库已发货 / 清关中 / 国内分拣中）是不是也是一批货一起往前推
+    domain: FULFILL
+    priority: P0
+    status: clarify
+    clarify: 前置状态是否也支持批量推进？逐款改 30 次店员是否可接受？
+    note: 我方判断做成批量（与发货那步同一种操作方式）。甲方未答，不阻塞。
+    tickets: [GZ-JP-106, GZ-JP-108]
+
+  # ══════════════════════════════════════════════════════════════════
+  # SNAP —— 代切（二期，全部 deferred）
+  # ══════════════════════════════════════════════════════════════════
+
+  - id: REQ-SNAP-001
+    source: 客户微信-2026-08-03#代切
+    module: 代切
+    text: >
+      代切：前面的部分就是实时购买日本网站的东西（煤炉）
+    domain: SNAP
+    priority: P1
+    status: deferred
+    defer_to: 二期
+    note: 甲方 2026-08-05 明确拼团先做、代切后续加。
+    tickets: []
+
+  - id: REQ-SNAP-002
+    source: 客户微信-2026-08-03#代切
+    module: 代切
+    text: >
+      （代切）没有上架部分
+    domain: SNAP
+    priority: P1
+    status: deferred
+    defer_to: 二期
+    tickets: []
+
+  - id: REQ-SNAP-003
+    source: 客户微信-2026-08-03#代切
+    module: 代切
+    text: >
+      客人可以从国内 不搭梯子就查到煤炉的货品 然后买
+    domain: SNAP
+    priority: P1
+    status: deferred
+    defer_to: 二期
+    note: 需站内搜索浏览煤炉在售商品 + 图片经自有备案域名代理（微信 downloadFile 合法域名必须 ICP 备案）。
+    tickets: []
+
+  - id: REQ-SNAP-004
+    source: 客户微信-2026-08-03#代切
+    module: 代切
+    text: >
+      后面的部分用同一个系统
+    domain: SNAP
+    priority: P1
+    status: deferred
+    defer_to: 二期
+    note: >
+      ★ 虽 defer，但约束一期架构：订单与履约状态机必须能容纳二期代切来源。
+      一期在订单行预留 source 维度（batch=拼团 / snap=代切），二期加值不改表。
+    tickets: [GZ-JP-105]
+
+  - id: REQ-SNAP-005
+    source: 客户微信-2026-08-04#Q4
+    module: 代切
+    text: >
+      Q4 煤炉的商品数据从哪来 —— C 自己直连煤炉 这样比较稳
+    domain: SNAP
+    priority: P1
+    status: deferred
+    defer_to: 二期
+    tickets: []
+
+  - id: REQ-SNAP-006
+    source: 客户微信-2026-08-04#Q5
+    module: 代切
+    text: >
+      Q5 抢单怎么执行 —— C 不是 C 的话这个项目推进不了 我会提供煤炉账号
+    domain: SNAP
+    priority: P1
+    status: deferred
+    defer_to: 二期
+    note: 甲方已知悉违反煤炉 TOS 与封号风险后仍选全自动下单，账号由甲方提供。
+    tickets: []
+
+  - id: REQ-SNAP-007
+    source: 客户微信-2026-08-04#细节项答复
+    module: 代切
+    text: >
+      代切怎么定价 —— 是一个浮动汇率 我们取现在的汇率然后 +0.05 或者多少
+      这样 国际汇率涨了会自动涨
+    domain: SNAP
+    priority: P1
+    status: deferred
+    defer_to: 二期
+    tickets: []
+
+  - id: REQ-SNAP-008
+    source: 客户微信-2026-08-05#1
+    module: 代切
+    text: >
+      应该需要日本有公司 这个后续我会让日本的员工去联系
+    domain: SNAP
+    priority: P1
+    status: deferred
+    defer_to: 二期
+    note: >
+      煤炉官方「越境EC事業者連携」计划：通过审核的事业者可获官方 API + 官方账号，
+      官方认可模式即「代理购入」。谈成则 REQ-SNAP-005/006 的灰色风险归零。甲方已安排日本员工推进。
+    tickets: []
+
+  - id: REQ-SNAP-009
+    source: 客户微信-2026-08-05#3
+    module: 代切
+    text: >
+      代切也是包邮的（但是代切还涉及到一个问题 我写到最后）
+    domain: SNAP
+    priority: P1
+    status: clarify
+    clarify: 甲方原话「代切还涉及到一个问题 我写到最后」但未写完，需补充。
+    defer_to: 二期
+    note: 已在确认单中回问并给了三个猜测选项供甲方选编号。不阻塞一期。
+    tickets: []
+
+  - id: REQ-SNAP-010
+    source: 客户微信-2026-08-05#5
+    module: 代切
+    text: >
+      如果官方那条不容易走通 我这边可以给 1-2 个 现在很大的那几个 app 是煤炉官方发的账号
+      有些小公司也在做这个 是自己注册的小账号
+    domain: SNAP
+    priority: P1
+    status: deferred
+    defer_to: 二期
+    tickets: []

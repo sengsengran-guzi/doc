@@ -1,0 +1,19 @@
+# dag_lint / accept 形态检查的项目侧配置
+# 用法：dag_lint.py 读它拿到本项目的公共字段全集，消除 DDL form 的误报
+
+systems:
+  default:
+    # ruoyi TenantEntity 自动填充的公共字段全集
+    # DDL form 的 accept 断言必须断齐这一套（漏 create_dept 到 INSERT 才炸，本项目踩过）
+    public_fields:
+      - create_by
+      - create_time
+      - update_by
+      - update_time
+      - create_dept      # 最易漏
+      - del_flag
+      - tenant_id        # 多租户，全表 '1001'
+
+# 本项目单后端单库，无需按 system 分组；ALTER 既有表的 ticket 不适用公共字段断言
+exempt_tickets:
+  - GZ-SYS-023   # ALTER gz_user 加列，不是建新表

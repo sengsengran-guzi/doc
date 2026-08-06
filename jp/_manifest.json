@@ -1,0 +1,59 @@
+{
+  "skill": "xuqiu",
+  "status": "needs_human",
+  "artifacts": {
+    "requirements": "doc/jp/requirements.yaml",
+    "blueprint": [
+      "doc/jp/authority/flows.yaml",
+      "doc/jp/authority/field-ssot.yaml",
+      "doc/jp/authority/ui-index.yaml"
+    ],
+    "rendered": "doc/jp/authority/_rendered/",
+    "tickets_dir": "doc/jp/tickets/",
+    "confirmation_sheets": {
+      "一期范围": {
+        "path": "doc/jp/confirmation/一期范围确认单.md",
+        "status": "pending"
+      }
+    },
+    "phase_plan": "doc/jp/phase-plan.md",
+    "round": 1,
+    "change_log": "doc/jp/change-log.md",
+    "design_options": {
+      "dir": "doc/jp/design-options/",
+      "review_html": "doc/jp/design-options/design-review.html",
+      "theme": {
+        "path": "doc/jp/design-options/00-theme.md",
+        "status": "confirmed",
+        "selected": "A"
+      },
+      "pages": {
+        "admin-fulfill-board": "A",
+        "mp-order-detail": "A",
+        "mp-home": "B",
+        "mp-product-detail": "A",
+        "mp-cart": "A"
+      },
+      "all_selected": true
+    }
+  },
+  "coverage": {
+    "total": 27,
+    "covered": 26,
+    "rate": 0.963,
+    "missing": [],
+    "clarify": [
+      "REQ-PROD-007",
+      "REQ-EVENT-002",
+      "REQ-FULFILL-007",
+      "REQ-SNAP-009"
+    ]
+  },
+  "summary": "38 条需求（一期在范围 27）→ 24 个 ticket，编成 7 个任务 D0-D6，约 18 人日；设计方案 6 项全部选定（基调 A + 页面 A/A/A/A/B）；3 条 lint 全绿；剩 REQ-PROD-007 待甲方答复",
+  "needs_human": {
+    "route": "client",
+    "why": "需求澄清项待甲方回复",
+    "what": "REQ-PROD-007（商品要不要多规格）是唯一有返工成本的澄清项，其余 3 项已按我方判断实现"
+  },
+  "next": "zhixing"
+}

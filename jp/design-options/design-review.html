@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>谷子宇宙拼团 · 设计评审</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#eceae5;color:#232120}
+  .wrap{max-width:1240px;margin:0 auto;padding:26px 20px 70px}
+
+  header h1{font-size:22px;margin-bottom:5px}
+  header .sub{color:#77706a;font-size:13px;margin-bottom:6px}
+  .flow{background:#fff;border:1px solid #e0dbd3;border-radius:10px;padding:12px 16px;font-size:12.5px;color:#5f5952;margin:14px 0 18px;line-height:1.9}
+  .flow b{color:#232120}
+  .flow code{background:#f2efe9;padding:1px 6px;border-radius:4px;font-size:11.5px}
+
+  nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;position:sticky;top:0;background:#eceae5;padding:10px 0;z-index:20;border-bottom:1px solid #dedad2}
+  nav button{font:inherit;font-size:13px;padding:7px 14px;border:1px solid #ddd8d0;background:#fff;border-radius:99px;cursor:pointer;color:#5f5952;display:flex;align-items:center;gap:6px}
+  nav button:hover{border-color:#bfb8ad}
+  nav button.on{background:#232120;border-color:#232120;color:#fff}
+  nav button .dot{width:6px;height:6px;border-radius:99px;background:#e0a92f}
+  nav button.done .dot{background:#3f9e6b}
+  nav button.on .dot{opacity:.85}
+
+  section{display:none}
+  section.on{display:block}
+  .sh{margin-bottom:16px}
+  .sh h2{font-size:18px;margin-bottom:4px}
+  .sh .q{color:#77706a;font-size:13px;max-width:820px;line-height:1.7}
+  .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;margin-bottom:8px}
+  .pill.wait{background:#fbf0d8;color:#8a6a1f}
+  .pill.done{background:#e0f0e7;color:#2f7350}
+
+  .cols{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start}
+  .col{flex:0 0 336px}
+  .cap{margin-bottom:9px}
+  .cap .k{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;padding:3px 9px;border-radius:99px;color:#fff;margin-bottom:6px}
+  .cap h3{font-size:15px;margin-bottom:3px}
+  .cap p{font-size:12.5px;color:#77706a;line-height:1.55}
+  .tk{margin-top:11px;font-size:12px;color:#77706a;line-height:1.85}
+  .tk b{color:#232120;font-weight:600}
+  .sw{display:flex;gap:5px;margin:6px 0}
+  .sw i{width:24px;height:24px;border-radius:5px;display:block;border:1px solid rgba(0,0,0,.08)}
+
+  .rec{background:#fff;border-left:3px solid #232120;border-radius:0 8px 8px 0;padding:13px 16px;margin-top:20px;font-size:13px;line-height:1.8;max-width:900px}
+  .rec h4{font-size:13px;margin-bottom:5px}
+  .rec .chosen{color:#2f7350;font-weight:600}
+
+  /* ===== 手机壳 ===== */
+  .ph{border-radius:22px;overflow:hidden;box-shadow:0 7px 22px rgba(0,0,0,.12)}
+  .nav-b{height:36px;display:flex;align-items:center;justify-content:center;font-size:12.5px}
+  .scr{height:530px;overflow:hidden;position:relative;padding-bottom:62px}
+  .in{height:100%;overflow-y:auto}
+
+  /* ===== 主题变量 ===== */
+  .A{--bg:#f5f3ef;--card:#fff;--ink:#1f1d1a;--sub:#8a8378;--line:#e6e1d8;--acc:#c8452f;--r:12px;--rs:8px;--sh:0 1px 3px rgba(0,0,0,.05);--navbg:#fff}
+  .B{--bg:#fbfaf7;--card:#fff;--ink:#2b2925;--sub:#9b958c;--line:#e2ded6;--acc:#a8321f;--r:2px;--rs:2px;--sh:none;--navbg:#fbfaf7}
+  .C{--bg:#fdf4f6;--card:#fff;--ink:#2d2430;--sub:#9b8fa3;--line:#f3e3ea;--acc:#e0518a;--r:18px;--rs:12px;--sh:0 3px 10px rgba(224,81,138,.13);--navbg:#fff}
+  .th{background:var(--bg);color:var(--ink)}
+  .th .nav-b{background:var(--navbg);border-bottom:1px solid var(--line);color:var(--sub)}
+
+  .ban{height:104px;margin:10px;border-radius:var(--r);background:linear-gradient(120deg,var(--acc),color-mix(in srgb,var(--acc) 55%,#fff));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;letter-spacing:3px}
+  .B .ban{background:none;border:1px solid var(--ink);color:var(--ink);letter-spacing:5px;font-size:11px;height:84px}
+  .st{display:flex;align-items:baseline;gap:7px;padding:4px 14px 8px}
+  .st b{font-size:15px}
+  .B .st{padding:10px 14px 8px;border-top:1px solid var(--line);margin-top:6px}
+  .B .st b{font-weight:500;letter-spacing:2px;font-size:13px}
+  .st span{font-size:11.5px;color:var(--sub)}
+  .ec{margin:0 10px 10px;background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+  .B .ec{border:1px solid var(--line)}
+  .ec .im{height:92px;background:#ddd7cd;display:flex;align-items:center;justify-content:center;color:#a89f92;font-size:11.5px}
+  .C .ec .im{background:#f6e4ec;color:#c99ab2}
+  .ec .tx{padding:9px 11px}
+  .ec .tx h5{font-size:13.5px;font-weight:600;margin-bottom:3px}
+  .B .ec .tx h5{font-weight:500}
+  .ec .tx p{font-size:11.5px;color:var(--sub)}
+  .badge{float:right;font-size:10.5px;padding:2px 8px;color:#fff;background:var(--acc);border-radius:99px}
+  .B .badge{border-radius:0;background:none;color:var(--acc);border:1px solid var(--acc);padding:1px 6px}
+  .gr{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 10px}
+  .pc{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+  .B .pc{border:1px solid var(--line)}
+  .pc .im{height:84px;background:#ded8ce;display:flex;align-items:center;justify-content:center;color:#a89f92;font-size:11px}
+  .C .pc .im{background:#f8e9f0;color:#cfa4bb}
+  .pc .tx{padding:7px 8px 9px}
+  .pc .tx h6{font-size:12px;line-height:1.35;height:32px;overflow:hidden;font-weight:500}
+  .pr{color:var(--acc);font-weight:700;font-size:15px;margin-top:4px}
+  .B .pr{font-weight:500;font-size:14px}
+  .pr small{font-size:9.5px;font-weight:400;color:var(--sub);background:color-mix(in srgb,var(--acc) 9%,#fff);padding:1px 5px;border-radius:3px;margin-left:4px}
+  .B .pr small{background:none;border:1px solid var(--line);border-radius:0}
+  .cta{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:9px 12px;display:flex;align-items:center;gap:9px}
+  .sum{line-height:1.25}
+  .sum i{font-style:normal;font-size:10.5px;color:var(--sub);display:block}
+  .sum b{color:var(--acc);font-size:17px}
+  .B .sum b{font-weight:500}
+  .btn{margin-left:auto;background:var(--acc);color:#fff;padding:0 20px;line-height:36px;border-radius:var(--rs);font-weight:600;font-size:14px}
+  .B .btn{border-radius:0;font-weight:400;letter-spacing:2px}
+  .C .btn{border-radius:99px;box-shadow:0 3px 9px rgba(224,81,138,.32)}
+
+  /* 商品详情专用 */
+  .hero{height:180px;background:linear-gradient(135deg,#d9d3c7,#c4bcae);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;letter-spacing:2px}
+  .dots{display:flex;gap:5px;justify-content:center;padding:8px 0;background:var(--card)}
+  .dots i{width:5px;height:5px;border-radius:99px;background:#d5cec2;display:block}
+  .dots i.on{background:var(--acc);width:14px}
+  .sec{background:var(--card);padding:14px;margin-bottom:8px}
+  .nm{font-size:16px;font-weight:600;line-height:1.4}
+  .big{font-size:26px;color:var(--acc);font-weight:700;margin-top:8px}
+  .big small{font-size:12px;font-weight:400;color:var(--sub);margin-left:6px;background:#f0ede6;padding:2px 7px;border-radius:4px}
+  .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13px}
+  .kv:last-child{border:0}
+  .kv span:first-child{color:var(--sub)}
+  .notice{background:#fdf6e8;border:1px solid #e8c98a;border-radius:8px;padding:12px;margin:0 0 8px}
+  .notice h6{font-size:13px;color:#8a6a1f;margin-bottom:6px}
+  .notice p{font-size:12.5px;color:#6b5a35;line-height:1.75}
+  .fold{background:var(--card);padding:12px 14px;margin-bottom:8px;display:flex;justify-content:space-between;font-size:13px;color:var(--sub)}
+  .imgs div{height:110px;background:#e0dad0;margin-bottom:6px;display:flex;align-items:center;justify-content:center;color:#a49a8c;font-size:12px}
+  .step{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:14px}
+  .step b{width:26px;text-align:center;background:#f7f5f1;font-weight:400;color:var(--sub);line-height:30px}
+  .step i{width:34px;text-align:center;font-style:normal;line-height:30px}
+  .btn2{flex:1;background:var(--acc);color:#fff;text-align:center;line-height:38px;border-radius:var(--rs);font-weight:600;font-size:15px}
+  .sheet{position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end}
+  .sheet-in{background:#fff;width:100%;border-radius:16px 16px 0 0;padding:18px 16px 14px}
+  .sheet-in h6{font-size:15px;margin-bottom:10px}
+  .chk{display:flex;gap:8px;align-items:flex-start;margin:14px 0;font-size:12.5px;color:#6b5a35}
+  .cbox{width:16px;height:16px;border:1.5px solid var(--acc);border-radius:4px;flex:0 0 auto;margin-top:1px}
+
+  /* 购物车专用 */
+  .grp{background:var(--card);margin-bottom:8px}
+  .grp-h{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);font-size:13px;font-weight:600}
+  .grp-h .cnt{margin-left:auto;font-weight:400;color:var(--sub);font-size:12px}
+  .it{display:flex;gap:10px;padding:10px 12px;align-items:center;border-bottom:1px solid #f2efe9}
+  .it:last-child{border:0}
+  .rbox{width:17px;height:17px;border:1.5px solid #cfc7ba;border-radius:99px;flex:0 0 auto}
+  .rbox.on{background:var(--acc);border-color:var(--acc);position:relative}
+  .rbox.on:after{content:"";position:absolute;left:5px;top:2px;width:4px;height:8px;border:solid #fff;border-width:0 1.6px 1.6px 0;transform:rotate(45deg)}
+  .thumb{width:50px;height:50px;background:#e0dad0;border-radius:6px;flex:0 0 auto}
+  .meta{flex:1;min-width:0}
+  .meta .n{font-size:12.5px;line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .meta .p{color:var(--acc);font-weight:600;margin-top:3px;font-size:13px}
+  .sstep{display:flex;border:1px solid var(--line);border-radius:5px;overflow:hidden;font-size:12px;flex:0 0 auto}
+  .sstep b{width:22px;text-align:center;background:#f7f5f1;font-weight:400;color:var(--sub);line-height:24px}
+  .sstep i{width:26px;text-align:center;font-style:normal;line-height:24px}
+  .dead{opacity:.45}
+  .bdg{font-size:11px;background:#eeeae3;color:var(--sub);padding:1px 6px;border-radius:3px;margin-left:5px}
+  .filter{display:flex;gap:6px;padding:8px 12px;background:var(--card);margin-bottom:8px;overflow-x:auto}
+  .chip{font-size:12px;padding:5px 12px;border-radius:99px;background:#f0ede6;color:var(--sub);white-space:nowrap}
+  .chip.on{background:var(--acc);color:#fff}
+  .allc{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub)}
+
+  /* ASCII 结构块 */
+  pre.ascii{background:#fff;border:1px solid #e0dbd3;border-radius:9px;padding:14px 16px;font:12px/1.75 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-x:auto;color:#3a3733}
+  .aw{flex:0 0 400px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>谷子宇宙拼团 · 设计评审</h1>
+  <p class="sub">日本代购一期 · 5 个关键页 + 1 个全局基调 &nbsp;|&nbsp; 更新 2026-08-06</p>
+  <div class="flow">
+    <b>两层顺序，不能颠倒：</b>
+    <code>① 视觉基调（全局一次）</code> → <code>② 关键页面 IA / 布局</code> → <code>③ 拆 ticket</code><br>
+    页面方案建在视觉基调之上。基调没定就出页面方案，每个方案都隐含一个没人确认过的主题。<br>
+    <span style="color:#8a6a1f">● 待选</span> &nbsp; <span style="color:#2f7350">● 已选定</span>
+  </div>
+</header>
+
+<nav id="nav">
+  <button class="on done" data-t="theme"><i class="dot"></i>① 视觉基调</button>
+  <button class="done" data-t="pd"><i class="dot"></i>商品详情</button>
+  <button class="done" data-t="cart"><i class="dot"></i>购物车</button>
+  <button class="done" data-t="board"><i class="dot"></i>履约看板</button>
+  <button class="done" data-t="od"><i class="dot"></i>订单详情</button>
+  <button class="done" data-t="home"><i class="dot"></i>首页</button>
+</nav>
+
+<!-- ══════════════ ① 视觉基调 ══════════════ -->
+<section class="on" id="theme">
+  <div class="sh">
+    <span class="pill done">已选定 · 方案 A</span>
+    <h2>① 视觉基调（全局，先于所有页面方案）</h2>
+    <p class="q">同一个首页、同一组组件，三套设计 token 渲染。选定后这套 token 就是新小程序的视觉基准。
+      这是<b>新小程序、新品牌</b>，视觉不必然沿用现有「谷子宇宙」小程序 —— 但也可以沿用，这个选择要显式做。</p>
+  </div>
+  <div class="cols">
+
+    <div class="col">
+      <div class="cap"><span class="k" style="background:#c8452f">方案 A</span>
+        <h3>延续现有 · 暖白清爽</h3>
+        <p>和现在那个「谷子宇宙」小程序同一套皮。米白底、白卡、柔和阴影、中圆角、克制朱红。</p></div>
+      <div class="ph th A">
+        <div class="nav-b">谷子宇宙拼团</div>
+        <div class="scr"><div class="in">
+          <div class="ban">当季新场 · 集单中</div>
+          <div class="st"><b>进行中的场</b><span>2 个</span></div>
+          <div class="ec"><div class="im">场封面</div><div class="tx"><h5>8月夏日限定场<span class="badge">进行中</span></h5><p>8/01 – 8/10 · 42 款</p></div></div>
+          <div class="st"><b>热门商品</b></div>
+          <div class="gr">
+            <div class="pc"><div class="im">商品图</div><div class="tx"><h6>初音未来 10周年 亚克力立牌</h6><div class="pr">¥128<small>包邮</small></div></div></div>
+            <div class="pc"><div class="im">商品图</div><div class="tx"><h6>鹤丸国永 亚克力挂件</h6><div class="pr">¥89<small>包邮</small></div></div></div>
+          </div>
+        </div><div class="cta"><div class="sum"><i>已选 3 款 · 已包邮</i><b>¥345</b></div><div class="btn">去结算</div></div></div>
+      </div>
+      <div class="tk">
+        <div class="sw"><i style="background:#c8452f"></i><i style="background:#f5f3ef"></i><i style="background:#fff"></i><i style="background:#e6e1d8"></i></div>
+        <b>主色</b> #c8452f 朱红　<b>底</b> #f5f3ef 米白<br>
+        <b>圆角</b> 卡 12 / 按钮 8　<b>阴影</b> 极淡<br>
+        <b>气质</b> 稳、干净、不抢商品图<br>
+        <b>成本</b> 最低 —— 直接复用现有 c-tokens
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="cap"><span class="k" style="background:#a8321f">方案 B</span>
+        <h3>日系杂志 · 克制留白</h3>
+        <p>近乎无阴影、直角细线、字距拉开、低饱和。像日本的商品目录册，弱化界面感、突出货本身。</p></div>
+      <div class="ph th B">
+        <div class="nav-b">谷子宇宙拼团</div>
+        <div class="scr"><div class="in">
+          <div class="ban">SUMMER SELECTION</div>
+          <div class="st"><b>进行中的场</b><span>2</span></div>
+          <div class="ec"><div class="im">场封面</div><div class="tx"><h5>8月夏日限定场<span class="badge">进行中</span></h5><p>8/01 – 8/10 · 42 款</p></div></div>
+          <div class="st"><b>热门商品</b></div>
+          <div class="gr">
+            <div class="pc"><div class="im">商品图</div><div class="tx"><h6>初音未来 10周年 亚克力立牌</h6><div class="pr">¥128<small>包邮</small></div></div></div>
+            <div class="pc"><div class="im">商品图</div><div class="tx"><h6>鹤丸国永 亚克力挂件</h6><div class="pr">¥89<small>包邮</small></div></div></div>
+          </div>
+        </div><div class="cta"><div class="sum"><i>已选 3 款 · 已包邮</i><b>¥345</b></div><div class="btn">去结算</div></div></div>
+      </div>
+      <div class="tk">
+        <div class="sw"><i style="background:#a8321f"></i><i style="background:#fbfaf7"></i><i style="background:#fff"></i><i style="background:#e2ded6"></i></div>
+        <b>主色</b> #a8321f 暗朱　<b>底</b> #fbfaf7 近白<br>
+        <b>圆角</b> 2（近直角）　<b>阴影</b> 无，全靠细线<br>
+        <b>气质</b> 高级、克制，贴「日本代购」调性<br>
+        <b>成本</b> 中 —— 重写 token；留白多，单屏信息量少
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="cap"><span class="k" style="background:#e0518a">方案 C</span>
+        <h3>谷圈甜系 · 高饱和圆润</h3>
+        <p>粉调底、大圆角、彩色投影、胶囊按钮。贴二次元周边受众的审美，最有「谷子」味。</p></div>
+      <div class="ph th C">
+        <div class="nav-b">谷子宇宙拼团</div>
+        <div class="scr"><div class="in">
+          <div class="ban">当季新场 · 集单中</div>
+          <div class="st"><b>进行中的场</b><span>2 个</span></div>
+          <div class="ec"><div class="im">场封面</div><div class="tx"><h5>8月夏日限定场<span class="badge">进行中</span></h5><p>8/01 – 8/10 · 42 款</p></div></div>
+          <div class="st"><b>热门商品</b></div>
+          <div class="gr">
+            <div class="pc"><div class="im">商品图</div><div class="tx"><h6>初音未来 10周年 亚克力立牌</h6><div class="pr">¥128<small>包邮</small></div></div></div>
+            <div class="pc"><div class="im">商品图</div><div class="tx"><h6>鹤丸国永 亚克力挂件</h6><div class="pr">¥89<small>包邮</small></div></div></div>
+          </div>
+        </div><div class="cta"><div class="sum"><i>已选 3 款 · 已包邮</i><b>¥345</b></div><div class="btn">去结算</div></div></div>
+      </div>
+      <div class="tk">
+        <div class="sw"><i style="background:#e0518a"></i><i style="background:#fdf4f6"></i><i style="background:#fff"></i><i style="background:#f3e3ea"></i></div>
+        <b>主色</b> #e0518a 樱桃粉　<b>底</b> #fdf4f6 淡粉<br>
+        <b>圆角</b> 卡 18 / 按钮胶囊　<b>阴影</b> 带主色的彩投<br>
+        <b>气质</b> 甜、活泼，客群贴合度最高<br>
+        <b>成本</b> 中 —— 新 token；与现有小程序视觉断裂
+      </div>
+    </div>
+
+  </div>
+  <div class="rec">
+    <h4 class="chosen">Kevin 选定：方案 A（延续现有 · 暖白清爽）· 2026-08-06</h4><b>选定理由</b>：复用现有 c-tokens，两个小程序视觉一致，客人两边跑认知成本低；省下的时间留给业务链路。<br><b>落地</b>：GZ-JP-001 直接复制现有 src/style/，工期不增。<br><br><b>原 AI 推荐（存档）</b>：A，置信度不高 —— 
+    我倾向 A 主要是<b>工程理由</b>（省事、和现有小程序一致），而视觉该由品牌意图驱动。三条判断供参考：<br>
+    · 两个小程序要让客人感知为<b>同一家店</b> → A（同一批客人两边跑，视觉一致降认知成本）<br>
+    · 想立<b>「日本代购很专业」</b>的印象 → B（谷圈对日系目录册那套视觉有天然信任感，且弱化界面突出商品图）<br>
+    · 目标是<b>拉新、社群里显眼</b> → C（截图传播最抓眼，代价是和现有小程序断裂）<br>
+    <b>影响面</b>：选 B/C 波及 GZ-JP-001（不能直接复制现有 style）+ 全部 mp 页面 ticket，工期 +0.5~1 天；
+    <b>已选定的三个页面方案不受影响</b>（IA 与主题无关，仅换皮）。选 A 则以上全为零。
+  </div>
+</section>
+
+<!-- ══════════════ 商品详情 ══════════════ -->
+<section id="pd">
+  <div class="sh">
+    <span class="pill done">已选定 · 方案 A</span>
+    <h2>商品详情 —— 注意事项怎么放</h2>
+    <p class="q">甲方原话「货物需要有一些额外的注意事项等」。谷子预订的注意事项通常是「不支持退款」「到货可能延期」
+      「介意者慎拍」这类风险告知 —— 放法直接决定后面会不会有纠纷。</p>
+  </div>
+  <div class="cols">
+    <div class="col">
+      <div class="cap"><span class="k" style="background:#2c5b8a">方案 A</span><h3>被动展示</h3>
+        <p>独立醒目区块，在底部 CTA 之上、默认展开不折叠。客人滚到加购按钮前必然路过。</p></div>
+      <div class="ph th A">
+        <div class="nav-b">商品详情</div>
+        <div class="scr"><div class="in">
+          <div class="hero">商品主图</div>
+          <div class="dots"><i class="on"></i><i></i><i></i></div>
+          <div class="sec"><div class="nm">【8月场】初音未来 10周年 亚克力立牌</div><div class="big">¥128 <small>包邮</small></div></div>
+          <div class="sec" style="padding-top:4px">
+            <div class="kv"><span>预计到货</span><span>8月下旬</span></div>
+            <div class="kv"><span>所属场</span><span>8月夏日限定场</span></div></div>
+          <div class="notice" style="margin:0 10px 8px"><h6>⚠ 注意事项</h6>
+            <p>本商品为日本代购预订品，下单后不支持退款。<br>预计到货时间为估算，可能因日本发货或清关延误。<br>介意者请勿下单。</p></div>
+          <div class="sec imgs"><div>商品图集 1</div><div>商品图集 2</div></div>
+        </div><div class="cta"><div class="step"><b>−</b><i>1</i><b>+</b></div><div class="btn2">加入购物车</div></div></div>
+      </div>
+      <div class="tk"><b>强</b>：零额外操作，加购顺畅，30 款连买不烦<br><b>弱</b>：客人可以不读就下单，事后「我没看到」难举证</div>
+    </div>
+
+    <div class="col">
+      <div class="cap"><span class="k" style="background:#9a4128">方案 B</span><h3>强制确认</h3>
+        <p>详情页里折叠；点「加入购物车」时弹确认层，必须勾「我已阅读」才能加购。</p></div>
+      <div class="ph th A">
+        <div class="nav-b">商品详情</div>
+        <div class="scr"><div class="in">
+          <div class="hero">商品主图</div>
+          <div class="dots"><i class="on"></i><i></i><i></i></div>
+          <div class="sec"><div class="nm">【8月场】初音未来 10周年 亚克力立牌</div><div class="big">¥128 <small>包邮</small></div></div>
+          <div class="sec" style="padding-top:4px">
+            <div class="kv"><span>预计到货</span><span>8月下旬</span></div>
+            <div class="kv"><span>所属场</span><span>8月夏日限定场</span></div></div>
+          <div class="fold"><span>注意事项</span><span>展开 ›</span></div>
+          <div class="sec imgs"><div>商品图集 1</div></div>
+        </div>
+        <div class="sheet"><div class="sheet-in">
+          <h6>下单前请确认</h6>
+          <div class="notice" style="margin:0"><p>本商品为日本代购预订品，下单后不支持退款。<br>预计到货时间为估算，可能因日本发货或清关延误。<br>介意者请勿下单。</p></div>
+          <div class="chk"><span class="cbox"></span><span>我已阅读并同意上述注意事项</span></div>
+          <div class="btn2">确认加入购物车</div>
+        </div></div></div>
+      </div>
+      <div class="tk"><b>强</b>：勾选可留痕，纠纷时有据可查<br><b>弱</b>：每加一款弹一次，买 30 款要勾 30 次，高频加购体感差</div>
+    </div>
+  </div>
+  <div class="rec">
+    <h4 class="chosen">Kevin 选定：方案 A · 2026-08-06</h4>配合<b>下单确认页勾一次</b>「已阅读不支持退款」做举证。<br><br><b>原推荐理由（存档）</b>：这一期核心场景是「一个客人买 30 款」，B 的摩擦会被放大 30 倍。真正的风险告知位其实在
+    <b>下单确认页</b> —— 那里加一次「已阅读不支持退款」的勾选就够了（旧预购模块就是这么做的），不必每次加购都拦。<br>
+    如果担心举证，折中：<b>A 的展示形态 + 下单确认页勾一次</b>。我倾向这个组合。
+  </div>
+</section>
+
+<!-- ══════════════ 购物车 ══════════════ -->
+<section id="cart">
+  <div class="sh">
+    <span class="pill done">已选定 · 方案 A</span>
+    <h2>购物车 —— 30 款怎么组织</h2>
+    <p class="q">一期唯一的高频批量操作页。甲方原话「一个客人比如买了 30 款商品」。</p>
+  </div>
+  <div class="cols">
+    <div class="col">
+      <div class="cap"><span class="k" style="background:#2c5b8a">方案 A</span><h3>按场分组</h3>
+        <p>商品按所属场分组，组头有场名 + 款数 + 组级全选。</p></div>
+      <div class="ph th A">
+        <div class="nav-b">购物车（12）</div>
+        <div class="scr"><div class="in" style="padding-top:8px">
+          <div class="grp">
+            <div class="grp-h"><span class="rbox on"></span>8月夏日限定场<span class="cnt">8 款</span></div>
+            <div class="it"><span class="rbox on"></span><div class="thumb"></div><div class="meta"><div class="n">初音未来 10周年 亚克力立牌</div><div class="p">¥128</div></div><div class="sstep"><b>−</b><i>2</i><b>+</b></div></div>
+            <div class="it"><span class="rbox on"></span><div class="thumb"></div><div class="meta"><div class="n">鹤丸国永 亚克力挂件</div><div class="p">¥89</div></div><div class="sstep"><b>−</b><i>1</i><b>+</b></div></div>
+            <div class="it dead"><span class="rbox"></span><div class="thumb"></div><div class="meta"><div class="n">限定征 吧唧<span class="bdg">已失效</span></div><div class="p">¥403</div></div><div class="sstep"><b>−</b><i>1</i><b>+</b></div></div>
+          </div>
+          <div class="grp">
+            <div class="grp-h"><span class="rbox"></span>秋叶原扫货场<span class="cnt">4 款</span></div>
+            <div class="it"><span class="rbox"></span><div class="thumb"></div><div class="meta"><div class="n">咒术回战 拉卡套餐</div><div class="p">¥350</div></div><div class="sstep"><b>−</b><i>1</i><b>+</b></div></div>
+            <div class="it"><span class="rbox"></span><div class="thumb"></div><div class="meta"><div class="n">挂轴 B 款</div><div class="p">¥78</div></div><div class="sstep"><b>−</b><i>1</i><b>+</b></div></div>
+          </div>
+        </div><div class="cta"><span class="allc"><i class="rbox"></i>全选</span><div class="sum" style="margin-left:auto;text-align:right"><i>已包邮 · 合计</i><b>¥345</b></div><div class="btn" style="margin-left:8px">去结算(3)</div></div></div>
+      </div>
+      <div class="tk"><b>强</b>：场是甲方的组织单位，一眼看清「这个场买了几件」；场有截止时间，快闭场的能优先结<br><b>弱</b>：场多时组头占屏，滚动路径变长</div>
+    </div>
+
+    <div class="col">
+      <div class="cap"><span class="k" style="background:#9a4128">方案 B</span><h3>平铺 + 场筛选</h3>
+        <p>顶部场 chip 筛选，下面平铺所有商品。</p></div>
+      <div class="ph th A">
+        <div class="nav-b">购物车（12）</div>
+        <div class="scr"><div class="in" style="padding-top:8px">
+          <div class="filter"><span class="chip on">全部 12</span><span class="chip">8月夏日限定场 8</span><span class="chip">秋叶原扫货场 4</span></div>
+          <div class="grp">
+            <div class="it"><span class="rbox on"></span><div class="thumb"></div><div class="meta"><div class="n">初音未来 10周年 亚克力立牌</div><div class="p">¥128</div></div><div class="sstep"><b>−</b><i>2</i><b>+</b></div></div>
+            <div class="it"><span class="rbox on"></span><div class="thumb"></div><div class="meta"><div class="n">鹤丸国永 亚克力挂件</div><div class="p">¥89</div></div><div class="sstep"><b>−</b><i>1</i><b>+</b></div></div>
+            <div class="it"><span class="rbox on"></span><div class="thumb"></div><div class="meta"><div class="n">咒术回战 拉卡套餐</div><div class="p">¥350</div></div><div class="sstep"><b>−</b><i>1</i><b>+</b></div></div>
+            <div class="it"><span class="rbox"></span><div class="thumb"></div><div class="meta"><div class="n">挂轴 B 款</div><div class="p">¥78</div></div><div class="sstep"><b>−</b><i>1</i><b>+</b></div></div>
+            <div class="it dead"><span class="rbox"></span><div class="thumb"></div><div class="meta"><div class="n">限定征 吧唧<span class="bdg">已失效</span></div><div class="p">¥403</div></div><div class="sstep"><b>−</b><i>1</i><b>+</b></div></div>
+          </div>
+        </div><div class="cta"><span class="allc"><i class="rbox on"></i>全选</span><div class="sum" style="margin-left:auto;text-align:right"><i>已包邮 · 合计</i><b>¥567</b></div><div class="btn" style="margin-left:8px">去结算(3)</div></div></div>
+      </div>
+      <div class="tk"><b>强</b>：列表最紧凑，30 款滚动路径最短；切场也快<br><b>弱</b>：<b>没有场的边界感</b>，客人分不清哪几件同场，而场是有截止时间的</div>
+    </div>
+  </div>
+  <div class="rec">
+    <h4 class="chosen">Kevin 选定：方案 A · 2026-08-06</h4><b>理由</b>：场有<b>截止时间</b> —— 快闭场的那批得优先结算，B 的平铺让客人看不出这个紧迫性。
+    而且下单后订单里也是按场展示的，购物车与订单结构一致，认知成本低。
+  </div>
+</section>
+
+<!-- ══════════════ 履约看板（已选） ══════════════ -->
+<section id="board">
+  <div class="sh">
+    <span class="pill done">已选定 · 方案 A</span>
+    <h2>admin 履约看板</h2>
+    <p class="q">店员每天开的主操作页。admin 走 ruoyi / Element Plus 默认审美（项目纪律：不引用 mockup、不调样式），
+      所以这里只对比信息架构。</p>
+  </div>
+  <div class="cols">
+    <div class="aw">
+      <div class="cap"><span class="k" style="background:#2f7350">方案 A ✓ 已选</span><h3>按客人聚合</h3>
+        <p>客人为可展开行组，组内是他名下全部商品行（可跨订单）。</p></div>
+<pre class="ascii">▼ 张三  共 12 款 · 待处理 8   [批量推进][批量发货]
+  ☐ 初音吧唧   ×2  JPO-0805-001  日本仓已发货
+  ☐ 鹤丸挂件   ×1  JPO-0805-001  清关中
+  ☐ 拉卡套餐   ×1  JPO-0806-003  国内分拣中  ←跨订单
+  ☑ 亚克力牌   ×3  JPO-0806-003  国内分拣中
+▶ 李四  共 30 款 · 待处理 30
+▶ 王五  共  3 款 · 待处理  0</pre>
+      <div class="tk"><b>强</b>：贴合打包决策 —— 店员问的就是「这个客人哪些货到齐了」，跨订单凑包裹天然成立<br><b>弱</b>：实现较复杂（分组表格 + 组内多选）</div>
+    </div>
+    <div class="aw">
+      <div class="cap"><span class="k" style="background:#9a9a9a">方案 B</span><h3>平铺商品行</h3>
+        <p>一行一个商品，客人只是其中一列，靠筛选和排序看。</p></div>
+<pre class="ascii">客人   商品        数量 订单          状态
+☐ 张三  初音吧唧      2  JPO-0805-001  日本仓已发货
+☐ 李四  拉卡套餐      1  JPO-0805-002  购买中
+☐ 张三  鹤丸挂件      1  JPO-0805-001  清关中
+☐ 王五  亚克力牌      3  JPO-0806-001  国内分拣中
+[筛选: 客人▼ 状态▼ 场▼]  [批量推进][批量发货]</pre>
+      <div class="tk"><b>强</b>：标准 ruoyi 表格 + 多选，实现最简<br><b>弱</b>：店员要自己在脑子里把同一个客人的货拼起来，30 款时极易漏发错发</div>
+    </div>
+  </div>
+  <div class="rec"><h4 class="chosen">Kevin 选定：方案 A（按客人聚合）· 2026-08-05</h4>
+    落地约束：组内可多选，<b>跨组勾选置灰</b>（一个运单号只属一个客人）；组头显示「客人名 · 共 N 款 · 待处理 M」；
+    批量标记购买失败需<b>二次确认</b>（触发真实退款，不可逆）。</div>
+</section>
+
+<!-- ══════════════ 订单详情（已选） ══════════════ -->
+<section id="od">
+  <div class="sh">
+    <span class="pill done">已选定 · 方案 A</span>
+    <h2>mp 订单详情</h2>
+    <p class="q">一单可含 30 款，每款状态可能不同 —— 呈现方式直接决定这一页能不能看。</p>
+  </div>
+  <div class="cols">
+    <div class="aw">
+      <div class="cap"><span class="k" style="background:#2f7350">方案 A ✓ 已选</span><h3>按履约状态分组</h3>
+        <p>同状态归一组，已发货组的运单号在组头只出现一次。</p></div>
+<pre class="ascii">订单 JPO-0805-001 · 实付 ¥1,280
+
+── 已发货 3 款 ──────────────
+顺丰 SF1234567890  [复制]
+  [图] 初音吧唧  ×2   ¥240
+  [图] 鹤丸挂件  ×1   ¥89
+  [图] 亚克力牌  ×1   ¥120
+
+── 清关中 2 款 ──────────────
+  [图] 拉卡套餐  ×1   ¥350
+  [图] 挂轴      ×1   ¥78
+
+── 购买失败 1 款 ────────────
+  [图] 限定征  ×1  已退 ¥403</pre>
+      <div class="tk"><b>强</b>：30 款时一眼看清「还差几款」；同一包裹单号不重复<br><b>弱</b>：需前端分组 + 二级按单号分子组</div>
+    </div>
+    <div class="aw">
+      <div class="cap"><span class="k" style="background:#9a9a9a">方案 B</span><h3>平铺，每行一个状态标签</h3>
+        <p>按下单顺序平铺 30 行，已发货行各自带单号。</p></div>
+<pre class="ascii">订单 JPO-0805-001 · 实付 ¥1,280
+
+[图] 初音吧唧  ×2  ¥240   已发货
+     顺丰 SF1234567890 [复制]
+[图] 鹤丸挂件  ×1  ¥89    已发货
+     顺丰 SF1234567890 [复制]    ← 重复
+[图] 亚克力牌  ×1  ¥120   已发货
+     顺丰 SF1234567890 [复制]    ← 重复
+[图] 拉卡套餐  ×1  ¥350   清关中
+[图] 挂轴      ×1  ¥78    清关中
+[图] 限定征    ×1  已退¥403 购买失败</pre>
+      <div class="tk"><b>强</b>：实现最简<br><b>弱</b>：页面极长，同一运单号重复十几次，客人要自己数还剩几款</div>
+    </div>
+  </div>
+  <div class="rec"><h4 class="chosen">Kevin 选定：方案 A（按状态分组）· 2026-08-05</h4>
+    落地约束：组按状态链顺序排；同状态但单号不同时按单号再分子组；组内行不再重复状态标签；
+    <b>全页不出现「包裹」二字</b>（客人不感知打包方式）。</div>
+</section>
+
+<!-- ══════════════ 首页（已选） ══════════════ -->
+<section id="home">
+  <div class="sh">
+    <span class="pill done">已选定 · 方案 B</span>
+    <h2>mp 首页</h2>
+    <p class="q">tabbar 第一格。<b>这一页 Kevin 推翻了 AI 推荐</b> —— AI 推 A（裸场列表），Kevin 选 B（聚合）。</p>
+  </div>
+  <div class="cols">
+    <div class="aw">
+      <div class="cap"><span class="k" style="background:#9a9a9a">方案 A</span><h3>裸场列表</h3>
+        <p>tabbar 第一格直接就是场列表，无其他模块。</p></div>
+<pre class="ascii">┌─ tabbar: 首页 | 我的 ─────┐
+│ 【进行中】                │
+│ [封面] 8月夏日限定场      │
+│        8/1 - 8/10         │
+│ [封面] 秋叶原扫货场       │
+│        8/3 - 8/12         │
+│ 【即将开始】              │
+│ [封面] 中元祭特场         │
+└───────────────────────────┘</pre>
+      <div class="tk"><b>强</b>：一期极简，场本身就是内容<br><b>弱</b>：没有运营位，也没有订单快捷入口</div>
+    </div>
+    <div class="aw">
+      <div class="cap"><span class="k" style="background:#2f7350">方案 B ✓ 已选</span><h3>聚合首页</h3>
+        <p>轮播 banner + 进行中的场 + 我的订单快捷入口。</p></div>
+<pre class="ascii">┌─ tabbar: 首页 | 我的 ─────┐
+│ ◀ [轮播 banner] ▶         │
+│                           │
+│ 进行中的场                │
+│ [封面] 8月夏日限定场      │
+│ [封面] 秋叶原扫货场       │
+│                           │
+│ ┌─ 我的订单 ─── 待收货 3 ┐│
+│ └─────────────────────────┘│
+└───────────────────────────┘</pre>
+      <div class="tk"><b>强</b>：像完整电商首页，有运营位可用<br><b>弱</b>：一期无运营内容，banner 容易是空的；多 0.5-1 天</div>
+    </div>
+  </div>
+  <div class="rec"><h4 class="chosen">Kevin 选定：方案 B（聚合首页）· 2026-08-05</h4>
+    <b>选 B 的主要风险必须防住</b>：banner 无配置时降级为<b>单张默认图</b>，绝不显示空轮播或占位骨架。
+    banner 走 sys_config 后台可配；订单入口带待收货款数角标。</div>
+</section>
+
+</div>
+<script>
+  const nav = document.getElementById('nav');
+  nav.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    nav.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+    document.querySelectorAll('section').forEach(s => s.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById(b.dataset.t).classList.add('on');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+# UI 权威索引 —— 谷子宇宙拼团（日本代购一期）
+# 锚前缀 UI:<page-id>（区块 UI:<page-id>.<block>）
+# mp = 新小程序 code/main/miniapp-jp/；admin = 既有 plus-ui
+
+kind: ui
+
+records:
+
+  # ══════════════════════════════════════════════════════════════════
+  - id: UI:global.theme
+    title: 视觉基调（全局设计 token）
+    status: active
+    body: |
+      **方案 A · 延续现有「暖白清爽」** —— 2026-08-06 Kevin 拍板（design-options/00-theme.md）。
+
+      直接复用现有 miniapp 的 c-tokens，两个小程序视觉一致：同一批客人在拼豆/回收和拼团之间
+      来回跑，视觉一致降低认知成本；省下的时间留给业务链路。
+
+      token 真源 = `code/main/miniapp-jp/src/style/`（从现有 miniapp 复制，不改值）：
+      主色 #c8452f 朱红 · 底 #f5f3ef 米白 · 卡片 #fff · 描边 #e6e1d8
+      圆角 卡 12 / 按钮 8 · 阴影极淡 0 1px 3px rgba(0,0,0,.05)
+
+      被否决：B 日系杂志（克制留白，气质更贴日本代购但要重写 token）、
+      C 谷圈甜系（高饱和圆润，客群贴合度最高但与现有小程序视觉断裂）。
+      两者均 +0.5~1 天且需新写 token；未来若甲方要独立品牌视觉可复活。
+
+      ★ 组件禁止硬编码 hex，一律走 token 变量。
+    related_reqs: [REQ-SYS-001, REQ-SYS-005]
+
+  # ══════════════════════════════════════════════════════════════════
+  # 小程序（mp）—— 客人侧
+  # ══════════════════════════════════════════════════════════════════
+
+  - id: UI:mp.home
+    title: 首页（聚合）
+    status: active
+    body: |
+      tabbar 第一格。自上而下三块：轮播 banner → 进行中的场 → 我的订单快捷入口。
+      banner 走 sys_config 后台可配（沿用现有 miniapp 的 gz.home.banners 做法）；
+      一期无运营内容时降级为单张默认图，不留空白位。
+      场区块纵向卡片流，分「进行中 / 即将开始 / 已结束」三组，进行中置顶，点卡片进场。
+    steps:
+      - id: UI:mp.home.banner
+        form: 轮播
+        note: sys_config 可配；无配置时显示单张默认图，不显示空轮播
+      - id: UI:mp.home.event_card
+        form: 卡片
+        note: 封面图 16:9 + 场名 + 时间范围 + 状态角标（进行中=主色，即将开始/已结束=灰）
+      - id: UI:mp.home.order_entry
+        form: 快捷入口
+        note: 「我的订单」入口 + 待收货款数角标，点进 UI:mp.order_list
+    related_reqs: [REQ-EVENT-001, REQ-SYS-001]
+
+  - id: UI:mp.event_detail
+    title: 场详情 · 商品列表
+    status: active
+    body: |
+      顶部场信息（封面/名称/倒计时或已结束提示），下方商品两列网格，上拉加载。
+      商品卡：主图 + 名称 + 价格 + 预计到货。点进商品详情。
+      场已结束时：商品仍可浏览，加购与下单入口置灰并提示「本场已结束」。
+    steps:
+      - id: UI:mp.event_detail.product_grid
+        form: 两列网格
+        note: 无筛选无排序（一期极简）；场内商品量级预计几十到上百，上拉分页
+    related_reqs: [REQ-EVENT-001, REQ-PROD-001]
+
+  - id: UI:mp.product_detail
+    title: 商品详情
+    status: active
+    body: |
+      顶部主图轮播（主图 + 图集）→ 名称 → 价格（大字，标注「包邮」）→ 预计到货时间 →
+      ★ 注意事项（独立醒目区块，不折叠）→ 底部固定 CTA「加入购物车」。
+      一期不做富文本详情，商品说明用图集承载。
+    steps:
+      - id: UI:mp.product_detail.notice
+        form: 醒目区块
+        note: >
+          ★ 甲方明确要求的「额外注意事项」。必须在 CTA 之上、默认展开不折叠，
+          底色区分于正文。这是下单前的风险告知位。
+      - id: UI:mp.product_detail.cta
+        form: 底部固定条
+        note: 价格 + 数量 stepper + 「加入购物车」。场已结束时置灰
+    related_reqs: [REQ-PROD-003, REQ-PROD-004, REQ-PROD-005, REQ-ORDER-004]
+
+  - id: UI:mp.cart
+    title: 购物车
+    status: active
+    body: |
+      按场分组列出购物车项：商品图 + 名 + 单价 + 数量 stepper + 删除 + 单选框。
+      底部：全选 + 合计金额（标注「已包邮」）+ 「去结算」。
+      失效项（场已结束 / 商品已下架）置灰并标「已失效」，不计入合计、不可勾选。
+    steps:
+      - id: UI:mp.cart.group
+        form: 按场分组
+        note: 跨场商品可共存于同一购物车，同一订单可含多场商品
+      - id: UI:mp.cart.summary
+        form: 底部固定条
+        note: ★ 只有商品合计一行，**无运费行**（全包邮）
+    related_reqs: [REQ-ORDER-005, REQ-ORDER-004]
+
+  - id: UI:mp.order_confirm
+    title: 下单确认
+    status: active
+    body: |
+      收货地址（选择/新增）→ 商品清单（只读）→ 备注输入 → 合计 → 「提交订单」→ 拉起微信支付。
+      提交前后端重算金额并复校：场仍 open、商品仍 on_shelf、价格未变；不一致则退回购物车提示。
+    steps:
+      - id: UI:mp.order_confirm.summary
+        form: 金额区
+        note: ★ 只有「商品合计」与「实付」两行，**无运费行**
+    related_reqs: [REQ-ORDER-003, REQ-ORDER-004, REQ-ORDER-006]
+
+  - id: UI:mp.order_list
+    title: 我的订单 · 列表
+    status: active
+    body: |
+      按状态分 tab：全部 / 待支付 / 进行中 / 已完成。
+      订单卡：订单号 + 下单时间 + 前 N 个商品缩略图 + 商品款数 + 实付金额 + 订单状态。
+      点进详情。
+    related_reqs: [REQ-FULFILL-001]
+
+  - id: UI:mp.order_detail
+    title: 我的订单 · 详情（★ 一期客人侧最重要的页）
+    status: active
+    body: |
+      订单头（订单号/下单时间/实付/收货地址）+ **商品按履约状态分组**展示。
+      ★ 分组而非平铺：一单可含 30 款，平铺时页面极长且同一运单号会重复出现十几次。
+      组按状态链顺序排列（发货完毕 → 国内分拣中 → 清关中 → 日本仓库已发货 →
+      等待官方发货 → 购买中 → 购买失败），组头显示「<状态> N 款」。
+      ★ 不出现任何「包裹」字样 —— 客人不感知打包方式（REQ-FULFILL-006）。
+    steps:
+      - id: UI:mp.order_detail.status_group
+        form: 分组区块
+        note: >
+          组头 = 状态名 + 该状态款数。已发货组的组头下方紧跟快递中文名 + 运单号 + 复制按钮
+          （同一包裹共用一个单号，**只显示一次**，这是分组相对平铺的主要收益）。
+          同一状态但运单号不同时，按运单号再分子组
+      - id: UI:mp.order_detail.item_row
+        form: 组内商品行
+        note: 图 + 名 + 数量 + 金额。行内不再重复状态标签（状态已由组头承载）
+      - id: UI:mp.order_detail.failed_group
+        form: 购买失败组
+        note: 排在最后，每行标「已退款 ¥xx」
+    related_reqs: [REQ-FULFILL-001, REQ-FULFILL-002, REQ-FULFILL-003, REQ-FULFILL-004, REQ-FULFILL-005, REQ-FULFILL-006]
+
+  # ══════════════════════════════════════════════════════════════════
+  # Admin（plus-ui）—— 店员侧。走 ruoyi/Element Plus 默认审美，不套 mp 设计系统
+  # ══════════════════════════════════════════════════════════════════
+
+  - id: UI:admin.event
+    title: 场管理
+    status: active
+    body: |
+      标准 ruoyi CRUD 列表 + 新建/编辑 Dialog。
+      列：场编号 / 名称 / 起止时间 / 状态 / 商品数 / 操作（编辑、开场、关场、删除）。
+      表单：名称 / 封面（ImageUpload）/ 简介 / 起止时间（datetime range）/ 排序号。
+    related_reqs: [REQ-EVENT-001]
+
+  - id: UI:admin.product
+    title: 商品管理
+    status: active
+    body: |
+      标准 ruoyi CRUD，顶部按场筛选。列：编号 / 主图 / 名称 / 所属场 / 价格 / 预计到货 / 状态 / 操作。
+      支持多选批量上下架。表单：所属场 / 名称 / 主图 / 图集 / 价格 / 预计到货文本 / **注意事项** / 排序号。
+      一期不做 Excel 导入导出、不做富文本编辑器、无库存字段。
+    related_reqs: [REQ-PROD-001, REQ-PROD-003, REQ-PROD-004, REQ-PROD-005]
+
+  - id: UI:admin.order
+    title: 订单管理
+    status: active
+    body: |
+      只读查询列表 + 详情抽屉。列：订单号 / 客人 / 款数 / 实付 / 订单状态 / 下单时间。
+      详情抽屉展示订单头 + 逐行商品及其履约状态（只读，推进操作在履约看板做）。
+    related_reqs: [REQ-ORDER-006, REQ-FULFILL-001]
+
+  - id: UI:admin.fulfill_board
+    title: 履约看板（★ 一期店员侧最重要的页）
+    status: active
+    body: |
+      本域核心操作页。**主视图按客人聚合**（打包决策是「这个客人有哪些货到齐了」，且可跨订单）。
+      顶部筛选：客人 / 履约状态 / 场 / 下单时间段。
+      表格行 = 订单商品行（不是订单）：客人 / 商品 / 数量 / 所属订单 / 当前状态 / 运单号。
+      多选框 + 顶部批量操作条：「批量推进到 <下一状态>」「批量发货（填单号）」「批量标记购买失败」。
+    steps:
+      - id: UI:admin.fulfill_board.batch_advance
+        form: 批量操作条
+        note: >
+          勾一批 → 选目标状态 → 提交。★ 允许跳过中间态（现货直接跳到日本仓库已发货）。
+          一期不做回退。批量接口做分页与单次条数上限（一个客人可能 30+ 行）
+      - id: UI:admin.fulfill_board.batch_ship
+        form: 批量发货弹窗
+        note: >
+          勾一批 → 弹窗选快递公司（gz_express_carrier 字典）+ 填一个运单号 → 提交。
+          这批行一起置 delivered 并共用该单号。★ 单号即包裹标识
+      - id: UI:admin.fulfill_board.mark_failed
+        form: 批量操作
+        note: >
+          勾一批 → 标记购买失败 → 二次确认（会触发真实退款）→ 按行金额发起微信部分退款
+    related_reqs: [REQ-FULFILL-001, REQ-FULFILL-002, REQ-FULFILL-003, REQ-FULFILL-004, REQ-FULFILL-005, REQ-FULFILL-006, REQ-FULFILL-007]
