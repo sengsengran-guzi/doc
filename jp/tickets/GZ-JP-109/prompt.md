@@ -27,8 +27,7 @@ accept:
     form: API
     run: |
       TOKEN=$(curl -s -X POST http://localhost:8080/auth/login -H 'Content-Type: application/json' \
-        -H 'clientid: e5cd7e4891bf95d1d19206ce24a7b32e' \
-        -d '{"username":"admin","password":"admin123","grantType":"password","tenantId":"1001"}' | jq -r '.data.access_token'); \
+        -d '{"username":"admin","password":"admin123","grantType":"password","tenantId":"1001","clientId":"e5cd7e4891bf95d1d19206ce24a7b32e"}' | jq -r '.data.access_token'); \
       curl -s 'http://localhost:8080/system/gz/jp/order/list' \
         -H "Authorization: Bearer $TOKEN" -H 'clientid: e5cd7e4891bf95d1d19206ce24a7b32e' \
         | jq -e '.rows[0] | has("orderNo") and has("totalAmountCent") and has("businessStatus") and has("itemCount")' >/dev/null
