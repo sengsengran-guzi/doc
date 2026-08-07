@@ -53,7 +53,7 @@ accept:
 3. 确认 `RefundCallbackDispatcher` 的 SPI 签名，照现有 `PreorderRefundCallbackHandler` 范式写。
 4. ★ 开工前 `git -C code/main/RuoYi-Vue-Plus status --porcelain` 记下基线 —— 完工时要能用 `git diff`
    证明 `pay/controller/PayRefundController.java`、`pay/service/impl/PayRefundServiceImpl.java`、
-   `pay/service/PayRefundTxService.java` **一行没动**。这是本卡的硬验收条件之一。
+   `pay/service/internal/PayRefundTxService.java` **一行没动**。这是本卡的硬验收条件之一。
 
 ## What
 

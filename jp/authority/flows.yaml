@@ -152,7 +152,10 @@ records:
         writes: [FIELD:gz_jp_order_item.refund_status, FIELD:gz_jp_order.business_status]
         produces: >
           有失败行且非全部 → 订单 partial_refunded；全部行失败 → 订单 refunded。
-          退款回调走 GZ-PAY 现有 RefundCallbackDispatcher，business_type='jp'
+          退款回调仍走 GZ-PAY 的 RefundCallbackDispatcher SPI（business_type='jp' 的 handler），
+          但因 jp 退款单落在独立的 gz_jp_refund 表（不是 gz_pay_refund），通知地址必须是
+          独立端点 /api/gz/jp/pay/refund-notify（不能复用 PayRefundController 共享的回调路径，
+          那条按 out_refund_no 去 gz_pay_refund 查单会 404）。GZ-JP-107 已实现。
     related_reqs: [REQ-FULFILL-005]
 
   # ══════════════════════════════════════════════════════════════════
