@@ -89,7 +89,14 @@ phase-plan §「appid 回补清单」列了 6 项，实测下来散落的更多�
 | # | 项 | 状态 |
 |---|---|---|
 | 1 | devtools 扫码登录 | ✅ **已完成** |
-| 2 | devtools →「详情」→「本地设置」→ 勾「不校验合法域名…」 | ✅ **已完成**（D5 QA 实测确认解除） |
+| 2 | devtools →「详情」→「本地设置」→ 勾「不校验合法域名…」（**miniapp-jp 工程**） | ✅ **已完成**（D5 QA 实测确认解除） |
+| 3 | ⭐ 同一个勾，**再给老 `miniapp` 工程勾一次** | ⬜ **待 Kevin，30 秒**（见下，卡着 GZ-JP-301 accept #1） |
+
+> ⭐ **#3 为什么必须做**：这个开关在微信开发者工具里是**每个工程各自一份**，给 miniapp-jp 勾过对老工程无效。
+> 老工程没勾 ⇒ 模拟器里所有 `wx.request` 被拦（`url not in domain list`）⇒ **老小程序全量回归永远真跑不了**，
+> 于是「多 appid 改造有没有伤到线上小程序」这条 accept 拿不到端侧证据（后端侧已用 19 个端点 + 登录 + 建单验绿）。
+> 操作：微信开发者工具 → 打开 `code/main/miniapp/dist/build/mp-weixin` → 右上「详情」→「本地设置」→ 勾上 → 告诉我，我重跑 `node test/e2e/run.mjs all`。
+> （已实测：改 `project.config.json` 的 `setting.urlCheck` / 换 appid / cli 重开 **都压不住它**，只能 GUI 勾。老 harness 现已加 gate，没勾时会**立刻报错并给出这段路径**，不再伪装成业务 bug。）
 
 > ⚠️ **配套安全红线**：模拟器在该开关**关闭**时唯一打得通的是**生产后端**（借用旧 appid 的合法域名）⇒ 拿 production profile 产物跑 E2E 会往**生产库真写单**。`run.mjs` 的 `distLooksDev` 护栏**不可绕过/注释**。
 
@@ -195,6 +202,21 @@ phase-plan §「appid 回补清单」列了 6 项，实测下来散落的更多�
   - gz-news 2 个单测陈旧 stub（`UnnecessaryStubbingException`），修一行即可
 
 ---
+
+## 桶 5：D6 QA 门新增（干净 QA 独立跑出来的）
+
+| # | 项 | 严重度 | 结论 / 待办 |
+|---|---|---|---|
+| 1 | 老 `miniapp` 工程的「不校验合法域名」没勾 | **blocker（对 accept #1）** | ⬜ 见 §3.1 #3，Kevin 30 秒。老 harness 已加 gate + 超时按 flow 数摊 + launch 重试（已提交） |
+| 2 | 老 `miniapp` **3 个既有单测红**：`token.test.ts` 的 `silentWxRenew` ×2、`MeHeader.test.ts` ×1 | 重要 | ⚠️ **与本项目无关**（工作区与 HEAD `59635d4 2026-07-27` 逐字节一致，本项目 08-06 才开工且从未改过该仓 `src/`）。但 `silentWxRenew()` 返 false 意味着**静默续期失败 → 用户被踢去重登**，上线前建议单独查 |
+| 3 | `gz_jp_order_item.id=25` 自相矛盾：`fulfill_status=purchasing` + `refund_status=refunded` ¥256，且**无对应 `gz_jp_refund` 行** | 次要 | 早期 ticket 手工改库的遗留脏数据（走正常流程复现不出来）。**演示前清掉**，否则 admin 履约看板会显示「购买中 / 已退款」一行 |
+| 4 | 跑一次 E2E 会把 `dist/build/mp-weixin/project.config.json` 的 appid 改写成**线上谷子宇宙的** `wx2f8b93e09703f07d` | 次要（操作风险） | harness 有意为之且注释充分（占位 appid 非法，游客模式打不了本地后端），只改 dist 不改源。**但这份 dist 在 IDE 里就是「线上谷子宇宙工程」——误点「上传」会把拼团代码推到线上小程序**。真 appid 到位后这条自然消失 |
+| 5 | mp 每次登出都打 `POST /applet/auth/logout` → **404**（新旧两个小程序都有） | 次要 | 脚手架继承的端点，后端从来没实现。只刷日志，不影响登出。**非 JP 引入** |
+| 6 | `GET /app/gz/user/orders/list` → 403（被 `/{id}` PathVariable 吃掉） | 次要 | V1.0 占位接口，mp 实际不调。**改造前既有** |
+
+**QA 真跑出来的覆盖**（供上线评估参考）：miniapp-jp 294 单测 / 后端 gz-jp 194 单测 / Flyway 全库 / JP 下单→支付→履约→行级退款→回调 rollup 的**跨表金额守恒**（含全库 sweep：不平订单 0、超退 0）/ 4 类并发（并发加购、**同一批 cartItemIds 并发下单只落 1 单**、并发支付回调、并发标记失败只出 1 张退款单）/ 多 appid **6 条串味邪路**（跨 clientid token 401、跨小程序读订单 4105）/ 非超管与无 token 权限各 5 条 / **真等到跨过 `end_time` 的边界行为**（场读时翻 closed、车内项自动失效、结算被拒 4102）/ miniapp-jp 模拟器 7 flow / plus-ui 4 个 JP 页真浏览器 0 console error。
+
+**QA 明确没验到的**：老小程序**前端**回归（§5 #1 阻塞）/ 任何真机微信原生能力 / prod 真 appid 下的 `gz_user.app_id` 隔离（dev 两边都是 `wxMOCK`，**结构上测不出**）/ real 模式退款回调**验签**（mock 通道不验签）/ staging·prod 部署与灰度。
 
 ## 实测确认（收尾时读代码核实的两件事）
 

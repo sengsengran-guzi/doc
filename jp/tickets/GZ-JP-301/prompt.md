@@ -19,7 +19,7 @@ accept:
   - name: 新小程序全流程 E2E
     form: API
     run: cd code/main/miniapp-jp && node test/e2e/run.mjs all
-  - name: 两库迁移全部应用且无 pending
+  - name: 迁移全部应用且无 pending（两个小程序共用 ry-vue 一个库）
     form: DATA
     run: |
       docker exec sensenran-dev-mysql mysql -uroot -proot ry-vue -N -e "
