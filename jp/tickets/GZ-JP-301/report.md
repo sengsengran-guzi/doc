@@ -162,10 +162,34 @@ if (!pathAfterQty.includes('pages/cart/index')) fails.push(`★ 点「＋」改�
 - **老 miniapp 工程的「不校验合法域名」需勾一次**，否则老小程序回归永远真跑不了；
 - **老 miniapp 3 个既有单测红**（含 `silentWxRenew`），建议上线前单独查一次。
 
-## §AI 测试段（kevin-qa 完工后追加）
+## §AI 测试段（kevin-qa 追加）
 
-（占位）**Tier 1A：accept #2 / #3 ✅，#1 环境阻塞**
+### D6 QA 门 · 第 1 轮 —— **FAIL**
 
-建议覆盖：新小程序 `run.mjs all` 重跑一遍确认 7/7 稳定（不是一次侥幸）；
-`pnpm test`（miniapp-jp 294）/ `self-test`（72）；
-**重点复核本卡对 accept #1 的"无 D1 回归"结论是否成立**（那是推理 + 旁证，不是全量真跑）。
+干净 QA（全新上下文、未读本报告）跑完整 L0-L3，结论：
+
+| 级 | 结果 |
+|---|---|
+| **L0 静态** | ✅ miniapp-jp 294 单测 / type-check / lint 全过；后端 `ruoyi-gz-jp` **194 单测 0 失败**；JP 19 个迁移全部 tracked；Flyway 磁盘 156 = 已应用 156，pending 0 |
+| **L1 集成** | ✅ **34/34**。走真 API 建数据、断言查 DB（不手写 INSERT 自证）。下单链路 22/22（订单额 = Σ 行额 = 车合计、行额 = 单价 × 数量、支付流水额 = 订单额、重复回调幂等）；退款链路 12/12（行级退款 rollup、**全额退完转 refunded**、★金额守恒 Σ已退 = 订单总额、跨域退款单打错回调被拒）。**全库 sweep：不平订单 0 / 超退 0 / 行超退 0 / 流水不符 0** |
+| **L2 端侧** | ✅ miniapp-jp **7/7**（QA 自己强制重建 dev dist 后跑，反 stale）；plus-ui 4 个 JP admin 页真浏览器渲染真数据、**0 console error**。⛔ 老 miniapp 跑不出结果（环境） |
+| **L3 邪路** | ✅ 32/34（2 条是 QA 自己断言写错，已更正）。**并发**：并发加购只 1 行不丢更新 / ★同一批 cartItemIds 并发下单 ×5 只落 1 单（codes=[200,4107×4]）/ 并发支付回调只 paid 一次 / ★并发标记失败只出 1 张退款单。**多 appid 串味 6 条全过**：跨 clientid token → 401、拼豆用户读 JP 订单 → 4105 不泄漏、未登记 clientid → 明确报错。**权限**：mp token 打 5 个 `/system/**` 5/5 被拒。**跨日期**：真等到跨过 `end_time`，场读时翻 closed、车内项自动失效、结算被拒 4102 |
+
+**QA 判定 FAIL 的两条**（不是 JP 代码质量问题）：
+1. **accept #1 拿不到端侧证据** —— 老 miniapp 工程的「不校验合法域名」没勾（每工程独立）。
+2. **需求与实现冲突：拼团没接 `upload_shipping_info`** —— 任务卡 What 明确要求，代码刻意不接（理由正当：支付当下无发货事实），但**置 delivered 那一刻也没人接**，等于 JP 单永不上报，涉及资金结算。
+
+### 第 1 轮返工（本轮已做）
+
+| 问题 | 处置 |
+|---|---|
+| 老 harness 无 app 侧可达性 gate / 超时写死 240s / launch 不重试 | ✅ 已修并提交（`miniapp` 仓 `c513435`，**仅测试 harness，未动业务代码**）。现在没勾开关会**立刻报错并给出确切 GUI 路径**，不再伪装成业务 bug |
+| 老 miniapp 工程的域名开关 | ⬜ **只能 Kevin 手勾**（30 秒，见 GO-LIVE-CHECKLIST §3.1 #3）。勾完重跑即可补上 accept #1 |
+| 拼团实物发货上报 | 🔄 已派实现（在**置 delivered 那一刻**接，不动支付回调的正确判断） |
+| accept #3 文案「两库」 | ✅ 已改（实际只有 `ry-vue` 一个库） |
+| 脏数据 / 登出 404 / dist appid 改写等 4 条次要项 | 📋 已登记进 GO-LIVE-CHECKLIST 桶 5 |
+
+**顺带读码核实**（QA 列为"没验到"的一条）：JP 退款回调在 real 模式下**是真验签的** ——
+`WechatPayV3ClientImpl.parseAndVerifyRefundNotify` 用官方 SDK `NotificationParser` 做
+AES-GCM 验签 + 解密，失败抛 `WechatPayVerifyException`。mock 通道不验签只是 mock 的事。
+（这是**读码结论**，不是活跑验证。）
