@@ -89,14 +89,22 @@ phase-plan §「appid 回补清单」列了 6 项，实测下来散落的更多�
 | # | 项 | 状态 |
 |---|---|---|
 | 1 | devtools 扫码登录 | ✅ **已完成** |
-| 2 | devtools →「详情」→「本地设置」→ 勾「不校验合法域名…」（**miniapp-jp 工程**） | ✅ **已完成**（D5 QA 实测确认解除） |
-| 3 | ⭐ 同一个勾，**再给老 `miniapp` 工程勾一次** | ⬜ **待 Kevin，30 秒**（见下，卡着 GZ-JP-301 accept #1） |
+| 2 | devtools「不校验合法域名」（**miniapp-jp 工程**） | ✅ **已完成** |
+| 3 | 同一个勾（**老 `miniapp` 工程**） | ✅ **已完成**，accept #1 已解锁真跑 |
 
-> ⭐ **#3 为什么必须做**：这个开关在微信开发者工具里是**每个工程各自一份**，给 miniapp-jp 勾过对老工程无效。
-> 老工程没勾 ⇒ 模拟器里所有 `wx.request` 被拦（`url not in domain list`）⇒ **老小程序全量回归永远真跑不了**，
-> 于是「多 appid 改造有没有伤到线上小程序」这条 accept 拿不到端侧证据（后端侧已用 19 个端点 + 登录 + 建单验绿）。
-> 操作：微信开发者工具 → 打开 `code/main/miniapp/dist/build/mp-weixin` → 右上「详情」→「本地设置」→ 勾上 → 告诉我，我重跑 `node test/e2e/run.mjs all`。
-> （已实测：改 `project.config.json` 的 `setting.urlCheck` / 换 appid / cli 重开 **都压不住它**，只能 GUI 勾。老 harness 现已加 gate，没勾时会**立刻报错并给出这段路径**，不再伪装成业务 bug。）
+> ⭐ **这个坑值得记住**：该开关在微信开发者工具里**按「工程路径」存**，`dist/dev/mp-weixin` 与
+> `dist/build/mp-weixin` 是**两个不同的工程**。人自然会打开 `dist/dev` 去勾（那是 `pnpm dev:mp` 的产物），
+> 而 E2E harness 默认打开 `dist/build` —— 勾了也没用，且现象与「没勾」一模一样。
+> 排查方法：`~/Library/Application Support/微信开发者工具/<hash>/WeappLocalData/localstorage_*.json`
+> 按 `projectid`（工程绝对路径）索引，里面的 `setting.urlCheck` 就是这个开关。
+> **程序化改它没用** —— devtools 一打开该工程就会把 `setting` 覆盖回去（实测）。
+>
+> 老小程序现在的跑法（用已授信那个路径，不必再勾一次）：
+> ```bash
+> cd code/main/miniapp
+> export MP_DIST="$PWD/dist/dev/mp-weixin"
+> node test/e2e/run.mjs all
+> ```
 
 > ⚠️ **配套安全红线**：模拟器在该开关**关闭**时唯一打得通的是**生产后端**（借用旧 appid 的合法域名）⇒ 拿 production profile 产物跑 E2E 会往**生产库真写单**。`run.mjs` 的 `distLooksDev` 护栏**不可绕过/注释**。
 
