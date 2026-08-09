@@ -193,3 +193,32 @@ if (!pathAfterQty.includes('pages/cart/index')) fails.push(`★ 点「＋」改�
 `WechatPayV3ClientImpl.parseAndVerifyRefundNotify` 用官方 SDK `NotificationParser` 做
 AES-GCM 验签 + 解密，失败抛 `WechatPayVerifyException`。mock 通道不验签只是 mock 的事。
 （这是**读码结论**，不是活跑验证。）
+
+### D6 QA 门 · 第 2-5 轮（全部围绕「微信发货信息上报」）
+
+第 1 轮逮到「任务卡 What 要求但一处调用都没有」之后，实现 → QA → 返工循环跑了 4 轮。
+**每一轮 QA 都用真接口真库真并发逮到了单测照不出的东西**，逐条如实记：
+
+| 轮 | QA 判定 | 逮到什么 | 处置 |
+|---|---|---|---|
+| 2 | FAIL | ① `is_all_delivered` 只在发货那刻算快照 → 最后一款走「标购买失败」落定时永不收口；② 追加包裹是无锁读-改-写 → 同支付单并发发两个运单丢一个；③ `shipping_list_json VARCHAR(4000)` 装不下微信允许的 15 个包裹、静默截断且无 `last_error` | 全修 + 真库复验 |
+| 3 | FAIL | ① 收口在**并发**下仍卡死（事务内快照 + 盲覆盖）；② ★**上一轮的 `FOR UPDATE` 没命中索引**（唯一键是 `(tenant_id, transaction_id)`，查询不带 tenant）→ 全表 X 锁 → 实测锁 1 条无关拼豆行就让 JP 发货等 7.1s | 补 `idx_transaction_id` + 收口改单调收敛 + 提交后重算 |
+| 4 | FAIL | ★★ **上一轮的索引把「慢但正确」换成了「快但静默丢钱」**：`FOR UPDATE` 探不存在的行拿 gap lock，两笔并发 INSERT 互相要 insert-intention → 死锁；且**与是否同一笔单无关**（同 gap 即撞），这张表拼豆/拼团/预购/扭蛋共用。InnoDB 死锁回滚**整个事务**而代码把异常吞了 → 9 张互不相干订单并发发货只有 1 张真落库；**两笔拼豆支付回调并发掉 1 笔且回微信 SUCCESS** | 改 insert-first + 死锁类异常一律上抛 |
+| 5 | FAIL | ① 死锁确认修好（对照实验：旧写法必炸/新写法 0 死锁），但**上抛被 `GzJpFulfillServiceImpl` 两层 `catch(Exception)` 原地吃掉** → 人为造死锁仍能骗回 200；② 收口改库了但**从没报给微信**：`markAllDelivered` 跑在 `afterCommit` 里，用的还是刚提交那条事务的连接，写入对异步上报那条连接不可见 → 早退。判决性对照：同方法从退款侧（事务外）调 100% 成功、从 `afterCommit` 调 100% 失败 | 两层 catch 放行 `ConcurrencyFailureException` + 收口改走 `@Async`（换线程=换连接） |
+
+**第 5 轮修完后的真库复验**（都是修前必挂的场景）：
+
+| 场景 | 修前 | 修后 |
+|---|---|---|
+| 9 张互不相干订单并发发货 | 真落库 **1/9** | **9/9**，上报 9/9 success，死锁 0 |
+| 两笔互不相干拼豆支付回调并发 | 真 paid **1/2** | **2/2** |
+| 4 路并发把整单发完 | 6/6 卡 `pending`，微信只收到 `allDelivered=false` | `is_all_delivered=1` / `upload_status=success` / 包裹 4，**微信侧真收到 `allDelivered=true packages=4`** |
+
+**这一段最该记住的教训**：695 个单测全绿、每一轮都全绿，**却一次都没照出上面任何一条**。
+死锁、Spring 事务同步语义、连接可见性——纯 Mockito 单测在结构上就测不到。
+这类链路的正确性只能靠**真库并发**背书。
+
+🔴 **但代码修得再干净也绕不开一个产品级前提**：微信要求发货信息在**支付后 48h 内**上传，
+而拼团发货天然在几周到几个月后。本地 mock 恒返成功，**这条在拿到真商户号之前无法证伪**。
+详见 [GO-LIVE-CHECKLIST.md](../../GO-LIVE-CHECKLIST.md)「确认 1」。**这件事没定之前，
+本功能的所有绿都只是「代码按设计跑通了」，不等于「微信会接受」。**
