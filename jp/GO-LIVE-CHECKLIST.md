@@ -220,18 +220,29 @@ phase-plan §「appid 回补清单」列了 6 项，实测下来散落的更多�
 
 ## 实测确认（收尾时读代码核实的两件事）
 
-### 确认 1：gz-jp **完全没有**接入 `upload_shipping_info`
+### 确认 1：拼团发货上报 —— **已接**（GZ-JP-301，挂在「发货」不在「支付回调」）
 
-**结论：没接，且是明确的、有理由的「刻意不接」，链路在 SPI 分发那层就断了。**
+原先没接（D6 QA 门逮到「任务卡 What 要求 vs 实现刻意不做」的冲突），现已补齐：
 
-1. 上报入口只有一个：`GzPayTransactionServiceImpl:311` `dispatcher.resolveShippingInfo(tx).ifPresent(...)` —— **只有 `PayCallbackHandler.buildShippingInfo()` 返回非空的业务才会落 `gz_pay_shipping_order` 并异步上报**
-2. SPI 默认值是「不上报」：`PayCallbackHandler:64` `default Optional<ShippingInfo> buildShippingInfo(...) { return Optional.empty(); }`
-3. **全后端只有拼豆 override 了它**：`PindouPayCallbackHandler:60`
-4. 拼团的 handler **刻意不 override**，`JpPayCallbackHandler:29-33` 类 javadoc 原文：
-   > 「`buildShippingInfo` **刻意不 override**（保持默认「不上报」）：拼团的到货周期是几周到几个月、发货由店员手工填顺丰单号 —— 支付当下没有任何可上报的发货事实。硬报会误导微信侧的收货判定。拼团的发货上报若要接，应在**置 delivered 那一刻**接，且**需甲方确认商户号侧要求**，不是在支付回调里。」
-5. 有单测钉死：`GzJpPayCallbackTest:347` `assertTrue(handler.buildShippingInfo(...).isEmpty(), "不接订单中心发货上报")`
+| 位置 | 做法 |
+|---|---|
+| **支付回调** | **仍然不报**（`JpPayCallbackHandler` 不 override `buildShippingInfo`，单测钉死）。拼团到货要几周到几个月，付款当下没有任何可上报的发货事实；且微信把「修改物流模式」视为**重新发货**、每笔支付单**只给一次**机会（`10060003`），先按虚拟报一次等于开局烧掉 |
+| **批量发货（店员填快递 + 运单号）** | ★ 上报就挂在这里。按「一笔支付单」拆：同一客人跨订单凑一个包裹时，两笔支付单**各报一次**（微信 upload 是按支付单的） |
+| 物流模式 | `logistics_type=1`（实体）+ `delivery_mode=2`（**分拆发货**）。拼团一单 30 款分批到货，统一发货报出去后再来包裹就只剩那唯一一次机会 |
+| `is_all_delivered` | 该订单还有「既没发货、也没购买失败」的行 → `false`；全落定才 `true`（`countUnfinishedByOrderId`） |
+| 包裹累计 | 一笔支付单一行，多包裹累加进 `shipping_list_json`（同运单号去重替换），每次把**截至目前的全部包裹**整份报上去；微信上限 15 个（`10060024`），到顶记 error 等人工并单 |
+| 快递编码 | 运行时按中文名反查微信 `get_delivery_list`（运力 1379 家，官方无静态编码表），结果 Redis 缓存 24h |
+| 收件人联系方式 | 订单地址快照手机号 → 掩码 `138****5678`（微信要求后 4 位不打码） |
+| `client_id` | 随任务落库。access_token 是 **appid 维度**凭证，拿错 appid 的 token 去报，微信恒回 `10060001`「支付单不存在」且重试永远好不了 |
+| 失败处置 | 上报失败**绝不回滚发货**（店员交寄是既成事实）；微信终态拒绝（`10060002`/`10060003`）落 `blocked` **停止自动重试**留人工，cron 与补报只扫 `pending`/`failed` |
 
-⇒ **`gz_pay_shipping_order` 里永远不会出现 `business_type='jp'` 的行**；admin「手动补报」按钮与兜底 scheduler 都只服务拼豆。
+**拼豆（虚拟商品）那条线一字未动** —— `ShippingInfo.virtual()` 的请求体形状有回归单测钉死（统一发货、`shipping_list` 只含 `item_desc`、不带 `is_all_delivered`）。
+
+⚠️ **待甲方确认**（不阻塞开发，上线前问一句）：
+1. 商户号侧是否已开通**实物商品**发货上报（拼豆是虚拟件，走的是另一套）；
+2. `receiver_contact` 用掩码手机号是否符合甲方对客人隐私的口径（当前实现：`138****5678`）。
+
+⚠️ **本地验不到的**：真实商户号下微信是否接受该报文（mock 通道不校验）、`get_delivery_list` 真实运力表里「顺丰速运」等中文名能否命中。**必须在真机 1 分钱支付那一轮一起验**。
 
 ### 确认 2：deploy compose **没有** `WX_JP_MA_*` 透传
 
