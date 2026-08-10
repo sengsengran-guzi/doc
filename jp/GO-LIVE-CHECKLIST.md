@@ -266,11 +266,14 @@ QA 第 5 轮提过「微信要求支付后 48h 内上传发货信息，而拼团
 （`deliveryDateText`，REQ-PROD-004），可**商家不填时的兜底文案是「待定（以店内通知为准）」**
 —— 那**不构成承诺时效**，微信很可能按普通商品的 48h 判，于是每单都超时。
 
-**要做的**（二选一，需甲方给数）：
-1. 把 `deliveryDateText` 做成 admin 建商品时的**必填**；或
-2. 把兜底文案换成一个**明确周期**（如「下单后 30-60 天内发出」），并确保它是甲方真能兑现的最短时效。
+**已处理**（2026-08-10）：兜底文案由「待定（以店内通知为准）」改为 **「下单后 7 天内发出」**
+（Kevin 暂定），落在 `miniapp-jp/src/locale/product.zh-CN.ts` 的 `deliveryUnset`，
+改一行即可换。商家在 admin 给单品填了具体到货时间时用商家填的，不走兜底。
 
-**别再把这条当 blocker**，但上线前要落实上面二选一。
+⚠️ **仍需 Kevin/甲方最终确认的口径差异**：页面写的是「预计**到货**」，微信管的是「**发货**时效」
+（上传运单号那一刻）。拼团是日本采购 → 跨境 → 国内发货，代码注释里的到货周期是「几周到几个月」。
+**若 7 天被读作「发货」承诺，按当前业务流大概率兑现不了** —— 承诺短于实际发货速度同样算超时。
+真实周期确定后改上面那一处。
 
 来源：[交易类小程序运营规范](https://developers.weixin.qq.com/minigame/product/jiaoyilei/yunyingguifan.html) ·
 [微信小店发货管理规则](https://store.weixin.qq.com/chengzhang/webdoc/wiki/407/e4ca8eb1ee772cf7/growth_center_rule_for_store) ·
