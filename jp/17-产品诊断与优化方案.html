@@ -1,0 +1,896 @@
+<title>谷子宇宙拼团 · 产品诊断与优化方案</title>
+<style>
+  :root {
+    --paper: #f6f7f9;
+    --surface: #ffffff;
+    --ink: #17202c;
+    --ink-2: #46536a;
+    --ink-3: #7b8798;
+    --line: #dde2e9;
+    --line-soft: #eaeef3;
+    --accent: #2f4f7a;
+    --accent-soft: #e8eef6;
+    --owed: #9a4a2f;
+    --owed-soft: #f7ece7;
+    --add: #2a6a58;
+    --add-soft: #e6f2ee;
+    --ask: #8a6015;
+    --ask-soft: #f8f0dd;
+    --gate: #a32b2b;
+    --gate-soft: #f9e9e9;
+    --serif: "Songti SC", "SimSun", "Noto Serif CJK SC", "Source Han Serif SC", serif;
+    --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #11161f;
+      --surface: #171e29;
+      --ink: #e6ebf2;
+      --ink-2: #a8b4c4;
+      --ink-3: #7a8698;
+      --line: #2a3442;
+      --line-soft: #212a36;
+      --accent: #8fb3dd;
+      --accent-soft: #1c2836;
+      --owed: #d99372;
+      --owed-soft: #2c211c;
+      --add: #79c4ab;
+      --add-soft: #182722;
+      --ask: #d9b165;
+      --ask-soft: #2a2318;
+      --gate: #e08585;
+      --gate-soft: #2e1d1d;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #11161f; --surface: #171e29; --ink: #e6ebf2; --ink-2: #a8b4c4; --ink-3: #7a8698;
+    --line: #2a3442; --line-soft: #212a36; --accent: #8fb3dd; --accent-soft: #1c2836;
+    --owed: #d99372; --owed-soft: #2c211c; --add: #79c4ab; --add-soft: #182722;
+    --ask: #d9b165; --ask-soft: #2a2318; --gate: #e08585; --gate-soft: #2e1d1d;
+  }
+  :root[data-theme="light"] {
+    --paper: #f6f7f9; --surface: #ffffff; --ink: #17202c; --ink-2: #46536a; --ink-3: #7b8798;
+    --line: #dde2e9; --line-soft: #eaeef3; --accent: #2f4f7a; --accent-soft: #e8eef6;
+    --owed: #9a4a2f; --owed-soft: #f7ece7; --add: #2a6a58; --add-soft: #e6f2ee;
+    --ask: #8a6015; --ask-soft: #f8f0dd; --gate: #a32b2b; --gate-soft: #f9e9e9;
+  }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 96px; }
+
+  /* ── 报头 ─────────────────────────────── */
+  header.masthead {
+    border-bottom: 2px solid var(--ink);
+    padding: 56px 0 20px;
+    margin-bottom: 8px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(28px, 4.4vw, 40px);
+    line-height: 1.25;
+    font-weight: 700;
+    margin: 0 0 14px;
+    text-wrap: balance;
+    letter-spacing: -.01em;
+  }
+  .standfirst {
+    color: var(--ink-2);
+    font-size: 15.5px;
+    max-width: 68ch;
+    margin: 0;
+  }
+  .meta-strip {
+    display: flex; flex-wrap: wrap; gap: 8px 22px;
+    margin-top: 22px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .meta-strip b { color: var(--ink-2); font-weight: 600; }
+
+  /* ── 目录 ─────────────────────────────── */
+  nav.toc {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+    margin: 0 -24px 40px; padding: 10px 24px;
+    display: flex; gap: 4px; overflow-x: auto;
+  }
+  nav.toc a {
+    flex: none;
+    font-size: 12.5px; color: var(--ink-2); text-decoration: none;
+    padding: 5px 11px; border-radius: 4px; white-space: nowrap;
+  }
+  nav.toc a:hover { background: var(--accent-soft); color: var(--accent); }
+  nav.toc a:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  /* ── 章节 ─────────────────────────────── */
+  section { margin-bottom: 64px; scroll-margin-top: 64px; }
+  h2 {
+    font-family: var(--serif); font-size: 25px; font-weight: 700;
+    margin: 0 0 8px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--line);
+    text-wrap: balance;
+  }
+  h2 .num {
+    font-family: var(--mono); font-size: 12px; color: var(--ink-3);
+    margin-right: 10px; letter-spacing: .1em;
+  }
+  .section-note { color: var(--ink-3); font-size: 13.5px; margin: 0 0 26px; }
+  h3 {
+    font-family: var(--serif); font-size: 18px; font-weight: 700;
+    margin: 40px 0 6px; display: flex; align-items: baseline; gap: 10px;
+  }
+  p { max-width: 72ch; }
+  code {
+    font-family: var(--mono); font-size: .87em;
+    background: var(--line-soft); padding: 1px 5px; border-radius: 3px;
+    word-break: break-all;
+  }
+  strong { font-weight: 600; }
+  a { color: var(--accent); }
+
+  /* ── 诊断层 ───────────────────────────── */
+  .layer { margin-bottom: 30px; padding-left: 20px; border-left: 3px solid var(--line); }
+  .layer.key { border-left-color: var(--accent); }
+  .layer h4 {
+    font-family: var(--sans); font-size: 15.5px; font-weight: 700;
+    margin: 0 0 8px; color: var(--ink);
+  }
+  .layer p { margin: 0 0 10px; }
+  .verdict {
+    margin-top: 34px; padding: 20px 24px;
+    background: var(--accent-soft); border-radius: 6px;
+    font-size: 16px;
+  }
+  .verdict p { margin: 0; max-width: none; }
+
+  /* ── 提案卡 ───────────────────────────── */
+  .group-head {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    margin: 48px 0 4px;
+  }
+  .group-head .tag {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+    padding: 3px 9px; border-radius: 3px; font-weight: 600;
+  }
+  .group-head h3 { margin: 0; font-size: 19px; }
+  .group-sub { color: var(--ink-3); font-size: 13.5px; margin: 0 0 22px; }
+
+  .item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--line);
+    border-radius: 5px;
+    padding: 18px 22px;
+    margin-bottom: 12px;
+  }
+  .item.a { border-left-color: var(--owed); }
+  .item.b { border-left-color: var(--add); }
+  .item.c { border-left-color: var(--ask); }
+  .item.gate { border-left-color: var(--gate); }
+  .item h4 {
+    font-family: var(--sans); font-size: 15.5px; font-weight: 700;
+    margin: 0 0 12px; line-height: 1.5;
+  }
+  .item h4 .id {
+    font-family: var(--mono); font-size: 12.5px; color: var(--ink-3);
+    margin-right: 8px; font-weight: 500;
+  }
+  .item dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 7px 14px; }
+  .item dt {
+    font-size: 11.5px; color: var(--ink-3); font-family: var(--mono);
+    padding-top: 3px; letter-spacing: .04em;
+  }
+  .item dd { margin: 0; font-size: 14px; color: var(--ink-2); }
+  .item dd strong { color: var(--ink); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 13px; }
+  .chip {
+    font-family: var(--mono); font-size: 11px; font-variant-numeric: tabular-nums;
+    padding: 2px 8px; border-radius: 3px; border: 1px solid var(--line);
+    color: var(--ink-2);
+  }
+  .chip.gate { background: var(--gate-soft); color: var(--gate); border-color: transparent; font-weight: 600; }
+  .chip.hi { background: var(--accent-soft); color: var(--accent); border-color: transparent; font-weight: 600; }
+
+  /* ── 优先级序列 ───────────────────────── */
+  ol.seq { list-style: none; counter-reset: s; padding: 0; margin: 0; }
+  ol.seq > li {
+    counter-increment: s; position: relative;
+    padding: 0 0 22px 52px; margin: 0;
+    border-left: 1px solid var(--line); margin-left: 15px;
+  }
+  ol.seq > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+  ol.seq > li::before {
+    content: counter(s);
+    position: absolute; left: -15px; top: 0;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-family: var(--mono); font-size: 13px; font-weight: 600;
+    display: grid; place-items: center;
+  }
+  ol.seq h4 { font-family: var(--sans); font-size: 15px; font-weight: 700; margin: 3px 0 6px; }
+  ol.seq p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* ── 甲方问题 ─────────────────────────── */
+  .q {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 5px; padding: 16px 20px; margin-bottom: 10px;
+  }
+  .q.must { border-color: var(--ask); background: var(--ask-soft); }
+  .q .qhead { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+  .q .qn { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .q .must-tag {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+    color: var(--ask); letter-spacing: .08em;
+  }
+  .q .ask { font-size: 15.5px; font-weight: 600; line-height: 1.6; }
+  .q .why { font-size: 13.5px; color: var(--ink-2); margin: 6px 0 0; }
+  .q ul { margin: 8px 0 0; padding-left: 20px; font-size: 14px; color: var(--ink-2); }
+
+  /* ── 表 ───────────────────────────────── */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 5px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; background: var(--surface); }
+  th, td { text-align: left; padding: 11px 15px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+    color: var(--ink-3); font-weight: 600; background: var(--line-soft);
+    white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { font-weight: 600; color: var(--ink); min-width: 150px; }
+
+  ul.plain { padding-left: 20px; max-width: 72ch; }
+  ul.plain li { margin-bottom: 9px; color: var(--ink-2); }
+  ul.plain li strong { color: var(--ink); }
+
+  .callout {
+    border: 1px solid var(--line); border-left: 4px solid var(--gate);
+    background: var(--surface); border-radius: 5px;
+    padding: 16px 20px; margin: 22px 0;
+  }
+  .callout h4 { font-family: var(--sans); font-size: 14.5px; margin: 0 0 8px; font-weight: 700; }
+  .callout p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  footer {
+    margin-top: 72px; padding-top: 22px;
+    border-top: 1px solid var(--line);
+    font-size: 12.5px; color: var(--ink-3); font-family: var(--mono);
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px 64px; }
+    nav.toc { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
+    .item dl { grid-template-columns: 1fr; gap: 3px; }
+    .item dt { padding-top: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">产品诊断 · 谷子宇宙拼团（日本代购 · 快闪场集单）</div>
+  <h1>「似乎太简单了，但说不上哪里有问题」</h1>
+  <p class="standfirst">
+    这份文档回答那个说不上来的东西。结论不是功能少，是<strong>系统做完了「记录这门生意」，没做「运营这门生意」</strong> ——
+    甲方的工作量一点没减，客人的信息量在付款那一刻反而变少了。
+  </p>
+  <div class="meta-strip">
+    <span><b>取证</b> 现状盘点 13 条 · 需求考古 17 条 · 市场调研 4 路</span>
+    <span><b>提案</b> 五视角 63 条 → 评审砍 30 条 → 定稿 29 条</span>
+    <span><b>日期</b> 2026-08-14</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#diag">诊断</a>
+  <a href="#plan-a">A 组 · 我们的锅</a>
+  <a href="#plan-b">B 组 · 低成本增强</a>
+  <a href="#plan-c">C 组 · 需甲方拍板</a>
+  <a href="#five">只做 5 件</a>
+  <a href="#ask">甲方问题清单</a>
+  <a href="#no">不建议做</a>
+  <a href="#gaps">证据不足</a>
+</nav>
+
+<!-- ═══════════ 一、诊断 ═══════════ -->
+<section id="diag">
+  <h2><span class="num">一</span>诊断</h2>
+  <p class="section-note">四层，从表到里。第三层是最该正视的那层。</p>
+
+  <div class="layer key">
+    <h4>第一层 · 做完了「记录这门生意」，没做「运营这门生意」</h4>
+    <p>
+      工程质量不是问题。履约状态机、行级部分退款、跨客人发货保护、逐页的 loading/error/empty 三态、预签名 URL 过期兜底、支付回调幂等守卫 —— 这些比很多真电商扎实。
+    </p>
+    <p>
+      但把甲方的一场从头走一遍：开场 → 上架几十款 → 客人下单付款 → <strong>他飞日本去买</strong> → 回来推状态 → 发货 → 标失败退款。
+      第 4 步是整条价值链的核心动作，而系统里<strong>没有任何一个页面能告诉他「这一场总共要买哪几款、每款几件」</strong>。
+      <code>ruoyi-gz-jp</code> 全模块 grep 不到任何聚合查询；四个 admin 页没有一个是采购视角（履约看板是按客人聚合的<em>打包</em>视角）。
+    </p>
+    <p>
+      客人侧同理：系统忠实记录了他买了什么，但没有一处帮他<strong>找到</strong>想买的（零搜索、零排序、零分类、零分享），
+      也没有在他付完钱之后告诉他<strong>什么时候到</strong>。
+    </p>
+  </div>
+
+  <div class="layer">
+    <h4>第二层 · ticket 按「页」拆，没有一张对「一条动线」负责</h4>
+    <p>
+      这是为什么「每一页单看都没问题，合起来觉得薄」。甲方原话是「一个客人比如买了 30 款商品」，
+      而这条动线穿过 5 个页面：场详情选货 → 商品详情加购 → 购物车 → 确认订单 → 订单详情看进度。
+      每一页的 AC 都过了，但这条线上没有任何一张 ticket 的验收覆盖它。
+    </p>
+    <p>
+      于是：商品卡不能直接加购、场详情零处购物车、tabbar 只有两格，买 30 款要跳 90 次；
+      <code>deliveryDateText</code> 和 <code>noticeText</code> 后端 VO 明明下发了、快照也存了，购物车／确认页／订单详情<strong>四处全都没取</strong>。
+      刚修掉的订单入口路由 bug 也是同一类 —— <strong>缝隙里的洞，不是页面里的洞</strong>。
+    </p>
+    <p>
+      代码自己留下了最好的注脚：<code>cart.zh-CN.ts:75-77</code> 写着「不许写『即将上线』……首页订单入口就这么被藏了一期」，
+      而 <code>home.zh-CN.ts:26</code> 至今仍是「拼团场次即将上线」。同一批人写下了纪律，又在另一个文件里违反了它 —— 因为那是另一张 ticket。
+    </p>
+  </div>
+
+  <div class="layer key">
+    <h4>第三层 · 一期的「完整」，是相对于我们自己写的确认单而言的完整</h4>
+    <p>
+      甲方最后一次输入是 <strong>2026-08-05</strong>，之后 doc 仓 30 个 commit 全是我方自问自答，
+      4 条待确认（含自标「越晚改代价越大」的多规格）一条都没回。
+    </p>
+    <p>
+      「这一期不做」7 项里，代切／运费／店里当面下单是甲方主动砍的；
+      <strong>库存、多规格、Excel 导入、状态回退这 4 项是我方单方判断砍的</strong>，理由分别是「您从没提过库存」「等您确认」。
+      也就是说，「简单」有一部分根本不是实现问题，<strong>是范围问题 —— 范围是我们自己定的，且定得偏保守</strong>。
+    </p>
+  </div>
+
+  <div class="layer">
+    <h4>第四层 · 甲方自述的唯一壁垒，在产品里零表达</h4>
+    <p>
+      原话：「他们拼团只能代买官网上发售的东西，等于代拍日本官网的货；我拼团是可以线下买，本质上压制」。
+      这条被翻译成技术结论「所以商品无需绑定任何外部货源系统」—— 判断没错，<strong>商业价值全丢</strong>。
+      全站 grep「线下／现场」只命中 3 处兜底文案。甲方花钱做这个系统，本质是想把「我能线下买」变现，
+      而小程序里没有任何一处告诉客人：这些货是我们的人在日本店里现场抢的。
+    </p>
+  </div>
+
+  <div class="verdict">
+    <p>
+      不必把这轮说成返工。一期做的是<strong>正确性</strong>，这轮要补的是<strong>效用</strong> ——
+      让甲方少干活、让客人找得到货和看得见进度、让这门生意能被传播出去。
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════ A 组 ═══════════ -->
+<section id="plan-a">
+  <h2><span class="num">二</span>方案</h2>
+  <p class="section-note">成本口径：XS = 半天内 · S = 1-2 天 · M = 3-5 天 · L = 1-2 周。</p>
+
+  <div class="group-head">
+    <span class="tag" style="background:var(--owed-soft);color:var(--owed)">A 组</span>
+    <h3>一期内、该做没做好</h3>
+  </div>
+  <p class="group-sub">这些是我们的锅，不该另收费。标 <strong>上线闸</strong> 的四条不修不能上线。</p>
+
+  <div class="item a">
+    <h4><span class="id">A1</span>订单详情补全：预计到货 / 发货时间 / 整单摘要 / 三句状态解释</h4>
+    <dl>
+      <dt>问题</dt><dd>后端 <code>GzJpOrderItemVO:47 deliveryDateText</code>、<code>:95 shippedAt</code> 都已下发，前端 <code>order/detail.vue:96-149</code> 的 DetailRow 根本没取。客人看到「清关中 12 款」，不知道是昨天进的还是三周前进的；30 款散在 5 个状态组里要一路滚才知道大概情况。</dd>
+      <dt>方案</dt><dd>纯前端渲染，后端一行不改。每行加灰字预计到货；组头加「MM/DD 更新」；顶部加整单摘要「已发货 12 · 在途 15 · 未抢到 3」；<strong>只补三句解释不是七句</strong>（等待官方发货／清关中／购买失败退款到账）；下单确认页把 30 款购买须知折叠成一条，<strong>不要逐条展开</strong> —— 客人手指已经在付款键上了。</dd>
+      <dt>落点</dt><dd><code>pages/order/detail.vue</code> · <code>detail.logic.ts</code> · <code>order/confirm.vue</code> · <code>locale/order.zh-CN.ts</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">S</span><span class="chip hi">价值 高</span><span class="chip">后端零改动</span></div>
+  </div>
+
+  <div class="item a">
+    <h4><span class="id">A2</span>未付款订单：补关单 + 「再次购买」，并改掉三处假文案</h4>
+    <dl>
+      <dt>问题</dt><dd><code>GzJpOrderMpController:35</code> 注释声称「未支付单由 5 分钟超时关单收尾」—— <strong>这句话是错的</strong>。<code>markCancelled</code> 在 gz-jp <strong>零 service 调用方</strong>（已复核）。同时提交订单那一刻购物车就被清空。结果：客人挑满 30 款 → 提交 → 收银台点取消 → 车空了、单永远停在待支付、卡上一个按钮都没有 → 只能从零再挑 30 款。而 locale 三处还在承诺「可到我的订单继续支付」。</dd>
+      <dt>方案</dt><dd>① <code>GzLocalPayScheduler</code> 加一条 jp 关单（调那个写好没人用的 <code>markCancelled</code>）；② 待支付卡加「再次购买」把行加回购物车 —— <strong>比做续付安全得多</strong>（续付要处理支付单已关闭、场已结束、商品已下架三种情况）；③ 三处文案改成与实际能力一致。</dd>
+      <dt>落点</dt><dd><code>GzLocalPayScheduler</code> · <code>GzJpOrderMpController</code> 新增 repurchase · <code>order/list.vue</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">M</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item a">
+    <h4><span class="id">A3</span>履约看板分页单位从「商品行」改成「客人」</h4>
+    <dl>
+      <dt>问题</dt><dd>看板按客人聚合，分页却按商品行（<code>selectBoardPage</code> 分页的是 BoardRow，pageSize 默认 20）。甲方举的例子就是「一个客人买 30 款」—— 这一个客人占满 1.5 页，<strong>必然被切开</strong>。店员第 1 页勾 20 行填 SF123，第 2 页那 10 行是同一个包裹却要再填 SF456，<strong>客人会看到两个运单号、以为要收两个快递</strong>。</dd>
+      <dt>方案</dt><dd>先止血（一分钟）：pageSize 20 → 100。正解：mapper 拆两条 SQL，先按同一套 WHERE 对 <code>DISTINCT user_id</code> 分页，再取这批客人的全部行；两条 SQL 必须共用同一份筛选条件构造。</dd>
+      <dt>落点</dt><dd><code>GzJpOrderItemMapper#selectBoardPage</code> · <code>GzJpFulfillServiceImpl:555-597</code> · <code>fulfill/index.vue:615</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">M（止血 XS）</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item gate">
+    <h4><span class="id">A4</span>商品「预计到货」改必填单选，删掉「下单后 7 天内发出」</h4>
+    <dl>
+      <dt>问题</dt><dd><code>delivery_date_text</code> nullable、Bo 只有 <code>@Size</code> 没有 <code>@NotBlank</code>、admin 非必填。兜底文案「下单后 7 天内发出」是我方 2026-08-10 暂填的。而这门生意的链路是「等本场结束 → 飞日本 → 现场买 → 日本仓 → 国际物流 → 清关 → 国内分拣」，<strong>七天在业务上不可能</strong>。微信按商家展示的最短时效判超时，承诺短于实际同样算超时，处置终点是<strong>暂停小程序交易</strong>。</dd>
+      <dt>方案</dt><dd>不要给甲方两个输入框（他会填错）。admin 改成<strong>一个必填下拉</strong>：1 / 2 / 3 个月内 / 按官方发售档期，后端存对应天数上限（微信预售上限 330 天，宁可报长不报短）。必填之后删掉兜底 —— 没有兜底就没有「我方替甲方乱承诺」的风险。<strong>具体天数必须甲方给</strong>。</dd>
+      <dt>落点</dt><dd>新增 <code>gz_jp_product.promise_ship_days</code> 迁移 · <code>GzJpProductBo</code> · admin 表单 · mp 详情</dd>
+    </dl>
+    <div class="chips"><span class="chip gate">上线闸 · 收款资格</span><span class="chip">S</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item gate">
+    <h4><span class="id">A5</span>发货上报兜底重试按「入队时刻」开窗，而不是付款时刻</h4>
+    <dl>
+      <dt>问题</dt><dd><code>WINDOW_HOURS = 47</code>，<code>windowStart = now.minusHours(47)</code>，筛的是 <code>paid_time</code>。拼团的上报挂在店员点发货那一刻 —— 那是付款后<strong>数周到数月</strong>，任务一创建就已在窗口外，<code>retryPending</code> 永远扫不到。<strong>已复核并纠正一处早期误判</strong>：这个 cron 在 prod 是<em>活的</em>（<code>enabled: ${GZ_LOCAL_SCHEDULER_ENABLED:true}</code>），所以卡住的唯一原因就是这个窗口。同一根因本项目已真实炸过一次（拼豆 74 单全卡待发货，甲方以为钱没到账）。</dd>
+      <dt>方案</dt><dd>改一处查询条件：开窗字段从 <code>paid_time</code> 换成 <code>create_time</code>（= 入队时刻，实体已自带该列，<strong>零迁移</strong>）。拼豆行为完全不变，拼团从「发货那一刻」起获得 47 小时自动重试。<strong>不要按 business_type 免窗</strong> —— 那等于给拼团开无限重试，只剩一道闸。</dd>
+      <dt>落点</dt><dd><code>GzPayShippingServiceImpl:434-441</code> + 单测 + 运维 SOP</dd>
+    </dl>
+    <div class="chips"><span class="chip gate">上线闸 · 资金结算</span><span class="chip">S</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item gate">
+    <h4><span class="id">A6</span>用真钱把行级部分退款验一遍</h4>
+    <dl>
+      <dt>问题</dt><dd>整个商业模式的兜底动作是「没抢到就只退这几款」，而这个动作<strong>至今零真钱验证</strong> —— dev 全程 mock 通道，无条件放行、既不验签也不校验任何金额规则。现在所有绿灯只证明我们自己的账算对了，<strong>不证明微信会照做</strong>。</dd>
+      <dt>方案</dt><dd>与真机 1 分钱那轮一起做完，不要拆开：① 一笔<strong>多行</strong>订单（≥3 行、金额不同），标 1 行失败，确认退款金额 = 该行金额；② 对同一支付单<strong>连续标失败第 2、3 行</strong>（只退一笔证明不了「一单 30 款分批退」）；③ real 模式退款回调验签通过；④ 把观察到的次数／金额限制记进上线清单 —— 如果真有上限，它会反过来约束「一单最多能买多少款」。</dd>
+      <dt>落点</dt><dd>GO-LIVE 清单桶 3 升级成可执行步骤 + 记录位</dd>
+    </dl>
+    <div class="chips"><span class="chip gate">上线闸 · 假设验证</span><span class="chip">XS（一笔真钱）</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item a">
+    <h4><span class="id">A7</span>mp 补「联系我们」页，一次解掉三处指向空气的承诺</h4>
+    <dl>
+      <dt>问题</dt><dd>三处文案把客人指向不存在的联系方式：退款失败显示「如有疑问请联系客服」（拼团客服链路在 GZ-JP-001 被整条删除）；隐私政策两处指向「运营方公示的联系方式」—— 而全站不存在任何公示联系方式。<strong>这是一个自指空环：协议叫你去看公示，公示不存在。</strong></dd>
+      <dt>方案</dt><dd><strong>不要等甲方开通微信客服</strong>（行政流程会拖，且小店大概率没人盯窗口 —— 一个没人回的窗口比没有更伤）。先做静态页：客服微信号（长按复制）+ 门店电话 + 服务时间。等甲方真开通了，<code>MeGrid</code> 已支持 <code>type='contact'</code>，换个 type 零返工。这一页同时兑现隐私政策承诺的行权通道，<strong>是提审时审核员会点的位置</strong>。</dd>
+      <dt>落点</dt><dd>新建 <code>pages/me/contact.vue</code> + <code>pages.routes.test.ts</code> 登记 · <code>me/index.vue</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">XS</span><span class="chip hi">价值 高</span><span class="chip">需甲方给素材</span></div>
+  </div>
+
+  <div class="item a">
+    <h4><span class="id">A8</span>「我已阅读不支持退款」的勾选必须落库</h4>
+    <dl>
+      <dt>问题</dt><dd>这个勾选只活在前端内存里（<code>agreedNoRefund = ref(false)</code>），api 与后端全 grep 0 命中，实体没有对应列。真起纠纷时拿不出任何证据。<strong>这条有时间性质：历史订单没法补</strong>，今天不加，今天之后的单才有证据 —— 而第一批客人恰恰是最可能闹的那批。</dd>
+      <dt>方案</dt><dd>加 <code>agreed_no_refund</code> / <code>agreed_time</code> 两列；mp 提交时上送，后端在 submit 里<strong>硬校验</strong>（前端闸拦不住 curl）。</dd>
+      <dt>落点</dt><dd><code>gz_jp_order</code> 迁移 · <code>GzJpOrderServiceImpl#submit</code> · <code>order/confirm.vue</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">S</span><span class="chip hi">价值 高</span><span class="chip">越晚做证据越少</span></div>
+  </div>
+
+  <div class="item gate">
+    <h4><span class="id">A9</span>协议正文的法务空位 + 隐私指引对齐</h4>
+    <dl>
+      <dt>问题</dt><dd>统一社会信用代码 / ICP 备案号 / 客服联系方式 / 退款时效 / 争议管辖地五项全空；<code>aboutIcp</code> 是字面占位串「蜀ICP备XXXXXXXX号」<strong>正在真实渲染给用户和审核员看</strong>。<em>纠正一处早期说法</em>：协议正文其实已成稿（服务协议 9 章、隐私政策 7 章），占位的是 ICP 与联系方式。另有一处协议与产品不符：承诺「可在会员中心自行管理地址」，而 mp 根本没有地址管理页。</dd>
+      <dt>方案</dt><dd>甲方填五个法务空；<strong>ICP 拿不到就整行不渲染，绝不能带着 XXXXXXXX 上线</strong>；隐私政策的信息收集清单与微信后台「用户隐私保护指引」逐项对齐（两边不一致是提审常见驳回点）；地址那句要么补页面要么改措辞。</dd>
+      <dt>落点</dt><dd><code>locale/agreement.zh-CN.ts</code> · <code>locale/user.zh-CN.ts:41</code> · 微信后台隐私指引</dd>
+    </dl>
+    <div class="chips"><span class="chip gate">上线闸 · 提审</span><span class="chip">S</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item a">
+    <h4><span class="id">A10</span>场管理列表补四列：商品数 / 已付订单数 / 下单人数 / 成交额</h4>
+    <dl>
+      <dt>问题</dt><dd>权威蓝图明写列要含「商品数」，实现没做，反而多了两个没承诺的。甲方决定下一场进什么货、开多久，拿不到任何自家数据。<strong>这是蓝图未兑现的债，不是新需求。</strong></dd>
+      <dt>方案</dt><dd>VO 加四字段，service 在 list 返回后对本页 eventId 批量补齐（两条 GROUP BY，不做 N+1）。<strong>「场看板」分析抽屉先不做</strong> —— 第一场都还没跑，那些图全是空的。★ 成交额列表头必须标注「经营数据，与对账中心口径不同」。</dd>
+      <dt>落点</dt><dd><code>GzJpEventAdminVO</code> · <code>GzJpEventMapper</code> · <code>event/index.vue:49-63</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">S</span><span class="chip">价值 中</span></div>
+  </div>
+
+  <div class="item a">
+    <h4><span class="id">A11</span>退款异常做成店员每天必然看见的东西</h4>
+    <dl>
+      <dt>问题</dt><dd>退款卡单没有自动补偿。救手是有的（退款抽屉全局、失败排最前、有 retry 按钮），但它藏在履约看板的一个抽屉里，<strong>要人主动想起来去打开</strong>。没人打开，客人的钱就一直没回去。</dd>
+      <dt>方案</dt><dd>先做便宜的一半：抽屉入口加红色角标 = 失败笔数 + 超 10 分钟无回调笔数，抽屉默认把这两类排最前。<strong>店员每天都在这个页面上，角标是唯一不依赖记性的机制。</strong>自动重试先不做。</dd>
+      <dt>落点</dt><dd><code>fulfill/index.vue:911-946</code> · <code>GzJpRefundController</code> 加异常计数</dd>
+    </dl>
+    <div class="chips"><span class="chip">S</span><span class="chip">价值 中</span></div>
+  </div>
+
+  <div class="item a">
+    <h4><span class="id">A12</span>甲方侧四项行政事做成三行倒排，把不依赖 appid 的部分全部前置</h4>
+    <dl>
+      <dt>问题</dt><dd>注册小程序 → ICP 备案（2-3 周，最慢）→ 海淘类目资质 → 商户号绑定，四项串行且全是 ❌。这条链走完才能做真机 1 分钱，而真钱又是 A6、发货上报真实报文、getPhoneNumber 三项的前置。<strong>Kevin 所有剩余的资金类验证，关键路径全压在甲方的行政动作上</strong>，而甲方零输入。</dd>
+      <dt>方案</dt><dd>给甲方<strong>一页纸三行字</strong>，每行只写：办什么 / 最晚哪天开始 / 不办卡住哪一天的什么。倒排表格他看不进去。顺带把订阅消息模板申请并进这张纸。把不依赖真 appid 的基建现在全做完 —— 尤其 <strong>18 条 jp 迁移的 staging 预演</strong>（其中 6 条 ALTER 的是拼豆正在 prod 跑、影响资金结算的活表、含 DROP KEY，<strong>不能等上线当晚第一次跑</strong>）。</dd>
+      <dt>落点</dt><dd>GO-LIVE 清单桶 2 改写 + 单独导出一页给甲方 · 部署机 <code>.env</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">XS（文档）</span><span class="chip hi">价值 高 · 决定上线日期</span></div>
+  </div>
+
+  <div class="item a">
+    <h4><span class="id">A13</span>半天可清的四处债</h4>
+    <dl>
+      <dt>问题</dt><dd>① <code>productCountSuffix: '件'</code> 绑的是款数，场详情写「共 12 件」而订单页是「共 N 款 · M 件」，<strong>同一概念两个名字</strong>；② <code>home.zh-CN.ts:26</code> 至今仍是「拼团场次即将上线」（P0 清理漏了这处）；③ 关于页品牌名写「谷子宇宙」，小程序叫「谷子宇宙拼团」；④ 权威锚 <code>ui-index.yaml</code> 的主题四个值与 <code>c-tokens.scss</code> <strong>全不符</strong>，下一个 agent 会照着朱红写组件。</dd>
+      <dt>方案</dt><dd>「件」→「款」并在 locale 注释写死口径；空态改「当前没有正在拼的场次」；品牌名补「拼团」；主题四值改成 c-tokens 真值。</dd>
+      <dt>落点</dt><dd>三个 locale 文件 · <code>me/about.vue</code> · <code>doc/jp/authority/ui-index.yaml:14-26</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">XS</span><span class="chip">价值 中</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ B 组 ═══════════ -->
+<section id="plan-b">
+  <div class="group-head">
+    <span class="tag" style="background:var(--add-soft);color:var(--add)">B 组</span>
+    <h3>一期内、低成本增强</h3>
+  </div>
+  <p class="group-sub">顺手能做的。B1 是本轮性价比最高的一条。</p>
+
+  <div class="item b">
+    <h4><span class="id">B1</span>本场采购清单 —— 甲方飞日本前要带的那张纸 ★ 性价比最高</h4>
+    <dl>
+      <dt>问题</dt><dd>系统承载了收单和打包发货两段，中间的采购那段完全空白。甲方去日本前只能进履约看板逐个客人展开手工加总，一场几十个客人就是几百行；商品管理列表连一列「已订件数」都没有。<strong>两份取证独立盘点后都把这条列为最大缺口。</strong></dd>
+      <dt>方案</dt><dd>新增只读页：选场 → 按商品聚合出【主图 / 名称 / 编号 / 需采购总件数 / 涉及客人数 / 单价 / 预计金额 / 已标失败件数】，默认按件数倒序（好卖的排最前，正好也是判断下一场进什么货的第一手依据），底部合计，配导出／打印。★ <code>business_status IN ('paid','partial_refunded','refunded')</code> 那个闸<strong>不是可选筛选项，是必需</strong> —— 漏了 = 店员拿着没付钱的单去日本下单。<strong>纯读聚合，不改任何写路径、不动数据模型</strong>，不会破坏已跑绿的 24 个 ticket。</dd>
+      <dt>落点</dt><dd>新建 <code>GzJpPurchaseController</code> + 一条 GROUP BY · 新菜单 menu_id 14040（<strong>活库需再确认</strong>）· <code>plus-ui/views/gz-jp/purchase/</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">M</span><span class="chip hi">价值 高 ★</span></div>
+  </div>
+
+  <div class="item b">
+    <h4><span class="id">B2</span>场内商品关键词搜索 + 排序</h4>
+    <dl>
+      <dt>问题</dt><dd>场详情是纯两列网格，零搜索/筛选/排序。每页 20 条，100 款要触底 5 次。蓝图自己承认「场内商品量级几十到上百」，甲方原话是「一个客人买 30 款」。<strong>这不违反任何已定约定</strong> —— 一期排除的是多规格 SKU / Excel / 库存，搜索和排序从未被排除。</dd>
+      <dt>方案</dt><dd>后端 list 加 keyword（name like，转义 %/_）与 sortBy（default/price_asc/price_desc，非法值回落不报错），排序恒以 sort_no/id 兜底保证分页稳定；mp 加吸顶搜索框 + 三个排序 chip。<strong>搜索走后端不走本地过滤</strong> —— 本地只能搜到已加载的 20 条，在 100 款场里等于搜不到。</dd>
+      <dt>落点</dt><dd><code>GzJpProductMpController#list</code> · <code>event/index.vue</code>（含删掉 <code>:17</code> 那条「一期不做筛选」注释）</dd>
+    </dl>
+    <div class="chips"><span class="chip">S</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item b">
+    <h4><span class="id">B3</span>加购动线：商品卡直接加购 + 场详情悬浮购物车球</h4>
+    <dl>
+      <dt>问题</dt><dd>每款 3 跳，30 款 = 90 次跳转，全程看不到已选多少件多少钱。<code>BizProductCard</code> props 无任何加购相关。</dd>
+      <dt>方案</dt><dd>① 商品卡加可选 quick-add，加购后显示「已加购 N」角标 —— 顺带解决「滚到第 80 款时不记得前面加过什么」；② 新建悬浮球显示件数+合计。<strong>tabbar 第三格先不做</strong> —— 它需要两张与现有风格一致的 PNG，而现有 tabbar 图标本身就是从谷子宇宙原样复制的，甲方零素材。①② 拿到 80% 的价值且零素材依赖。</dd>
+      <dt>落点</dt><dd><code>BizProductCard.vue</code> · 新建 <code>BizCartFab.vue</code> · <code>event/index.vue</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">S</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item b">
+    <h4><span class="id">B4</span>开分享口子：商品 / 场 / 首页三处</h4>
+    <dl>
+      <dt>问题</dt><dd>全项目 <code>onShareAppMessage</code> 只命中类型声明，<strong>零页面实现</strong>。集单代购是靠微信群和朋友圈传播的生意，甲方本来就有私域群 —— 现在群里想推某款只能截图 + 打字说「进小程序自己找」。</dd>
+      <dt>方案</dt><dd>三处加分享，<strong>全部不带任何利益交换</strong>（不送券、不返现、不解锁、不加小红点）：商品详情（谷圈聊天就是按具体某款货聊的）、场详情（<strong>把截止时间放进标题就是天然紧迫感</strong>，零成本用上「限时」这一要素）、首页兜底；同时开 onShareTimeline。</dd>
+      <dt>落点</dt><dd>三个页面 + 各 locale + <code>pages.json</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">S</span><span class="chip hi">价值 高</span><span class="chip">合规已核</span></div>
+    <p style="font-size:13px;color:var(--ink-3);margin:10px 0 0">合规依据：微信列的 7 种诱导分享违规形态<strong>全部是「用利益换分享」</strong>；普通分享本身完全合规。这是把一条本来合规、却被一起关掉的通道打开，不是新增风险。</p>
+  </div>
+
+  <div class="item b">
+    <h4><span class="id">B5</span>首页四补：玩法说明条 / 场卡「N 款 · ¥xx 起」/ 场列表翻页 / 订单角标真值</h4>
+    <dl>
+      <dt>问题</dt><dd>① 首页没有一个字解释这门生意是什么 —— 全站建立在「场」这个客人可能不认识的概念上却没有定义；② 场卡三张长得一样，客人只能盲点；③ 一次拉 20 条就到底、无翻页，跑几个月后早期场会被静默截断；④ 订单角标写死 <code>ref(0)</code> 永不渲染。</dd>
+      <dt>方案</dt><dd>加三行玩法说明条：「① 每次开一场，我们把这一趟日本能带的货挂上来，一场只开几天 → ② 你挑好加购、<strong>一次付清</strong>（已含国际+国内运费，之后不再补钱）→ ③ <strong>我们飞日本现场买</strong>，每款各自走进度，到一批发一批；没抢到的原路退款」。第 ② 句尤其重要 —— <strong>谷圈标准交易模式是「补款」（定金预售），目标用户的默认预期与我们的产品正好相反，而全站零表达</strong>。第 ③ 句是甲方壁垒在首屏的唯一表达位。<br>另：删掉假渐变占位（<strong>没配图就整块不渲染，空白比假占位诚实</strong>），但 <strong>banner 位保留</strong> —— 它是已建好、带站内跳转的运营工具，交付时写一条 SOP 教甲方「每场闭场当天换成下一场预告图」，这是零代码的场间召回。</dd>
+      <dt>落点</dt><dd><code>index.vue</code> + <code>index.logic.ts</code> · <code>BizEventCard.vue</code> · <code>BizHomeBanner.vue</code> · <code>GzJpEventMpVO</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">M</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item b">
+    <h4><span class="id">B6</span>后台上架提效三件（不碰 Excel）</h4>
+    <dl>
+      <dt>问题</dt><dd>商品管理只有单条新建（9 字段 + 主图 + 图集逐张传），批量能力只有上下架。上一场 60 款 = 重复填 60 遍表单。这是甲方每开一场都要付出的固定成本，<strong>也是他最可能抱怨「这系统用起来慢」的地方</strong>。</dd>
+      <dt>方案</dt><dd>一期不做 Excel 是已定约定，不推翻。在此前提下：① 行操作加「复制此商品」；② 新建弹窗加「保存并继续新增」；③ <strong>「从上一场导入商品」</strong> —— 常驻款每场都要重上一遍，这件比复制单个商品省事得多。①② 纯前端零后端先做，③ 稍重但价值最大。</dd>
+      <dt>落点</dt><dd><code>plus-ui/views/gz-jp/product/index.vue</code>；③ 需新增批量导入端点</dd>
+    </dl>
+    <div class="chips"><span class="chip">M</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item b">
+    <h4><span class="id">B7</span>把代购的三个反直觉在正确的时刻说清楚（+ 图片可放大）</h4>
+    <dl>
+      <dt>问题</dt><dd>客人的购买决策发生在商品详情页，但代购最反直觉的三件事（先付全款 / 我们再去买 / 可能买不到）在这一页<strong>一个字都没有</strong> —— 全站第一次说「不支持退款」是在两页之后的勾选项里。另：全项目 <code>previewImage</code> <strong>0 命中</strong> —— 这是个「看图买」的品类，客人不能放大看角色细节和包装磨损，而「包装可能有磨损，介意慎拍」恰恰是纠纷时唯一的挡箭牌。</dd>
+      <dt>方案</dt><dd>商品详情插三行块（把现有条款口径提前，不是新造承诺）；购买须知兜底补「外包装可能有轻微磨损」；主图加 <code>previewImage</code>（约 10 行）；支付成功页加四行时间线 —— <strong>其中「同一单可能分几个包裹、各有各的运单号」尤其重要</strong>，分包裹是正常行为，但客人收到第一个包裹发现少 20 款一定会以为漏发。</dd>
+      <dt>落点</dt><dd><code>locale/product.zh-CN.ts</code> · <code>product/detail.vue</code> · <code>order/result.vue</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">XS</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item b">
+    <h4><span class="id">B8</span>mp 收货地址管理页</h4>
+    <dl>
+      <dt>问题</dt><dd>后端是全 CRUD 六个端点，而 mp 只包了三个、<strong>连删除都没有</strong>，也没有 address 页 —— 地址只能在下单确认页的弹层里新增和选择。拼豆是当天到店核销、地址不是问题；<strong>拼团是数月后寄实物，客人搬家或写错门牌是必然会发生的</strong>，而协议已经承诺「可在会员中心自行管理」。</dd>
+      <dt>方案</dt><dd>新建地址页（列表 + 增删改 + 设默认），api 补两个包装函数（端点已存在），「我的」加一格并在 <code>pages.routes.test.ts</code> 登记。<strong>后端一行不用改。</strong></dd>
+      <dt>落点</dt><dd>新建 <code>pages/me/address/index.vue</code> · <code>api/gz-user-address.ts</code></dd>
+    </dl>
+    <div class="chips"><span class="chip">S</span><span class="chip">价值 中</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ C 组 ═══════════ -->
+<section id="plan-c">
+  <div class="group-head">
+    <span class="tag" style="background:var(--ask-soft);color:var(--ask)">C 组</span>
+    <h3>超出一期、需与甲方协商</h3>
+  </div>
+  <p class="group-sub">Kevin 拿去谈。C1 已经晚了。</p>
+
+  <div class="item c">
+    <h4><span class="id">C1</span>多规格：同一款吧唧 A/B/C 三个角色 = 1 个商品还是 3 个商品 ★ 唯一必答</h4>
+    <dl>
+      <dt>问题</dt><dd>我方在确认单里把这条列为 ★ 最要紧、明写「越晚改代价越大 —— 订单的结构要跟着动」，请甲方优先回。<strong>甲方没回</strong>，2026-08-06 单方拍板一期不做。现在建表、快照、下单／履约／行级退款全链路已落地，反悔就是结构性返工。谷子的吧唧／立牌<strong>天然是同一款多角色</strong>，一场几十上百款，很可能第一场就撞上。</dd>
+      <dt>方案</dt><dd>不写代码，只问一句。答「3 个商品」= 维持现状零成本；答「1 个商品」= 结构性返工需重新排期。<strong>这条已经晚了，不能再拖到第一场之后。</strong></dd>
+    </dl>
+    <div class="chips"><span class="chip">XS（问）/ L（做）</span><span class="chip hi">价值 高 · 避险</span></div>
+  </div>
+
+  <div class="item c">
+    <h4><span class="id">C2</span>卖完了怎么办（「限量」的正确问法）</h4>
+    <dl>
+      <dt>问题</dt><dd>一期无库存是<strong>我方判断砍的</strong>，理由「您从没提过库存」，甲方一条没回。而甲方自述的壁垒恰恰是「线下买」—— <strong>线下现场抢货天然有量上限</strong>。这是私域熟客生意，退款多了口碑就没了。</dd>
+      <dt>方案</dt><dd>★ <strong>不要问「要不要设限量」</strong>。一个开谷子店的老板在上货那一刻根本不知道现场能抢到几个，让他提前填「这款只能卖 5 个」他填不出来，<strong>这个功能上线第一天就不会有人用</strong>。正确的问法是「卖出去的比您能抢到的多，您希望怎么办」，给三个选项。答 A 则 B1 的「已订件数 + 超阈值标红」就是答案，零额外成本；答 C 则把回答记进 requirements <strong>结案</strong> —— 现在它是「没人拍板」，比「明确不做」危险。</dd>
+    </dl>
+    <div class="chips"><span class="chip">XS（问）/ M（做）</span><span class="chip">价值 中</span></div>
+  </div>
+
+  <div class="item c">
+    <h4><span class="id">C3</span>商品加「现货 / 官网预订」二选一标</h4>
+    <dl>
+      <dt>问题</dt><dd>甲方原话区分了两类货，履约状态机已按「可跳过中间态」实现了，<strong>但商品表上没有任何字段标记哪些是现货</strong> —— 店员推状态时无从判断该不该跳，客人也无从判断这款是 1 周到还是 3 个月到。市场调研确认「现货 vs 空气谷」是谷圈买家下单前<strong>最在意的区分</strong>，圈内有专门的词。</dd>
+      <dt>方案</dt><dd>加 <code>stock_type</code>，admin 必填 radio，四处落地（商品卡／详情／快照／看板筛选）。★ <strong>黑话取舍</strong>：只用「现货」，<strong>不用「空气谷」</strong>（买家自嘲的负面词，卖家自己用等于承认「你买的是空气」）、不用「吃谷」（交易页面上显得轻佻）、不用「补款」（我们没有这个环节，提它反而制造预期）。这条是甲方壁垒变现的最短路径，但 REQ 是 clarify 状态，不能自己拍。</dd>
+    </dl>
+    <div class="chips"><span class="chip">M</span><span class="chip">价值 中</span></div>
+  </div>
+
+  <div class="item c">
+    <h4><span class="id">C4</span>微信订阅消息：只推「已发货」和「购买失败已退款」两个模板</h4>
+    <dl>
+      <dt>问题</dt><dd>全项目零通知能力。履约周期数周到数月，「没抢到是常态」，行级退款做得很扎实 —— 但<strong>客人不主动点进那一单就永远不知道有 2 款没抢到、钱已经退了</strong>。甲方本人对留存有意识，他解释代切时的原话就是「后续加的，增加粘性」。</dd>
+      <dt>方案</dt><dd><strong>模板申请今天就启动</strong>（周期最长，并进 A12 那张纸），代码排二期。授权时机放在点「提交订单」<strong>之前</strong>（钱都要付了，意愿最高）；<strong>只推 2 个节点、不推中间态</strong> —— 额度有限，烧在清关中／分拣中就换不到发货那条。</dd>
+    </dl>
+    <div class="chips"><span class="chip">XS（申请）/ L（代码）</span><span class="chip hi">价值 高</span></div>
+  </div>
+
+  <div class="item c">
+    <h4><span class="id">C5</span>甲方在日本店里怎么用这个系统 —— 手机端现场登记</h4>
+    <dl>
+      <dt>问题</dt><dd><strong>63 条提案里一条都没提这件事</strong>，是评审里最有价值的一条新发现。B1 的采购清单是电脑后台的页面，而甲方最累的那半天是<strong>人在日本店里、一手拿货一手拿手机</strong>。现在他只能回酒店对着电脑再录一遍。</dd>
+      <dt>方案</dt><dd>先确认他在现场用什么设备。如果用手机：采购清单页做成窄屏可用，每行三个大按钮直接写状态 ——「买到了 / 没抢到 / 只抢到 N 件」，当场点完即落库，把采购和履约第一段合并成一个动作。这条如果成立，<strong>价值可能排在 B1 之后第二位</strong>；如果他其实回酒店用电脑，那 B1 就够了。<strong>先问，不要先做。</strong></dd>
+    </dl>
+    <div class="chips"><span class="chip">M</span><span class="chip hi">价值 高（条件成立时）</span></div>
+  </div>
+
+  <div class="item c">
+    <h4><span class="id">C6</span>履约状态推错了能改（单行修正，只给店长）</h4>
+    <dl>
+      <dt>问题</dt><dd>不做状态回退也是我方判断砍的（理由「推错了我帮您改」）。代码已固化不可回退，意味着<strong>每一次误操作都只能由 Kevin 手工改库</strong>，而看板批量操作一次动几十行。</dd>
+      <dt>方案</dt><dd><strong>不放开批量回退</strong>（那会让状态机失去意义），只加受控的单行修正：选目标 + 必填原因 + 写审计日志，<strong>挂独立权限点、只给店长</strong>。两条硬约束必须一起做：① 已发起过退款的行禁改；② 改 delivered 行时若已上报过发货要提示核对（微信「重新发货」每笔支付单只有一次机会）。</dd>
+    </dl>
+    <div class="chips"><span class="chip">S</span><span class="chip">价值 中</span></div>
+  </div>
+
+  <div class="item c">
+    <h4><span class="id">C7</span>场还开着的时候，客人能不能自己撤掉其中 2 款</h4>
+    <dl>
+      <dt>问题</dt><dd><strong>五个视角全漏了这条。</strong>场跑几天，客人第一天付了 30 款、第三天想减掉 2 款 —— 这在集单代购里<strong>是必然会发生的请求</strong>，而现在唯一的减款途径是甲方去日本没买到才标失败。行级退款的能力已经完整存在，缺的只是一条规则和一个按钮。现在这件事悬空：客人一定会打电话来，而店员没有任何工具，只能改库。</dd>
+      <dt>方案</dt><dd>先要一条规则。若给撤：加窗口判定 + mp 行级申请 + admin 审批（<strong>复用现成的行级退款链路，不新建资金路径</strong>）；若不给撤：在购买须知里<strong>写死</strong>「付款后不可减款、不可取消」，别让它悬着。</dd>
+    </dl>
+    <div class="chips"><span class="chip">XS（定规则）/ S（做）</span><span class="chip">价值 中</span></div>
+  </div>
+
+  <div class="item c">
+    <h4><span class="id">C8</span>二期候选打包（五件，均需甲方确认后才排期）</h4>
+    <dl>
+      <dt>问题</dt><dd>四件来自评审中的<strong>客户视角推演而非甲方真实表态</strong>，必须先问过再排期。</dd>
+      <dt>方案</dt><dd>
+        ① <strong>客人名单</strong> —— 熟客私域生意最值钱的资产就是这份名单，而后台现在只有订单没有客人。<br>
+        ② <strong>许愿／求购入口</strong> —— 直接决定他该进什么货，现在全靠私聊，聊完就散。<br>
+        ③ <strong>本场货单长图／海报（带小程序码）</strong> —— 甲方的实际动作是往群里甩一张图，现在只能一款一款分享。<br>
+        ④ <strong>上货填日元 + 汇率</strong> —— 他在日本看到的标价全是日元，回来要拿计算器一个个乘。<br>
+        ⑤ <strong>admin 改未发货订单的收货地址</strong> —— 动的是「下单锁定快照」这条已定设计原则，需 Kevin 先确认口径。
+      </dd>
+    </dl>
+    <div class="chips"><span class="chip">各 S-M</span><span class="chip">价值 中（①③④ 偏高）</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ 三、只做5件 ═══════════ -->
+<section id="five">
+  <h2><span class="num">三</span>如果只做 5 件事</h2>
+  <p class="section-note">顺序是有依赖的：第 1 件不做，后面几件可能白做（范围会变）；第 5 件不做，前面几件上不了线。</p>
+
+  <ol class="seq">
+    <li>
+      <h4>一次 10 分钟录屏走查 + 三道必答题</h4>
+      <p>甲方 8/05 起零输入，再发一份长确认单大概率还是没回。改成录两条线各 5 分钟 ——「一个客人买 3 款到看进度」和「您开一场到发货」—— 让他挑毛病，配三道封闭式必答题。<strong>放第一位不是因为它最重要，是因为甲方接触是稀缺资源</strong>，而多规格这条我们自己写了「越晚改代价越大」、现在已经晚了。这一件是 XS，其余四件可以并行开工，不用等回复。</p>
+    </li>
+    <li>
+      <h4>B1 本场采购清单（+ 已订件数列）</h4>
+      <p>唯一一件能让甲方觉得「这系统变重了」的。采购是他每开一场都要付出一次的固定人工，而这条是纯读聚合、不改任何写路径、不动数据模型。<strong>这是回答「太简单」最直接的商业答案。</strong></p>
+    </li>
+    <li>
+      <h4>A1 订单详情补全</h4>
+      <p>唯一一件能让客人觉得「产品变厚了」的，而且后端数据早就在手里。在一个履约期数周到数月的生意里，「什么时候到」是客服最高频问题 —— <strong>系统里有答案却不给客人看，这是最不该欠的债</strong>。半天到一天，不改任何跨层契约。</p>
+    </li>
+    <li>
+      <h4>A2 未付款订单关单 + 再次购买（顺手把 A3 的 pageSize 改掉）</h4>
+      <p>两条都会造成客人可感知的错误，而且<strong>伤害面正好落在客单价最高的那批人身上</strong>：客人挑 30 款、支付失败、车空了单死了，他会觉得「东西被吞了」；看板分页不改，一个包裹会被填成两个运单号。A3 的正解排后面，但那一个数字今天就能改，一分钟。</p>
+    </li>
+    <li>
+      <h4>上线三闸打包（A4 + A5 + A6）</h4>
+      <p>三条加起来 1.5 天，但性质不同于前四件：A4 动的是甲方的<strong>收款资格</strong>（承诺 7 天必然每单超时，处置终点是暂停交易）；A5 动的是<strong>资金结算</strong>（同一根因本项目已经真实炸过一次）；A6 是全清单里<strong>唯一一条不成立就要推翻产品设计</strong>的假设 —— 全款预付之所以敢做，就是因为承诺买不到能只退那几款，而这件事至今零真钱验证。</p>
+    </li>
+  </ol>
+
+  <p style="margin-top:26px;color:var(--ink-2)">
+    第 6-8 件（<strong>第一场跑完立刻做</strong>）：B2 场内搜索、B3 加购动线、B4 分享。这三件是客人侧感知最强的，但在还没有一个客人的时候做，收益是 0。
+  </p>
+</section>
+
+<!-- ═══════════ 四、甲方问题 ═══════════ -->
+<section id="ask">
+  <h2><span class="num">四</span>需要甲方拍板的问题清单</h2>
+  <p class="section-note">
+    <strong>形式</strong>：不要再发确认单。约一次微信语音或见面，先放 10 分钟录屏（两条线：客人买货 / 您开一场到发货），让他边看边挑毛病，然后问下面这些。<strong>必答只有三条（1、2、4）</strong>，其余答不答都不阻塞。
+  </p>
+
+  <div class="q must">
+    <div class="qhead"><span class="qn">01</span><span class="must-tag">必答</span></div>
+    <div class="ask">同一款吧唧，A 赏、B 赏、C 赏三个角色，您想上架成 1 个商品还是 3 个商品？</div>
+    <p class="why">这条我们两个月前就问过，一直没等到您的回复。现在系统是按 3 个商品做的；如果您要 1 个商品分角色选，改动比较大，越往后越贵，所以想跟您确认死。</p>
+  </div>
+
+  <div class="q must">
+    <div class="qhead"><span class="qn">02</span><span class="must-tag">必答</span></div>
+    <div class="ask">一款货，客人订的比您在日本能抢到的多，您希望怎么办？</div>
+    <ul>
+      <li>A. 我自己盯着，订多了我就手动下架</li>
+      <li>B. 上货的时候给个数，卖到那个数系统自动下架</li>
+      <li>C. 先卖着，抢不到的按现在这样退钱就行</li>
+    </ul>
+  </div>
+
+  <div class="q">
+    <div class="qhead"><span class="qn">03</span></div>
+    <div class="ask">您在日本店里买货的时候，手上拿的是手机还是电脑？</div>
+    <p class="why">有没有可能您在店里当场就把「这款买到了 / 这款没抢到 / 只抢到 3 件」点掉，回酒店不用再录一遍？</p>
+  </div>
+
+  <div class="q must">
+    <div class="qhead"><span class="qn">04</span><span class="must-tag">必答</span></div>
+    <div class="ask">一款货，从客人付完钱到寄出去，您敢给的最长时间是多少？</div>
+    <p class="why">1 个月内 / 2 个月内 / 3 个月内 / 按官方发售档期。这个数字微信要看，现在页面上写的是「下单后 7 天内发出」—— 那是我们暂时填的，肯定不对，得换成您敢承诺的数。<strong>宁可报长，报长了提前到货是惊喜，报短了每一单都算超时。</strong></p>
+  </div>
+
+  <div class="q">
+    <div class="qhead"><span class="qn">05</span></div>
+    <div class="ask">客人问「什么时候到、我的到哪了」，您希望他找谁？</div>
+    <p class="why">加您微信 / 进店里的群 / 打电话 / 在小程序里发消息（这个需要店里有人一直盯着）。</p>
+  </div>
+
+  <div class="q">
+    <div class="qhead"><span class="qn">06</span></div>
+    <div class="ask">客人付完这一笔钱，还会不会再收他钱？</div>
+    <p class="why">比如到货了要补差价、或者收关税。我们要在页面上写死一句话，<strong>写错了是要赔的</strong>，所以必须您来定。</p>
+  </div>
+
+  <div class="q">
+    <div class="qhead"><span class="qn">07</span></div>
+    <div class="ask">场还开着的时候，客人想撤掉其中两款，给不给撤？</div>
+    <p class="why">给撤的话是到闭场之前都能撤，还是别的规则？现在系统里没这条规则，客人打电话来店员一点办法都没有。</p>
+  </div>
+
+  <div class="q">
+    <div class="qhead"><span class="qn">08</span></div>
+    <div class="ask">上次您说「代切还涉及到一个问题，我写到最后」，是指什么问题？</div>
+    <p class="why">您那句话后面没写完，我们一直记着。</p>
+  </div>
+
+  <div class="q">
+    <div class="qhead"><span class="qn">09</span></div>
+    <div class="ask">拼团小程序要不要跟谷子宇宙长得不一样？</div>
+    <p class="why">现在两个是同一套配色。这条不急，您先看看录屏里的样子再说。</p>
+  </div>
+
+  <div class="callout">
+    <h4>另外一张纸（不是问题，是告知）</h4>
+    <p>新小程序注册 / ICP 备案 / 海淘类目资质 / 商户号绑定，四件事是<strong>串着来的</strong>，ICP 最慢要两三周，办不完小程序上不了线。三行字写清「哪天之前办什么、不办卡住哪一天的什么」。<strong>顺带把微信订阅消息的两个模板也一起申请了</strong>，那个周期也长，先申请着不影响别的。</p>
+  </div>
+</section>
+
+<!-- ═══════════ 五、不建议做 ═══════════ -->
+<section id="no">
+  <h2><span class="num">五</span>不建议做（以及为什么）</h2>
+  <p class="section-note">这一节和方案一样重要 —— 防止同一个想法再诱惑一次。评审从 63 条里砍掉 30 条，以下是理由值得记住的部分。</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>不做</th><th>为什么</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>换主色成朱红 / 独立品牌视觉</td>
+        <td><strong>论据是反的。</strong>Kevin 原话「选 A，直接复用现有 c-tokens，两个小程序视觉一致」。那串 <code>#c8452f</code> 是 <code>design-review.html:57</code> 里 <code>.A{--acc:#c8452f}</code> 的<strong>样张 CSS 变量被误抄进了权威锚</strong>，不是规格 —— 已复核。「让代码去对齐蓝图」把因果说反了。<br><em>但要诚实记一笔</em>：拍板当天屏幕上的样张是朱红米白，落地拿到的是绿色（miniapp 早已换过皮），决策依据本身失真了 —— 所以把「要不要不一样」作为第 9 个可选问题问一次。doc 的四个错值现在就改（A13④）。</td>
+      </tr>
+      <tr>
+        <td>发货上报按 business_type 免窗</td>
+        <td>被 A5 完整证伪且更危险。cron 在 prod 是活的，卡住的唯一原因就是 <code>paid_time</code> 开窗。「jp 不设窗口」等于给拼团开无限重试，只剩一道闸；改用 <code>create_time</code> 是一行、零迁移、拼豆行为完全不变。</td>
+      </tr>
+      <tr>
+        <td>单独清理三处「可继续支付」文案</td>
+        <td>它的缓解论据（「未付单 5 分钟自动关单」）<strong>是错的</strong> —— <code>markCancelled</code> 零调用方，jp 未付单永远停在待支付。照它改出来的新文案在业务单层面同样是假的，只是把谎话换了个说法。并入 A2，<strong>先修事实再改文案</strong>。</td>
+      </tr>
+      <tr>
+        <td>骨架屏 / 图片淡入 / 点按缩放</td>
+        <td>典型的「客人说不出哪里好但会觉得顺」—— 对一个<strong>还没有客人</strong>的产品，这个收益是 0。技术判断没错，留到第一场跑完。</td>
+      </tr>
+      <tr>
+        <td>全站 emoji 换 12-14 个矢量图标</td>
+        <td>问题是真的，但援引 CLAUDE.md 铁律「不混 emoji」是<strong>误读</strong> —— 那条讲的是 i18n 可见字符串，而这些是刻意的占位（组件里作者自己标了「上线替矢量素材」）。在 ICP、类目资质、商户号三项全 ❌ 的当口花 1-2 天画图标是错配。<strong>它真正的前置是甲方的素材</strong> —— 图一到位，一半 emoji 位直接消失。</td>
+      </tr>
+      <tr>
+        <td>商品加自由文本「标签」字段</td>
+        <td>甲方每上一款要多填一次，60 款就是 60 次；而且今天写「柯南」明天写「名侦探柯南」，<strong>客人搜哪个都搜不全，等于白填还添乱</strong>。B2 的关键词搜索已经能搜到「柯南」。第一场跑完看实际上货结构再说。</td>
+      </tr>
+      <tr>
+        <td>成团进度条 / 邀请返现 / 阶梯价 / 积分会员等级</td>
+        <td>这是<strong>集单代购不是社交拼团</strong>，加了只会让客人误解玩法。63 条提案全部守住了这条线，这里明确记一笔，防止以后被「拼团」这个词带偏。</td>
+      </tr>
+      <tr>
+        <td>场卡显示「已有 N 人下单」</td>
+        <td>一场刚开只有两个人下单，写出来<strong>是劝退不是助攻</strong>。真要做也得等人数够多才显示 —— 那就是一个需要运营判断的开关，不值得在第一版引入。</td>
+      </tr>
+      <tr>
+        <td>30 款购买须知在下单页逐条展开</td>
+        <td>客人手指已经在付款键上，弹三十条免责声明就不付了。折叠成一条 + 订单详情能翻回来，举证力足够。</td>
+      </tr>
+      <tr>
+        <td>两个小程序打通账号</td>
+        <td>甲方自己的分责逻辑就是「因为是两个系统，不然出了问题不好分责任」。打通会把两条性质完全不同的资金链路（当天到店核销 / 数月跨境实物）的退款、投诉、客服口径<strong>搅在一起</strong>。唯一真实的损失是「拼豆的存量到店客人这个最精准的流量池没被用起来」—— 那用引流入口就能解决，排二期。</td>
+      </tr>
+      <tr>
+        <td>在支付成功页写「我们暂时不会主动给你发消息提醒」</td>
+        <td>付款成功那一刻是客人<strong>信任度最高</strong>的时候，在那里主动广告自己的能力缺失是自伤。诚实不等于把每个缺口都贴在收银台上。正解是 C4。</td>
+      </tr>
+      <tr>
+        <td>场看板 BI 抽屉（Top10 / 失败率 / 客单价 / 时段分布）</td>
+        <td>第一场都还没跑，那些图全是空的。四列先上（A10），跑过三场甲方自然会来要抽屉，<strong>那时才知道该做哪几个数</strong>。</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ═══════════ 六、证据不足 ═══════════ -->
+<section id="gaps">
+  <h2><span class="num">六</span>证据不足 / 需要进一步确认</h2>
+
+  <div class="callout">
+    <h4>必须先说清的一条</h4>
+    <p>本轮两路评审里，有一路是<strong>用甲方口吻写的推演，不是甲方的真实答复</strong>。里面那些「我现在就答：颜色换 / 关税我全包 / 限量我不要」<strong>全部不能当甲方口径使用</strong> —— 甲方自 2026-08-05 起零输入，这个事实没有变。那一路的价值在于它推演出了五个技术视角全漏掉的几件事（在日本店里用手机、群里发货单海报、客人名单、许愿单、日元定价），这些已按「需甲方确认」归进 C 组，<strong>没有当成需求</strong>。</p>
+  </div>
+
+  <ul class="plain">
+    <li><strong>微信退款到账天数</strong> —— 文案里想写「零钱几分钟、银行卡 1-3 个工作日」，按通行说法写，<strong>没有本项目的实测数据</strong>。宁可写「以微信支付通知为准」也不要写一个错的天数。</li>
+    <li><strong>单笔支付单的退款次数 / 频率限制</strong> —— 未查证。这直接约束「一单 30 款能不能分 10 次退」，A6 那轮真钱验证要顺带测出来。</li>
+    <li><strong>「定金 + 补款」在微信支付下的合规实现</strong> —— 未查证。所以只做「一次付清」的文案表达，<strong>不建议改商业模式</strong>，那也不是我们该提的。</li>
+    <li><strong>订阅消息在代购类目的具体转化率</strong> —— 未查证，C4 里没引任何数字。</li>
+    <li><strong>关税承担方</strong> —— 商业条款，一个字都没写死，全部留给问题 06。</li>
+    <li><strong>退款的钱从哪来</strong> —— 评审提出一个真实但<strong>未验证</strong>的风险：微信原路退款要求商户号余额充足，而新商户有冻结期、结算有周期；一场几十客人集中退款如果余额不足会直接失败，那时客人的钱既没变成货也没退回来。支付域 grep 只在 mock 转账里见到「余额不足」，<strong>退款路径对这个失败态的处理没有看完，不能断言有没有洞</strong>。建议 A6 那轮顺带确认，并问甲方他商户号的结算周期。</li>
+    <li><strong>menu_id 14040</strong> —— grep 全部迁移当前最大是 14036，14040 空闲，但<strong>没有查活库</strong>。本项目 menu_id 撞号踩过 3 次（曾误删核销权限导致全线 403），实施前必须再查一次活库。</li>
+    <li><strong>商品图的真实比例</strong> —— 等甲方给 5-10 张样图才能定网格用 1:1 还是 3:4。改比例会让所有现有图构图重排，没见过真图之前是赌博。</li>
+    <li><strong>甲方一场里限量货占几成</strong> —— 完全没有数据，这正是 C2 该不该做的关键，<strong>所以先问不先做</strong>。</li>
+    <li><strong>平台 IP 投诉规则</strong> —— 没有可引来源，所以相关提案整个砍了，没有基于推测提建议。</li>
+  </ul>
+</section>
+
+<footer>
+  取证 30 条 · 市场调研 4 路 · 五视角提案 63 条 · 评审砍 30 条 · 定稿 29 条<br>
+  文中三处「纠正早期误判」（markCancelled 零调用方 · 本地调度器 prod 存活 · 朱红色值出自样张 CSS）已逐条回代码复核
+</footer>
+
+</div>
