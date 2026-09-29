@@ -2,11 +2,29 @@
 # L1 回归包原子 —— 谷子宇宙拼团（日本代购一期）
 # 用法：bash doc/jp/verify.sh [域]    例：bash doc/jp/verify.sh jp
 # 退出码 0 = 全绿。每个 ticket 的 accept 沉淀进来后，任务 QA 门在确定性快照上全量重放。
+#
+# ⚠️ 本脚本**只覆盖 dev 本机环境**（硬编码 dev 容器名 / 库名 ry-vue / localhost:8080 / ~/.m2 里的 jar）。
+#    它是「dev 回归包」，**不是** staging/prod 验收工具 —— 那两套要走各自的环境（见 .dsh/knowledge/deploy.md）。
+#    guard_env 会在环境对不上时直接 FAIL，不让它在错的环境里跑出「全绿」的假信号。
 set -uo pipefail
 
 MYSQL="docker exec sensenran-dev-mysql mysql -uroot -proot ry-vue -N -e"
 API_BASE="http://localhost:8080"
 FAIL=0
+
+# ── 断言 -1：环境守卫（先于一切断言）────────────────────────────────
+# 只要不是「本机 dev 三件套」就拒绝跑：跑在别处得到的绿毫无意义，而一次误读的绿比红更贵。
+guard_env() {
+  if ! docker ps --format '{{.Names}}' 2>/dev/null | grep -qx 'sensenran-dev-mysql'; then
+    echo "  ✗ [env] 未找到 dev 容器 sensenran-dev-mysql —— 本脚本只用于本机 dev，不在目标环境执行"
+    return 1
+  fi
+  if ! curl -s --noproxy '*' -o /dev/null -m 5 "$API_BASE/actuator/health" 2>/dev/null; then
+    echo "  ✗ [env] $API_BASE 无响应 —— 先本机起后端（mvn spring-boot:run -pl ruoyi-admin，dev profile）"
+    return 1
+  fi
+  echo "  ✓ [env] 本机 dev（sensenran-dev-mysql + $API_BASE）"
+}
 
 # ── 断言 0：反 stale（必跑前置守卫，不是可选）──────────────────────────
 # 被测产物版本对不上就直接 FAIL，不许在旧 jar / 旧 dist 上断言
@@ -35,6 +53,13 @@ api()  { # api "说明" "路径" "jq 表达式"   —— 必须断返回体内�
 json() { # json "说明" "文件" "jq 表达式"
   if jq -e "$3" "$2" >/dev/null 2>&1; then echo "  ✓ $1"; else echo "  ✗ $1"; FAIL=1; fi
 }
+
+echo "── 断言 -1：环境守卫（dev 专用）──"
+if ! guard_env; then
+  echo ""
+  echo "❌ verify.sh 拒绝在非 dev 本机环境执行 —— 本脚本是 dev 回归包，不是 staging/prod 验收工具"
+  exit 2
+fi
 
 echo "── 断言 0：产物新鲜度 ──"
 guard_fresh || FAIL=1

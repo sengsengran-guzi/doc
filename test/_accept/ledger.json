@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "source": "doc/test/kevin-test.xlsx",
+  "source_fp": "28be7bb1f9cd",
+  "last_sync": "2026-09-27 18:45",
+  "items": {
+    "ACC-ef7f85ca": {
+      "id": "ACC-ef7f85ca",
+      "path": "",
+      "desc": "1. admin里不要临时桌，现在的逻辑做的有点复杂，店员很难操作；我们梳理一下，店员创建桌子后，可对桌子或者座位进行开关操作，如果关闭，则小程序上不可预订，但是无论是否关闭，看板功能都不应该受影响。这里的启用功能可以去掉，改成上述描述的开关",
+      "shots": [
+        "=DISPIMG(\"ID_8FC929FB98F94E62870BD00F98140E9B\",1)",
+        "=DISPIMG(\"ID_A8D45DEE4EE54911B1E4325793C7A77E\",1)"
+      ],
+      "row": 2,
+      "status": "已修复",
+      "cause": "doc",
+      "note": "已修复（Kevin 2026-09-26 第七轮：价格配置集中）。**所有价格只在一个入口改**：列表操作列的「星期 × 时段价格」弹窗顶部新增「全局默认价」区块（基础单价 元/小时 + 包天基础价 元/天）；「编辑座位类型」弹窗里的这两个价格输入撤掉，只留一行只读指路「当前基础单价 ¥x/小时、包天基础价 ¥y/天。价格（含逐格/按星期）统一在列表的「星期 × 时段价格」里改」。价值：这两个价本来就是网格留空格子的回退值（第 3 级兜底 / 包天兜底），弹窗里本来也只把它们当 placeholder —— 现在改成可直接编辑，价格配置就齐了。\n关键技术点：**新增专用写入口** PUT /system/gz/bean/seatTypeConfig/default-price（只改 price_cent / day_pass_price_cent 两列，Bo 只收 id+两个价）。**没有复用全量编辑接口** —— 那条走 toEntity 逐字段拷贝，缺省字段会按默认值把 dayPassQuota/mpVisible/mpLongCloseCount 一起写掉（真机上就是这类静默清配置）。真机验证：改价后 包天名额/长期关闭/mp 可约/订法/数量 全部原样，mp 计价跟着兜底价变（unitPriceCent 5000→6600）。\n前端配套：编辑桌型时 payload 不带这两个价（否则拿表单旧值覆盖价格弹窗刚改的价）；新增才传 0；列表 基础单价=0 红字+tooltip 报警（防忘了设价按 ¥0 计价）。\n验证：单测 +3（只写两列 / 包天价空落 0 / 桌型不存在返 false）+ 变异验证（给补丁顺手多写两列 → 1 条红）；gz-bean 320/320；新增 spec 用例「价格弹窗必须有全局默认价且可编辑」+ 编辑弹窗守卫（label 不得含这两个价、正文须指向星期×时段价格）；eslint 0 / vue-tsc 72→72 / i18n 2521=2521 / build:prod exit 0。",
+      "cell_note": "已修复(09-26)",
+      "first_seen": "2026-09-26",
+      "history": [
+        {
+          "at": "2026-09-26T16:13:45",
+          "event": "set status=处理中 cause=unknown note=架构级：把现有四套「mp 不可订」机制（桌型 enabled / mp_visible 临时桌 / 座位 enabled / slot_quota_close）收敛成一个开关。与 ADR-0016(选桌型档不选座)、ADR-0023(临时桌两轴)、GZ-BEAN-055(数量=座位行数,保存自动对齐) 直接相关，需先定口径再动"
+        },
+        {
+          "at": "2026-09-26T16:28:28",
+          "event": "set status=处理中 cause=doc note=已定案（ADR-0024）：4 套 mp 不可订机制收敛为「桌型级『对小程序开放』开关 + 今天关几个 + 删除」。删 enabled(桌型)/enabled(座位)/用途三个控件；座位级开关不做（mp 按桌型档卖，slotCapacity 不读座位表=死控件）。看板/分座不再受任何开关影响。实施中：后端+admin 并行"
+        },
+        {
+          "at": "2026-09-26T16:43:51",
+          "event": "set status=已修复 cause=doc note=ADR-0024 落地完成并真机验证：① 后端删 gz_bean_seat_type_config.enabled + gz_bean_seat.enabled 两列（迁移 V202609261629 已 Flyway 真 apply，179→180 条，两列 information_schema 已 0）；② 13 处 getEnabled 校验清理（含紧随 isMpVisible 的等价接管 + 3 处座位级拦截删除）+ 2 个 toggle 端点删除；③ 前端删「启用」列/表单项/端点封装，「用途」radio→el-switch「对小程序开放」，tempTag/tempTypeTag→mpClosedTag「未开放」。真机验证：起 app 后新建 mpVisible=0 桌型+座位 → 看板显示其 2 座位 ✅、mp type-slots 不含它 ✅（验收数据已清）。测试 gz-common 260 / gz-bean 301 全绿，vue-tsc 72→72，i18n 2411=2411"
+        },
+        {
+          "at": "2026-09-26T19:22:05",
+          "event": "set status=已修复 cause=doc note=已修复并全部验证通过（2026-09-26 收尾）：ADR-0024 落地。① 后端删 gz_bean_seat_type_config.enabled + gz_bean_seat.enabled 两列（迁移 V202609261629 已 Flyway 真 apply，179→180 条，两列 information_schema 计数 0）；② 13 处 getEnabled 校验清理 + 2 个 toggle 端点删除；③ 前端删「启用」列/表单项/端点封装，「用途」radio→el-switch「对小程序开放」，tempTag/tempTypeTag→mpClosedTag「未开放」。真机验证：新建 mpVisible=0 桌型+2 座位 → 看板照常显示 ✅、mp type-slots 不含它 ✅（验收数据已清，活库 mp_visible=0 行数 0）。测试：gz-bean 307/307、gz-common 260 全绿；前端 eslint 0、vue-tsc 72→72 无新增、i18n 2433=2433、build:prod exit 0。不变量：所有 mp 不可订只由桌型级 mp_visible + 桌型级 slot_quota_close 决定，看板/分座/排位/改派/放座/延时完全不受影响。"
+        },
+        {
+          "at": "2026-09-26T20:24:32",
+          "event": "set status=处理中 cause=doc note=**尚有未做完的一项**（Kevin 2026-09-26 二次复审指出）：座位类型编辑弹窗里的「对小程序开放」开关 = ADR-0023 的临时桌 mp_visible，我上一轮只是把「用途」radio 换成 switch，**仍是桌型级**。甲方 8/26 原话第一句就是「admin 里不要临时桌…这里的启用功能可以去掉」，按原意这个开关应当摘掉 —— 我漏了这个。影响面：① mp 目录过滤（全 1 时 no-op，无影响）② isTempSeatType 放宽失去入口 → ADR-0018「线上单可分到临时桌」的跨型分座放行不可达（= 8/26 交付能力退回）③ 迁移处理存量 mp_visible=0（活库 0 行）。已挂 AGENTS.md §7.4 未决项，等 Kevin 拍板（摘入口 / 连字段删）后落地。其余部分（删桌型 enabled + 座位 enabled 两列、13 处 getEnabled 清理、2 个 toggle 端点删除、mp 可见性收敛）已完成并真机验证。"
+        },
+        {
+          "at": "2026-09-26T20:24:46",
+          "event": "set status=处理中 cause=doc note=**尚有未做完的一项**（Kevin 2026-09-26 二次复审指出）：座位类型编辑弹窗里的「对小程序开放」开关 = ADR-0023 的临时桌 mp_visible，我上一轮只是把「用途」radio 换成 switch，**仍是桌型级**。甲方 8/26 原话第一句就是「admin 里不要临时桌…这里的启用功能可以去掉」，按原意这个开关应当摘掉 —— 我漏了这个。影响面：① mp 目录过滤（全 1 时 no-op，无影响）② isTempSeatType 放宽失去入口 → ADR-0018「线上单可分到临时桌」的跨型分座放行不可达（= 8/26 交付能力退回）③ 迁移处理存量 mp_visible=0（活库 0 行）。已挂 AGENTS.md §7.4 未决项，等 Kevin 拍板（摘入口 / 连字段删）后落地。其余部分（删桌型 enabled + 座位 enabled 两列、13 处 getEnabled 清理、2 个 toggle 端点删除、mp 可见性收敛）已完成并真机验证。"
+        },
+        {
+          "at": "2026-09-26T20:40:44",
+          "event": "set status=已修复 cause=doc note=全部落地（Kevin 2026-09-26 二次复审选 A 后收口）。① 后端口径：4 套「mp 不可订」机制收敛为「桌型一律进小程序目录 + 一个计数」——删 gz_bean_seat_type_config.enabled / gz_bean_seat.enabled 两列（迁移 V202609261629 已真 apply，180 条），13 处 getEnabled 校验 + 2 个 toggle 端点删除；② **mp_visible 的 UI 入口全部摘掉**（座位类型编辑弹窗的 el-switch、列表「对小程序开放」筛选下拉、独立列），字段保留默认 1：甲方 8/26 原话第一句「admin 里不要临时桌…这里的启用功能可以去掉」，我第一版只把「用途」radio 换成 switch 改名「对小程序开放」，机制原样保留 → Kevin 二次复审打回，现已按原意摘入口。兜底：万一有人直接改库造出 mp_visible=0，列表会在类型名后挂「未开放」角标（否则该桌型会同时从小程序和今日可售抽屉静默消失）；isTempSeatType 放宽代码留着但已无路径可达（主动接受的能力退回，恢复临时桌只需把入口加回来，后端零改动）。③ 座位级开关不做（mp 顾客选桌型档不选座位）；「预留几个座」= 减档位配额，「座位坏了」= 删座位。验证：真机（编辑弹窗已无开关、桌型配置列表正常）+ 新 spec e2e/gz-bean/seat-type-config.spec.ts 守卫（弹窗不得再出现「对小程序开放/已开放/未开放」与任何 el-switch）；前端 eslint 0 / vue-tsc 72→72 / i18n 2502=2502 / build:prod exit 0。"
+        },
+        {
+          "at": "2026-09-26T21:14:33",
+          "event": "set status=已修复 cause=doc note=已修复（含 Kevin 2026-09-26 第三轮新增的第 2 条）。**新增长期关闭能力（GZ-BEAN-057）**：甲方「可以在桌型配置那里控制一下，当前桌型几个座位长期在小程序里不显示」→ 新增 gz_bean_seat_type_config.mp_long_close_count（迁移 V202609262102，桌面配置页「长期关闭」字段，单位 whole=桌 / seat=座）。\n口径：**一个公式两个减项** —— 有效可订量 = slotCapacity − 长期关闭 − 当日该格 close_count（下限 0）；长期走配置页、临时走看板「今日可售」抽屉。四条读路径（mp 余量 / admin 明细 / 看板抽屉）+ 三条下单防超卖（submitPaid / submitPaidGroup / submitDayPass）全部收敛到一个方法 effectiveCap()（此前 7 处手写减法）；包天名额上界也收紧为 slotCapacity − 长期关闭；两条写路径共用一个上限闸 0..sellableCapacity。\n真机踩坑并修掉：GzBeanSeatTypeConfigServiceImpl.toEntity() 是**手写逐字段拷贝**（不是 MapStruct），加字段漏补一行 → 接口 200 但 DB 静默不生效（E2E 第一轮就是这么漏的）；已补 toEntity + 单测 updateByBo_writesMpLongCloseCount 钉死。\n验证：真栈 E2E 长期关 2 → sellableCap 6 且 mp remaining 6；叠加当日关 3 → 该格 3；关满 6 → mp 全约满；恢复全 0；越界（9>8）与包天（7>6）均拒且报错带实际数字；后端 gz-bean **314/314**（含变异验证：摘掉长期关闭项 → 恰好 2 条新用例变红）。"
+        },
+        {
+          "at": "2026-09-26T21:40:13",
+          "event": "set status=已修复 cause=doc note=已修复（含 Kevin 2026-09-26 第四轮口径修正）。**长期关闭 = 看板「今天关闭」的默认值（覆盖关系，不是相加）**——第二版我做成了 （两个减项相加），被 Kevin 打回。正确口径：，。店员今天不动 → 按长期默认关；今天改成 0（全开）或 3 → 只对今天生效，桌型配置不变。\n实现要点：① 读当日值改用新增的 getQuotaCloseOrNull（回可空 Integer）——**null（没设）与 0（特意全开）必须分开**，用归 0 的版本会让长期默认直接失效；② 上限闸与包天名额上界都回到 slotCapacity（当日关闭是绝对值覆盖，可把长期关着的也一起关满/全放开；拿默认值卡包天会造出「今天明明全开、名额却被压住」的假约束）；③ 唯一实现 effectiveClose/effectiveCapacity + effectiveCap(config, recordedClose)，4 条读路径 + 3 条下单防超卖全走它；④ 抽屉列改为「每格容量 / 长期关闭(默认) / 今天关闭(生效值 + 「沿用长期」or「今天已改」角标) / 全天关闭几个(stepper 预填生效值、上限总容量)」，提示语一句话讲清不填=沿用长期，改了只对今天；⑤ 迁移 V202609262135 只改列注释（旧迁移已 apply，append-only 不改内容）。\n验证：真栈三态（长期 2 不填 → 今天关闭 2 沿用、mp 6；改 0 → mp 8；改 3 → mp 5 且配置仍 2；明天无记录 → 回到 2）+ 上限 8（9 拒且报错说明长期只是默认值）+ per-config 隔离；后端 gz-bean 315/315（两次变异验证：摘掉长期项 → 2 条红；让 effectiveClose 忽略当日记录 → 5 条红）。"
+        },
+        {
+          "at": "2026-09-26T21:40:19",
+          "event": "set status=已修复 cause=doc note=已修复（含 Kevin 2026-09-26 第四轮口径修正）。【长期关闭 = 看板「今天关闭」的默认值，覆盖关系、不是相加】—— 第二版我做成了「总容量 − 长期关闭 − 当日关闭」（两个减项相加），被 Kevin 打回。正确口径：今日生效关闭数 = 当日已记录值 ?? 长期关闭；有效可订量 = 总容量 − 今日生效关闭数。店员今天不动 → 按长期默认关；今天改成 0（全开）或 3 → 只对今天生效，桌型配置不变。\n实现要点：① 读当日值改用新增的 getQuotaCloseOrNull（回可空 Integer）—— null（今天没设）与 0（今天特意全开）必须分开，用归 0 的版本会让长期默认直接失效；② 上限闸与包天名额上界都回到 slotCapacity（当日关闭是绝对值覆盖，可把长期关着的也一起关满/全放开；拿默认值去卡包天会造出「今天明明全开、名额却被压住」的假约束）；③ 唯一实现 effectiveClose/effectiveCapacity + effectiveCap(config, recordedClose)，4 条读路径 + 3 条下单防超卖全走它；④ 抽屉列改为「每格容量 / 长期关闭(默认) / 今天关闭(生效值 + 沿用长期 or 今天已改 角标) / 全天关闭几个(stepper 预填生效值、上限总容量)」，提示语一句话讲清「不填=沿用长期、改了只对今天」；⑤ 迁移 V202609262135 只改列注释（旧迁移已 apply，append-only 不改内容）。\n验证：真栈三态（长期 2 不填 → 今天关闭 2 沿用、mp 6；改 0 → mp 8；改 3 → mp 5 且桌型配置仍 2；明天无记录 → 回到 2）+ 上限 8（9 被拒且报错说明长期只是默认值）+ per-config 隔离；后端 gz-bean 315/315（两次变异验证：摘掉长期项 → 2 条红；让 effectiveClose 忽略当日记录 → 5 条红）。"
+        },
+        {
+          "at": "2026-09-27T09:09:40",
+          "event": "set status=已修复 cause=doc note=已修复（Kevin 2026-09-26 第五轮补充）。**座位类型配置列表新增「小程序可约数量」列**（甲方要的那一列）：= 总容量 − 长期关闭（单位 whole=桌 / seat=座），列头带说明 tooltip「今天店员没在看板改时，小程序每个小时格能约多少」；后端派生字段 GzBeanSeatTypeConfigVO.mpSellableCapacity，在 fillDerived 里算（复用 expectedCells 的容量规则，不另写乘法），越界时夹到 0 不出负数。前端为 0 时红字提示。\n验证：真栈 list 接口返回 单人 3桌 / 双人 4桌 / 四人桌 6座（8−2）；单测 +2（正常派生 + 越界夹 0）→ gz-bean 317/317；Playwright 实拍确认列已出现。"
+        },
+        {
+          "at": "2026-09-27T18:45:29",
+          "event": "set status=已修复 cause=doc note=已修复（Kevin 2026-09-26 第七轮：价格配置集中）。**所有价格只在一个入口改**：列表操作列的「星期 × 时段价格」弹窗顶部新增「全局默认价」区块（基础单价 元/小时 + 包天基础价 元/天）；「编辑座位类型」弹窗里的这两个价格输入撤掉，只留一行只读指路「当前基础单价 ¥x/小时、包天基础价 ¥y/天。价格（含逐格/按星期）统一在列表的「星期 × 时段价格」里改」。价值：这两个价本来就是网格留空格子的回退值（第 3 级兜底 / 包天兜底），弹窗里本来也只把它们当 placeholder —— 现在改成可直接编辑，价格配置就齐了。\n关键技术点：**新增专用写入口** PUT /system/gz/bean/seatTypeConfig/default-price（只改 price_cent / day_pass_price_cent 两列，Bo 只收 id+两个价）。**没有复用全量编辑接口** —— 那条走 toEntity 逐字段拷贝，缺省字段会按默认值把 dayPassQuota/mpVisible/mpLongCloseCount 一起写掉（真机上就是这类静默清配置）。真机验证：改价后 包天名额/长期关闭/mp 可约/订法/数量 全部原样，mp 计价跟着兜底价变（unitPriceCent 5000→6600）。\n前端配套：编辑桌型时 payload 不带这两个价（否则拿表单旧值覆盖价格弹窗刚改的价）；新增才传 0；列表 基础单价=0 红字+tooltip 报警（防忘了设价按 ¥0 计价）。\n验证：单测 +3（只写两列 / 包天价空落 0 / 桌型不存在返 false）+ 变异验证（给补丁顺手多写两列 → 1 条红）；gz-bean 320/320；新增 spec 用例「价格弹窗必须有全局默认价且可编辑」+ 编辑弹窗守卫（label 不得含这两个价、正文须指向星期×时段价格）；eslint 0 / vue-tsc 72→72 / i18n 2521=2521 / build:prod exit 0。"
+        }
+      ]
+    },
+    "ACC-f1265c3c": {
+      "id": "ACC-f1265c3c",
+      "path": "",
+      "desc": "1. admin里的所有抽屉或者弹框，点击蒙层就应该能自动关闭",
+      "shots": [
+        "=DISPIMG(\"ID_3E5F27441F794E1B98EEACD5945717A2\",1)",
+        ""
+      ],
+      "row": 3,
+      "status": "已修复",
+      "cause": "impl",
+      "note": "根因=plus-ui/src/main.ts:43 全局把 ElDialog.props.closeOnClickModal.default 改成 false；而 el-drawer 与 el-dialog 共用 dialogProps → 抽屉也被一起关掉，业务页不显式写就一律点蒙层没反应。已删该全局覆盖 + 去掉 gz 看板代客抽屉与两处重置密码 prompt 的显式 false",
+      "cell_note": "已修复(09-26)",
+      "first_seen": "2026-09-26",
+      "history": [
+        {
+          "at": "2026-09-26T16:13:45",
+          "event": "set status=已修复 cause=impl note=根因=plus-ui/src/main.ts:43 全局把 ElDialog.props.closeOnClickModal.default 改成 false；而 el-drawer 与 el-dialog 共用 dialogProps → 抽屉也被一起关掉，业务页不显式写就一律点蒙层没反应。已删该全局覆盖 + 去掉 gz 看板代客抽屉与两处重置密码 prompt 的显式 false"
+        }
+      ]
+    },
+    "ACC-6e6df26c": {
+      "id": "ACC-6e6df26c",
+      "path": "",
+      "desc": "1. 红框区域，添加一个板块，动态显示小程序看板日期里没有被预订的座位，同时加一个按钮，可以动态让该座位不在小程序上预订",
+      "shots": [
+        "=DISPIMG(\"ID_A463491F47E047498D6D2862E59EE0C9\",1)",
+        ""
+      ],
+      "row": 4,
+      "status": "已修复",
+      "cause": "impl",
+      "note": "已修复（Kevin 2026-09-26 第六轮：按钮太夸张）。入口从「独占整行的大按钮」（100% 宽 / 48px 高）改成**和统计条那五个格子同一行、同一视觉规格的第 6 个格子**：type=primary plain、align-self:stretch 跟统计格等高（实测同为 56px）、圆角 8px、宽 180px，紧跟「空闲」格之后、时钟之前。E2E 守卫同步改成「与 .board-metric 同一行（中心 y 差<12）+ 高度 ≤ 统计格高+4 + 宽度<520（不许占整行）」，实拍几何：入口 y=593.31 与统计格 y=593.31 完全一致。\n验证：两条 gz-bean spec 绿；eslint 0 / vue-tsc 72→72 / build:prod exit 0。",
+      "cell_note": "已修复(09-26)",
+      "first_seen": "2026-09-26",
+      "history": [
+        {
+          "at": "2026-09-26T16:13:46",
+          "event": "set status=处理中 cause=unknown note=与 ACC-ef7f85ca 同一模型：看板上加「未被预订座位」板块 + 就地开关该座 mp 可订性"
+        },
+        {
+          "at": "2026-09-26T16:28:28",
+          "event": "set status=处理中 cause=doc note=同 ADR-0024：看板加「今日可售」板块——只读展示当天没被预订的座位 + 就地两动作（今天少卖 N 个 / 该桌型今天不上小程序）。不做座位级按钮（同 ACC-ef7f85ca 的死控件理由）。依赖收敛先落地"
+        },
+        {
+          "at": "2026-09-26T19:04:09",
+          "event": "set status=处理中 cause=doc note=口径已定（Kevin 2026-09-26 选 A）：看板顶部「今日可售」板块。只读展示各桌型当天没被预订的座位 + 就地「今天少卖 N 个」（= POST /slotQuotaClose/close-day，对当天每个小时格统一覆盖 closeCount；0=恢复；关满 slotCapacity 即今天不上小程序）。契约与不变量（必须与 mp 同源算小时格）已冻结进 ADR-0024 §3。实施中：后端 + 前端并行"
+        },
+        {
+          "at": "2026-09-26T19:21:50",
+          "event": "set status=已修复 cause=impl note=已实现（ADR-0024 §3）：看板顶部「今日可售」板块 = GET /system/gz/bean/booking/day-sellable（只读，展示各「对小程序开放」桌型的每格可订 / 今日已订(单) / 空闲座位[展开可看座位号] / 今日关闭）+ POST /system/gz/bean/slotQuotaClose/close-day（今天少卖 N 个，对当天每个小时格统一覆盖 closeCount，0=恢复全开；关满 slotCapacity = 今天不上小程序）。口径：小程序按桌型档售卖、不按座位 → 开关落在桌型上，不做座位级按钮（ADR-0024 §1）。验证：真栈 E2E —— closeCount=1 后 mp type-slots remaining 8→7；=8 后全格 remaining=0/full=true；=0 后恢复 8；=9 被拒 500「关闭数超出该桌型每格可售上限：closeCount=9 cap=8」；per-config 隔离（config 1/2 仍 3/4）。后端 gz-bean 307/307 绿；前端 eslint 0 + vue-tsc 无新增 + build:prod exit 0；新 Playwright spec e2e/gz-bean/sellable-panel.spec.ts 绿（含 4 列头与入口位置断言）。同源不变量：close-day 与 mp 可售共用 GzBeanHourSlotResolver 的小时格集合。"
+        },
+        {
+          "at": "2026-09-26T19:55:48",
+          "event": "set status=处理中 cause=impl note=Kevin 2026-09-26 复审打回，返工中：①「真正对小程序不可见的应该是座位，而不是整个桌型」——但 mp 顾客侧只选桌型档不选座位（ADR-0016，miniapp/src/api/gz-bean.ts:425 明载；seat-map 现仅店员扫码核销页在用），座位级开关对顾客零影响、只挡店员分座（正是甲方要不受影响的那部分）→ 口径复核后维持数量制：预留 N 个座 = 减该桌型该格配额。②去掉「今天不上小程序」整档关停。③面板改抽屉，抽屉里同时给「逐时段」和「按天统一」两个入口。"
+        },
+        {
+          "at": "2026-09-26T19:55:52",
+          "event": "set status=已修复 cause=impl note=返工完成（Kevin 2026-09-26 三条意见全部落地）。① 面板→抽屉（el-drawer，入口仍在「过期待处理」行右侧）；② 抽屉同时给两个入口——「逐时段」表（时段/已订/剩余/今日关闭 + 行内 stepper 保存，走 POST /system/gz/bean/slotQuotaClose 单格 upsert）与「按天统一」（行内 stepper + 应用到全天，走 POST .../close-day）；③ 删掉「今天不上小程序」。口径：维持**数量制**（ADR-0024 §1 复核）——mp 顾客只选桌型档不选座位（ADR-0016），「预留几个座」只能落成减该桌型该格配额；「座位坏了」= 删该座位（不恢复 seat.enabled）。契约：GET day-sellable 改下发 slots[{slotStart,slotEnd,booked,closeCount,remaining}]（去掉 closePerSlot/closeMixed 单值口径，一致性由前端从 slots 推）。附带修一个洞：单格 upsert 原先没有上限校验，现已与 close-day 共用同一闸 0..slotCapacity（前端 stepper 的 max 不是安全边界）。验证：真栈 E2E 逐时段（10:00 留 2 → mp remaining 8→6；16:00 留 5 → 3；其它 9 格纹丝不动）+ 按天统一（4 → 11 格全 4，mp 全 4）+ 两条路径 closeCount=cap+1 均拒 500 带 cap + 恢复 0 + per-config 隔离；后端 gz-bean 309/309；前端 eslint 0 / vue-tsc 72→72 / i18n 2506=2506 / build:prod exit 0；Playwright sellable-panel.spec.ts 绿且跑前跑后配额表零变化。"
+        },
+        {
+          "at": "2026-09-26T20:24:36",
+          "event": "set status=已修复 cause=impl note=已修复 + Kevin 2026-09-26 二次复审两条落地：①「全天都留几个」入口文案改清楚——列头「全天都留几个」、按钮随 stepper 变「全天都留 N 个」（N=0 →「恢复全开」）、提示「上限 {cap} {桌|座}」，逐时段表列头改「本时段留几个」；② 抽屉删掉 :close-on-click-modal=\"false\"（我上一轮给新抽屉加了这个 opt-out，等于把 ACC-f1265c3c 刚修的 bug 又种一遍），E2E 加回归守卫：点 .el-overlay 后面板必须消失。验证：spec 绿（含新守卫）+ 跑前跑后配额表零变化；eslint 0 / vue-tsc 72→72 / i18n 2506=2506 / build:prod exit 0。"
+        },
+        {
+          "at": "2026-09-26T21:14:28",
+          "event": "set status=已修复 cause=impl note=已修复 + Kevin 2026-09-26 第三轮两条落地：① **文案改「关闭」**——「留 N 个」在中文里两读（给线上留 / 留出不给线上），他看图第一反应就是逻辑反了；定为列头「全天关闭几个」/「本时段关闭几个」、按钮「全天关闭 N 个 / 恢复全开」。数值语义未变（closeCount=N = 从每格可订里减 N），E2E 加了守卫：抽屉里不得再出现「留 N 个」。② **下线「座位管理 → 实时余量与关闭」tab**（甲方：让店员直接去看板看）：删 tab + 删 378 行的 slot-availability 页面 + 剪掉只被它用的 API 封装；**sys_menu 6064/6065/6066 一行不动**（本就 visible='1' 隐藏，但 gz:bean:slotQuota:edit 挂在 6066 上，删菜单行会让看板 stepper 全线 403）。验证：两条 gz-bean spec 绿 + 跑前跑后配额表逐行零变化。"
+        },
+        {
+          "at": "2026-09-26T21:40:25",
+          "event": "set status=已修复 cause=impl note=已修复（Kevin 2026-09-26 三、四轮全部落地）。① 文案改「关闭」：「留 N 个」在中文里两读（给线上留 / 留出不给线上），Kevin 看图第一反应就是逻辑反了；定为列头「全天关闭几个」/「本时段关闭几个」、按钮「全天关闭 N 个 / 恢复全开」，E2E 有守卫（不得再出现「留 N 个」）。② 下线「座位管理 → 实时余量与关闭」tab（甲方：让店员直接去看板看）：删 tab + 删 378 行页面 + 剪掉只被它用的 API 封装；sys_menu 6064/6065/6066 一行不动（本就 visible=1 隐藏，但 gz:bean:slotQuota:edit 挂在 6066 上，删菜单行会让看板 stepper 全线 403）。③ 抽屉列与提示按「长期=默认、当天可覆盖」重排：每格容量 / 长期关闭(默认) / 今天关闭(生效值 + 沿用长期 or 今天已改) / 全天关闭几个(stepper 预填生效值、上限总容量)，顶部一句话讲清规则。验证：两条 gz-bean spec 绿 + 跑前跑后配额表逐行零变化。"
+        },
+        {
+          "at": "2026-09-27T09:09:40",
+          "event": "set status=已修复 cause=impl note=已修复（Kevin 2026-09-26 第五轮 UI 三条）。① 看板入口：从「过期待处理 / 刷新」行右侧的小链接 → 该行下方的**整行大按钮**（primary / size=large / 宽 100% / 高 48px），文案与抽屉标题都改成「今日小程序剩余座位」；E2E 守卫改为断言「在过期待处理行下方 + 宽度>600 + 高度>=40 + 文案含今日小程序剩余座位」。② 抽屉「长期关闭(默认)」的说明从**每行重复的 ⓘ** 挪到**列头**（每行说明本就一模一样），图标放到 15px、hover 变蓝。③ 逐时段表列头/单位维持上轮口径不变。\n验证：两条 gz-bean spec 绿（新入口断言通过）；Playwright 实拍确认按钮位置与列表新列；前端 eslint 0 / vue-tsc 72→72 / i18n 2513=2513 / build:prod exit 0。"
+        },
+        {
+          "at": "2026-09-27T09:45:58",
+          "event": "set status=已修复 cause=impl note=已修复（Kevin 2026-09-26 第六轮：按钮太夸张）。入口从「独占整行的大按钮」（100% 宽 / 48px 高）改成**和统计条那五个格子同一行、同一视觉规格的第 6 个格子**：type=primary plain、align-self:stretch 跟统计格等高（实测同为 56px）、圆角 8px、宽 180px，紧跟「空闲」格之后、时钟之前。E2E 守卫同步改成「与 .board-metric 同一行（中心 y 差<12）+ 高度 ≤ 统计格高+4 + 宽度<520（不许占整行）」，实拍几何：入口 y=593.31 与统计格 y=593.31 完全一致。\n验证：两条 gz-bean spec 绿；eslint 0 / vue-tsc 72→72 / build:prod exit 0。"
+        }
+      ]
+    }
+  }
+}

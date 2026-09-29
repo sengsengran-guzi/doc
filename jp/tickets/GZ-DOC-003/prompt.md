@@ -13,7 +13,7 @@ accept:
   - name: menu 段位表已含 GZ-JP 14000 段
     form: API
     run: |
-      grep -qE '14000\s*-\s*14999' .claude/CLAUDE.md && grep -q 'GZ-JP' .claude/CLAUDE.md
+      awk '/14000-14[0-9][0-9].*GZ-JP/{f=1} END{exit !f}' .claude/CLAUDE.md
   - name: 代码位置表已含新模块与新小程序工程
     form: API
     run: |
