@@ -35,3 +35,15 @@
 
 本项目 **admin 端不出 mockup**（项目纪律），**mp 端用 HTML 草案**（skill 允许的 Claude Design 兜底形式）。
 全部方案合并在一个页面 [design-review.html](design-review.html)，顶部 tab 切换。
+
+## 二期 · 代切（2026-10-03）
+
+视觉基调沿用一期方案 A，不另出基调方案。草图：[snap-review.html](snap-review.html)。
+
+| 页面 | 是否关键页 | 出方案？ | 理由 |
+|---|---|---|---|
+| mp 代切搜索（含入口位置） | ★ 是（一级入口 + 高频） | ✅ [已选定 B](mp-snap-search.md) | 入口放哪决定代切是不是一门显眼的生意 |
+| mp 代切详情 | ★ 是（决定下单） | ✅ [已选定 A](mp-snap-detail.md) | 价格透明度直接影响比价与信任 |
+| admin 代切下单 | ★ 是（日本员工主操作页） | ✅ [已选定 A](admin-snap-purchase.md) | 人工代买与交易跟踪的组织方式 |
+| mp 下单确认 / 订单详情代切态 | 否 | 不出 | 复用一期已选定页面，只加区块（`UI:mp.order_confirm.snap` / `UI:mp.order_detail.snap`） |
+| admin 账号 / 配置 / 词表 | 否 | 不出 | 照 gz-bean/store 范式的 CRUD / 表单页 |

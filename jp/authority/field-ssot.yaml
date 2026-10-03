@@ -14,6 +14,7 @@ type_map:
   date:      { ddl: "DATE",          entity: "LocalDate",     ts: "string" }
   datetime:  { ddl: "DATETIME(3)",   entity: "LocalDateTime", ts: "string" }
   dict:      { ddl: "VARCHAR",       entity: "String",        ts: "string" }
+  decimal:   { ddl: "DECIMAL(12,6)", entity: "BigDecimal",    ts: "string" }
 
 # ruoyi TenantEntity 自动填充的公共字段全集。DDL form 的 accept 断言就断这一整套。
 common_field_blocks:
@@ -122,12 +123,13 @@ tables:
       - { name: id, type: id, nullable: false, comment: "主键" }
       - { name: order_id, type: id, nullable: false, comment: "所属订单 FK gz_jp_order.id" }
       - { name: user_id, type: id, nullable: false, comment: "冗余下单用户 id —— 履约看板主视图按客人聚合且跨订单，避免每次 join 订单表" }
-      - { name: product_id, type: id, nullable: false, comment: "商品 FK gz_jp_product.id" }
-      - { name: product_snapshot_json, type: text, nullable: false, comment: "下单时商品快照（名/图/价/注意事项），商品后续改动不影响已下单" }
+      - { name: product_id, type: id, nullable: true, comment: "拼团商品 FK gz_jp_product.id。★ 二期改可空（ADR-0025 §5，新迁移 ALTER）：source=batch 必填 / source=snap 恒空，应用层保证" }
+      - { name: snap_item_id, type: id, nullable: true, comment: "★ 二期新增：代切商品 FK gz_jp_snap_item.id。source=snap 必填 / source=batch 恒空" }
+      - { name: product_snapshot_json, type: text, nullable: false, comment: "下单时商品快照（名/图/价/注意事项），商品后续改动不影响已下单。source=snap 时另含 snap 段：externalId / titleJa / titleZh / priceJpy / ratePer100Jpy / markupRatio / fixedFeeCent / estShippingCent / gateResult / gateReason / shippingPayer / conditionText / mainImageId / quoteId / quotedAt（REQ-SNAP-021 锁价凭据）" }
       - { name: qty, type: int, nullable: false, comment: "数量" }
       - { name: unit_price_cent, type: bigint, nullable: false, comment: "下单时单价（分）" }
       - { name: amount_cent, type: bigint, nullable: false, comment: "行金额（分）= unit_price_cent × qty。★ 行级退款按此金额退" }
-      - { name: source, type: dict, length: 16, dict: gz_jp_item_source, nullable: false, default: "batch", comment: "来源 batch=拼团。★ 为二期代切 snap 预留维度（REQ-SNAP-004），二期加值不改表" }
+      - { name: source, type: dict, length: 16, dict: gz_jp_item_source, nullable: false, default: "batch", comment: "来源 batch=拼团 / snap=代切（二期字典加值）。source=snap 的订单一单只有这一行（REQ-SNAP-035）" }
       - { name: fulfill_status, type: dict, length: 24, dict: gz_jp_fulfill_status, nullable: false, default: "purchasing", comment: "履约状态 purchasing购买中/purchase_failed购买失败/await_seller_ship等待官方发货/jp_shipped日本仓库已发货/customs清关中/cn_sorting国内分拣中/delivered发货完毕。★ 允许跳过中间态（现货无 await_seller_ship）" }
       - { name: carrier_code, type: dict, length: 32, dict: gz_express_carrier, nullable: true, comment: "国内快递编码（复用现有 gz_express_carrier 字典），置 delivered 时必填" }
       - { name: tracking_no, type: str, length: 64, nullable: true, comment: "国内运单号，员工手工填。★ 本列即包裹标识——同单号的行属同一包裹，不另建包裹表" }
@@ -139,6 +141,7 @@ tables:
       - { name: idx_user_fulfill, cols: [tenant_id, user_id, fulfill_status] }
       - { name: idx_order, cols: [tenant_id, order_id] }
       - { name: idx_tracking, cols: [tenant_id, tracking_no] }
+      - { name: idx_snap_item, cols: [tenant_id, snap_item_id] }
 
   # ══════════════════════════════════════════════════════════════════
   - table: gz_user
@@ -150,3 +153,138 @@ tables:
     fields:
       - { name: app_id, type: str, length: 32, nullable: false, default: "wx2f8b93e09703f07d", comment: "★ 新增列：所属小程序 appid。唯一键由 (tenant_id, openid) 改为 (tenant_id, app_id, openid)；存量行回填现小程序 appid" }
       - { name: openid, type: str, length: 64, nullable: false, unique: uk_tenant_app_openid, comment: "既有列，唯一约束变更为含 app_id" }
+
+  # ══════════════════════════════════════════════════════════════════
+  - table: gz_jp_refund
+    comment: "拼团行级退款单（GZ-JP-107 建，一期漏登记 SSOT，二期补登）—— 只列二期改动与关键列"
+    module: ruoyi-gz-jp
+    id_range: "无独立菜单（既有按钮 14035 退款单查询 / 14036 退款重新发起，在履约看板 14030 下）"
+    migration: "既有 V202608071102；二期改动 = V<yyyyMMddHHmm>__GZ-SNAP-xxx-alter-gz_jp_refund-add-refund_type.sql"
+    common_fields: []
+    fields:
+      - { name: order_item_id, type: id, nullable: false, comment: "退的是哪一行。★ 唯一键二期由 uk_order_item(tenant_id, order_item_id) 改为 uk_item_type(tenant_id, order_item_id, refund_type)（ADR-0025 §5，Kevin 2026-10-03 确认）" }
+      - { name: refund_type, type: dict, length: 20, dict: gz_jp_refund_type, nullable: false, default: "purchase_failed", unique: uk_item_type, comment: "★ 二期新增：purchase_failed 购买失败全额（存量行回填此值）/ shipping_diff 到付预估运费多退（REQ-SNAP-025）。一行至多各一条" }
+      - { name: refund_amount_cent, type: bigint, nullable: false, comment: "本次退款金额（分）。purchase_failed = 该行 amount_cent − 该行已成功的 shipping_diff 金额" }
+
+  # ══════════════════════════════════════════════════════════════════
+  - table: gz_jp_snap_item
+    comment: "代切商品（煤炉商品在 ruoyi 侧的缓存副本 + 孤品互斥锁）。★ 权威是煤炉本身，本表可能过期 —— 下单前必须实时查（OWN:mercari_item_live）"
+    module: ruoyi-gz-jp
+    id_range: "无独立菜单"
+    migration: "V<yyyyMMddHHmm>__GZ-SNAP-xxx-create-gz_jp_snap_item.sql"
+    common_fields: [audit, tenant]
+    fields:
+      - { name: id, type: id, nullable: false, comment: "主键" }
+      - { name: platform, type: dict, length: 16, dict: gz_jp_snap_platform, nullable: false, default: "mercari", unique: uk_platform_external, comment: "来源平台，二期只有 mercari" }
+      - { name: external_id, type: str, length: 32, nullable: false, unique: uk_platform_external, comment: "煤炉商品 ID（m+数字）—— 跨系统稳定业务键" }
+      - { name: title_ja, type: str, length: 255, nullable: false, comment: "日文原标题" }
+      - { name: title_zh, type: str, length: 255, nullable: true, comment: "机翻中文标题（REQ-SNAP-016）" }
+      - { name: price_jpy, type: bigint, nullable: false, comment: "最近一次实时查询的日元价（整数日元）" }
+      - { name: item_status, type: dict, length: 16, dict: gz_jp_snap_item_status, nullable: false, comment: "煤炉侧状态 on_sale在售/trading交易中/sold_out已售出/deleted已删除" }
+      - { name: shipping_payer, type: dict, length: 16, dict: gz_jp_snap_shipping_payer, nullable: false, comment: "运费承担 seller卖家包邮/buyer到付（REQ-SNAP-024 判定依据）" }
+      - { name: category_id, type: str, length: 32, nullable: true, comment: "煤炉分类 ID（白名单判定，REQ-SNAP-019）" }
+      - { name: condition_text, type: str, length: 64, nullable: true, comment: "成色（日文原文，如「新品、未使用」）" }
+      - { name: seller_id, type: str, length: 64, nullable: true, comment: "煤炉卖家 ID" }
+      - { name: gate_result, type: dict, length: 16, dict: gz_jp_snap_gate, nullable: false, comment: "准入 auto可自动下单/manual转人工/blocked不可购买（REQ-SNAP-022/023/024）" }
+      - { name: gate_reason, type: str, length: 64, nullable: true, comment: "命中的规则（如 kw:専用 / kw:コメント必須 / shipping:buyer / category / blacklist），admin 与人工队列展示" }
+      - { name: main_image_id, type: id, nullable: true, comment: "下单时转存的主图 FK gz_file_object.id（未下单过为空）" }
+      - { name: raw_json, type: text, nullable: true, comment: "最近一次详情原始返回（审计 / 排障）" }
+      - { name: fetched_at, type: datetime, nullable: false, comment: "最近一次实时查询时间" }
+      - { name: active_order_item_id, type: id, nullable: true, comment: "★ 孤品互斥锁：占用中的订单行 FK gz_jp_order_item.id；提交订单时 FOR UPDATE 判定，关单 / 失败 / 退款时置空（REQ-SNAP-041）" }
+      - { name: version, type: int, nullable: false, default: "0", comment: "乐观锁版本号 @Version" }
+    indexes:
+      - { name: idx_active_order_item, cols: [tenant_id, active_order_item_id] }
+
+  # ══════════════════════════════════════════════════════════════════
+  - table: gz_jp_snap_purchase
+    comment: "代切下单任务 + 煤炉交易跟踪（与 source=snap 的订单行 1:1）。purchase_status 管「买没买到」、trade_status 管「买到之后到评价」，双状态机正交（ADR-0007 范式）"
+    module: ruoyi-gz-jp
+    id_range: "menu 14050 代切下单（人工代买队列 / 交易看板）"
+    migration: "V<yyyyMMddHHmm>__GZ-SNAP-xxx-create-gz_jp_snap_purchase.sql"
+    common_fields: [audit, tenant]
+    fields:
+      - { name: id, type: id, nullable: false, comment: "主键" }
+      - { name: order_item_id, type: id, nullable: false, unique: uk_order_item, comment: "FK gz_jp_order_item.id（支付回调重复推送靠此唯一键幂等）" }
+      - { name: order_no, type: str, length: 32, nullable: false, comment: "冗余订单号 = 跨系统幂等键（POST /v1/purchases 的 order_no）" }
+      - { name: snap_item_id, type: id, nullable: false, comment: "FK gz_jp_snap_item.id" }
+      - { name: external_id, type: str, length: 32, nullable: false, comment: "冗余煤炉商品 ID" }
+      - { name: locked_price_jpy, type: bigint, nullable: false, comment: "锁定日元价 = 下单时报价；自动下单时当前价高于它即 failed(price_up)（REQ-SNAP-027）" }
+      - { name: mode, type: dict, length: 16, dict: gz_jp_snap_mode, nullable: false, comment: "auto自动/manual人工。入队时定，风控暂停时 auto 可批量改 manual" }
+      - { name: purchase_status, type: dict, length: 20, dict: gz_jp_snap_purchase_status, nullable: false, comment: "queued待下单/executing下单中/unknown结果不明(对账中)/manual_pending待人工/success已买到/failed未买到" }
+      - { name: manual_reason, type: str, length: 64, nullable: true, comment: "转人工原因：gate:<规则> / reconcile_exhausted / auto_paused / no_account" }
+      - { name: fail_reason, type: dict, length: 24, dict: gz_jp_snap_fail_reason, nullable: true, comment: "sold_out已售出/deleted已下架/price_up涨价/manual_rejected人工谈不成/seller_cancel卖家取消/inspect_ng验货不通过" }
+      - { name: reconcile_count, type: int, nullable: false, default: "0", comment: "对账次数，满 3 次转人工（REQ-SNAP-029）" }
+      - { name: next_action_at, type: datetime, nullable: true, comment: "调度：下次执行 / 对账时间" }
+      - { name: account_code, type: str, length: 32, nullable: true, comment: "执行账号 FK gz_jp_snap_account.account_code（人工 = 员工所用账号）" }
+      - { name: mercari_txn_id, type: str, length: 64, nullable: true, comment: "煤炉交易号（success 必填）" }
+      - { name: actual_price_jpy, type: bigint, nullable: true, comment: "实际成交日元价（低于锁定价差价不退，仅审计，REQ-SNAP-028）" }
+      - { name: actual_shipping_jpy, type: bigint, nullable: true, comment: "到付实际运费（日元，人工填），用于多退少不补（REQ-SNAP-025）" }
+      - { name: trade_status, type: dict, length: 20, dict: gz_jp_snap_trade_status, nullable: false, default: "none", comment: "none未成交/await_ship待卖家发货/shipped卖家已发货/arrived已到仓/rated已评价/returned已退货/cancelled卖家取消" }
+      - { name: arrived_at, type: datetime, nullable: true, comment: "到仓时间" }
+      - { name: rate_deadline_at, type: datetime, nullable: true, comment: "评价期限 = arrived_at + rateDeadlineHours（REQ-SNAP-034）" }
+      - { name: rated_at, type: datetime, nullable: true, comment: "员工点「已评价」时间" }
+      - { name: evidence_file_ids, type: str, length: 512, nullable: true, comment: "下单证据（截图 / 页面快照）file id 逗号分隔，usage_type=snap_evidence（REQ-SNAP-043）" }
+      - { name: manual_operator, type: bigint, nullable: true, comment: "人工处理人 sys_user.user_id" }
+      - { name: manual_note, type: str, length: 512, nullable: true, comment: "人工备注" }
+      - { name: last_error, type: str, length: 512, nullable: true, comment: "最近一次调用日本服务的错误（不静默吞）" }
+      - { name: executed_at, type: datetime, nullable: true, comment: "开始执行时间" }
+      - { name: result_at, type: datetime, nullable: true, comment: "落终态（success / failed）时间 —— REQ-SNAP-038「1 分钟可见」按 paid_time→result_at 量" }
+      - { name: version, type: int, nullable: false, default: "0", comment: "乐观锁版本号 @Version（抢任务用条件更新）" }
+    indexes:
+      - { name: idx_status_next, cols: [tenant_id, purchase_status, next_action_at] }
+      - { name: idx_trade, cols: [tenant_id, trade_status, rate_deadline_at] }
+
+  # ══════════════════════════════════════════════════════════════════
+  - table: gz_jp_snap_account
+    comment: "采购账号（只存状态与限额，★ 登录态 / 凭据只在日本服务，ruoyi 永不持有 —— OWN:mercari_account_session）"
+    module: ruoyi-gz-jp
+    id_range: "menu 14060 采购账号"
+    migration: "V<yyyyMMddHHmm>__GZ-SNAP-xxx-create-gz_jp_snap_account.sql"
+    common_fields: [audit, tenant]
+    fields:
+      - { name: id, type: id, nullable: false, comment: "主键" }
+      - { name: account_code, type: str, length: 32, nullable: false, unique: uk_account_code, comment: "账号编码（与日本服务配置一致的稳定业务键，如 acc01）" }
+      - { name: nickname, type: str, length: 64, nullable: true, comment: "煤炉昵称（展示用）" }
+      - { name: admin_enabled, type: bool, nullable: false, default: "1", comment: "admin 手动启停（只有 admin 写）" }
+      - { name: health_status, type: dict, length: 16, dict: gz_jp_snap_account_health, nullable: false, default: "unknown", comment: "healthy正常/challenge触发验证/logged_out登录失效/unreachable不可达/unknown —— 只由 ruoyi 心跳任务按日本服务 /v1/health 写" }
+      - { name: daily_limit, type: int, nullable: false, default: "20", comment: "每日自动下单上限" }
+      - { name: today_count, type: int, nullable: false, default: "0", comment: "当日已自动下单数（today_date 换日清零）" }
+      - { name: today_date, type: date, nullable: true, comment: "today_count 所属日期（Asia/Tokyo）" }
+      - { name: cooldown_sec, type: int, nullable: false, default: "60", comment: "两单之间最短间隔秒数" }
+      - { name: last_purchase_at, type: datetime, nullable: true, comment: "最近一次自动下单时间" }
+      - { name: last_heartbeat_at, type: datetime, nullable: true, comment: "最近一次心跳成功时间" }
+      - { name: pause_reason, type: str, length: 255, nullable: true, comment: "停用 / 熔断原因（REQ-SNAP-030）" }
+      - { name: version, type: int, nullable: false, default: "0", comment: "乐观锁版本号 @Version" }
+
+  # ══════════════════════════════════════════════════════════════════
+  - table: gz_jp_snap_term
+    comment: "中日词表（中文搜索词 → 日文，REQ-SNAP-014）"
+    module: ruoyi-gz-jp
+    id_range: "menu 14070 代切词表"
+    migration: "V<yyyyMMddHHmm>__GZ-SNAP-xxx-create-gz_jp_snap_term.sql"
+    common_fields: [audit, tenant]
+    fields:
+      - { name: id, type: id, nullable: false, comment: "主键" }
+      - { name: zh_term, type: str, length: 64, nullable: false, unique: uk_zh_term, comment: "中文词（如「蓝色监狱」「吧唧」）" }
+      - { name: ja_term, type: str, length: 128, nullable: false, comment: "日文词（如「ブルーロック」「缶バッジ」）" }
+      - { name: term_type, type: dict, length: 16, dict: gz_jp_snap_term_type, nullable: false, comment: "ip作品/character角色/goods品类" }
+      - { name: enabled, type: bool, nullable: false, default: "1", comment: "启用" }
+      - { name: sort_no, type: int, nullable: false, default: "0", comment: "同一中文前缀多条命中时的优先级，越小越前" }
+    indexes:
+      - { name: idx_enabled, cols: [tenant_id, enabled, sort_no] }
+
+  # ══════════════════════════════════════════════════════════════════
+  - table: gz_jp_fx_rate
+    comment: "汇率记录（日元→人民币），报价取最新一条（REQ-SNAP-020）"
+    module: ruoyi-gz-jp
+    id_range: "menu 14080 代切配置（汇率 tab）"
+    migration: "V<yyyyMMddHHmm>__GZ-SNAP-xxx-create-gz_jp_fx_rate.sql"
+    common_fields: [audit, tenant]
+    fields:
+      - { name: id, type: id, nullable: false, comment: "主键" }
+      - { name: rate_per_100jpy, type: decimal, nullable: false, comment: "每 100 日元兑人民币（如 4.812300）" }
+      - { name: source, type: dict, length: 16, dict: gz_jp_fx_source, nullable: false, comment: "boc中国银行现汇卖出价/manual手动录入" }
+      - { name: fetched_at, type: datetime, nullable: false, comment: "取价时间（新鲜度判定：超 6h 拒报价）" }
+    indexes:
+      - { name: idx_fetched, cols: [tenant_id, fetched_at] }
+

@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>代切二期 · 设计评审</title>
+<style>
+  :root{
+    --bg:#f4f2ed; --card:#fff; --ink:#211d17; --ink2:#857d70; --ink3:#b4ada1;
+    --brand:#33b36b; --brand-soft:#e5f6ec; --line:rgba(33,29,23,.07);
+    --warn:#b7791f; --warn-soft:#fdf3e1; --gray-soft:#efede8; --danger:#c0392b;
+    --shadow:0 1px 3px rgba(33,29,23,.05),0 6px 20px rgba(33,29,23,.05);
+    --page:#eceae5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--page);color:var(--ink)}
+  .wrap{max-width:1240px;margin:0 auto;padding:24px 16px 70px}
+  header h1{font-size:21px;margin-bottom:4px}
+  header .sub{color:#77706a;font-size:13px}
+  nav{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 20px;position:sticky;top:0;background:var(--page);padding:10px 0;z-index:20;border-bottom:1px solid #dedad2}
+  nav button{font:inherit;font-size:13px;padding:7px 14px;border:1px solid #ddd8d0;background:#fff;border-radius:99px;cursor:pointer;color:#5f5952}
+  nav button.on{background:#232120;border-color:#232120;color:#fff}
+  section{display:none}
+  section.on{display:block}
+  .sh h2{font-size:18px;margin-bottom:4px}
+  .sh .q{color:#77706a;font-size:13px;max-width:860px;margin-bottom:16px}
+  .cols{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+  .col{flex:0 1 330px;min-width:0}
+  .col.wide{flex:1 1 100%}
+  .cap .k{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;padding:2px 9px;border-radius:99px;color:#fff;background:#232120;margin-bottom:5px}
+  .cap .k.rec{background:var(--brand)}
+  .cap h3{font-size:15px;margin-bottom:2px}
+  .cap p{font-size:12.5px;color:#77706a;margin-bottom:10px}
+
+  /* phone */
+  .phone{width:300px;max-width:100%;height:560px;background:var(--bg);border-radius:30px;border:8px solid #232120;overflow:hidden;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+  .status{height:22px;font-size:10px;color:var(--ink2);display:flex;justify-content:space-between;padding:4px 16px}
+  .nav-t{text-align:center;font-weight:600;font-size:14px;padding:4px 0 8px}
+  .scroll{position:absolute;top:56px;bottom:52px;left:0;right:0;overflow:hidden;padding:0 10px}
+  .scroll.notab{bottom:64px}
+  .search{background:#fff;border-radius:99px;padding:8px 14px;font-size:12px;color:var(--ink3);box-shadow:var(--shadow);margin-bottom:10px;display:flex;gap:6px;align-items:center}
+  .search .ic{width:12px;height:12px;border:2px solid var(--ink3);border-radius:99px;flex:none}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{font-size:11px;background:#fff;border-radius:99px;padding:3px 10px;color:var(--ink2);box-shadow:var(--shadow)}
+  .chip.on{background:var(--brand-soft);color:var(--brand)}
+  .hint{font-size:11px;color:var(--ink2);background:#fff;border-radius:12px;padding:8px 10px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .gc{background:#fff;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  .gc .im{aspect-ratio:1;background:linear-gradient(135deg,#dfe9f2,#efe3ec)}
+  .gc .im.b{background:linear-gradient(135deg,#e9efdf,#f1e7da)}
+  .gc .t{font-size:11px;padding:6px 8px 0;line-height:1.35;height:36px;overflow:hidden}
+  .gc .p{font-size:13px;color:var(--brand);font-weight:700;padding:2px 8px 0}
+  .gc .y{font-size:10px;color:var(--ink3);padding:0 8px 7px}
+  .tag{display:inline-block;font-size:9px;padding:1px 6px;border-radius:6px;background:var(--warn-soft);color:var(--warn);margin-left:4px;vertical-align:1px}
+  .event{background:#fff;border-radius:16px;box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden}
+  .event .cv{height:84px;background:linear-gradient(135deg,#f3dfd3,#e6e2f3)}
+  .event .eb{padding:8px 10px;font-size:12px}
+  .event .eb b{display:block;font-size:13px}
+  .sec-t{font-size:12px;font-weight:700;margin:4px 2px 8px}
+  .hscroll{display:flex;gap:8px;overflow:hidden;margin-bottom:10px}
+  .hscroll .gc{flex:0 0 108px}
+  .tabbar{position:absolute;bottom:0;left:0;right:0;height:52px;background:#fff;border-top:1px solid var(--line);display:flex}
+  .tabbar div{flex:1;text-align:center;font-size:10px;color:var(--ink3);padding-top:8px}
+  .tabbar div i{display:block;width:18px;height:18px;border-radius:6px;background:var(--ink3);margin:0 auto 3px;opacity:.5}
+  .tabbar div.on{color:var(--brand)}
+  .tabbar div.on i{background:var(--brand);opacity:1}
+  .ann{position:absolute;right:8px;font-size:10px;background:#232120;color:#fff;border-radius:6px;padding:2px 6px}
+
+  /* detail */
+  .hero{height:210px;background:linear-gradient(135deg,#dfe9f2,#efe3ec);margin:0 -10px 10px}
+  .card{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:10px 12px;margin-bottom:9px}
+  .live{font-size:10px;color:var(--brand);margin-bottom:3px}
+  .big{font-size:22px;font-weight:800;color:var(--brand);line-height:1.1}
+  .small{font-size:11px;color:var(--ink2)}
+  .ttl{font-size:13px;font-weight:600;margin-top:6px;line-height:1.4}
+  .orig{font-size:10px;color:var(--ink3);margin-top:2px}
+  .link{font-size:11px;color:var(--brand)}
+  .rows div{display:flex;justify-content:space-between;font-size:11.5px;padding:3px 0;border-bottom:1px solid var(--line)}
+  .rows div:last-child{border-bottom:0}
+  .rows .sum{font-weight:700;color:var(--brand)}
+  .gate{font-size:11px;border-radius:12px;padding:8px 10px;margin-bottom:9px;background:var(--warn-soft);color:var(--warn)}
+  .meta{font-size:11px;color:var(--ink2);line-height:1.8}
+  .cta{position:absolute;bottom:0;left:0;right:0;height:64px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 12px}
+  .cta .pr{flex:1;font-size:16px;font-weight:800;color:var(--brand)}
+  .cta .bt{background:var(--brand);color:#fff;border-radius:99px;padding:9px 20px;font-size:13px;font-weight:600;box-shadow:0 6px 16px rgba(51,179,107,.25)}
+  .drawer{position:absolute;left:0;right:0;bottom:64px;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.08);padding:12px 14px}
+  .drawer h4{font-size:13px;margin-bottom:6px}
+  .dim{position:absolute;inset:56px 0 64px 0;background:rgba(0,0,0,.25)}
+
+  /* admin */
+  .desk{background:#fff;border:1px solid #dcdfe6;border-radius:6px;overflow:hidden;font-size:12px;color:#303133}
+  .desk .bar{background:#304156;color:#bfcbd9;padding:8px 12px;font-size:12px}
+  .desk .body{padding:12px;overflow-x:auto}
+  .state{display:flex;gap:16px;flex-wrap:wrap;align-items:center;background:#f4f4f5;border-radius:4px;padding:8px 12px;margin-bottom:10px}
+  .state b{color:#67c23a}
+  .state .bad{color:#f56c6c}
+  .etabs{display:flex;gap:0;border-bottom:2px solid #e4e7ed;margin-bottom:10px}
+  .etabs span{padding:6px 14px;color:#606266}
+  .etabs span.on{color:#409eff;border-bottom:2px solid #409eff;margin-bottom:-2px}
+  .badge{display:inline-block;background:#f56c6c;color:#fff;border-radius:9px;font-size:10px;padding:0 6px;margin-left:3px}
+  table{border-collapse:collapse;width:100%;min-width:640px}
+  th,td{border-bottom:1px solid #ebeef5;padding:7px 8px;text-align:left;white-space:nowrap}
+  th{background:#f5f7fa;color:#909399;font-weight:500}
+  tr.hot td{background:#fef0f0}
+  .ebtn{color:#409eff;margin-right:8px}
+  .lanes{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:10px;overflow-x:auto}
+  .lane{background:#f4f4f5;border-radius:6px;padding:8px;min-height:220px}
+  .lane h5{font-size:12px;margin-bottom:8px;color:#606266}
+  .kc{background:#fff;border:1px solid #ebeef5;border-radius:4px;padding:7px;margin-bottom:7px;font-size:11px;line-height:1.6}
+  .kc .ebtn{display:inline-block;margin-top:3px}
+  .src{display:inline-block;font-size:10px;padding:0 5px;border-radius:3px;background:#ecf5ff;color:#409eff}
+  .src.s{background:#fdf6ec;color:#e6a23c}
+  .rec-box{background:#fff;border-left:3px solid var(--brand);border-radius:0 8px 8px 0;padding:10px 14px;margin-top:18px;font-size:13px;max-width:860px}
+  @media (max-width:700px){.col{flex:1 1 100%}.phone{margin:0 auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>代切二期 · 设计评审</h1>
+  <div class="sub">3 个关键页，每页 2~3 个方案，选定后锁为基准再拆 ticket。视觉基调沿用拼团一期（暖中性底 · 白卡 · 品牌绿）。逐页理由见同目录 md。</div>
+</header>
+<nav>
+  <button class="on" data-s="search">① 代切搜索 · 入口位置</button>
+  <button data-s="detail">② 代切详情 · 价格透明度</button>
+  <button data-s="admin">③ 代切下单 · 日本员工工作台</button>
+</nav>
+
+<!-- ① 搜索 -->
+<section id="search" class="on">
+  <div class="sh"><h2>① 代切搜索：代切入口放在哪</h2><div class="q">结果页本身（输入框 + 两列网格 + 排序）三个方案一致，差别只在客人怎么进来。</div></div>
+  <div class="cols">
+    <div class="col">
+      <div class="cap"><span class="k">A</span><h3>首页搜索框</h3><p>首页顶部加搜索框，点进独立搜索页；tabbar 不动。</p></div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●●●</span></div>
+        <div class="nav-t">谷子宇宙拼团</div>
+        <div class="scroll">
+          <div class="search"><span class="ic"></span>搜煤炉商品，或粘贴煤炉链接</div>
+          <div class="sec-t">进行中的场</div>
+          <div class="event"><div class="cv"></div><div class="eb"><b>9 月 Animate 快闪</b>09-28 ~ 10-08 · 进行中</div></div>
+          <div class="event"><div class="cv"></div><div class="eb"><b>咒术回战 一番赏拼团</b>10-05 开场</div></div>
+        </div>
+        <div class="tabbar"><div class="on"><i></i>首页</div><div><i></i>我的</div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="cap"><span class="k rec">B · 推荐</span><h3>tabbar 新增「煤炉」</h3><p>首页 = 拼团，煤炉 = 代切。煤炉 tab 即搜索页，空态放热门词 + 贴链接提示。</p></div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●●●</span></div>
+        <div class="nav-t">煤炉代切</div>
+        <div class="scroll">
+          <div class="search"><span class="ic"></span>蓝色监狱 吧唧</div>
+          <div class="chips"><span class="chip on">新上架</span><span class="chip">价格↑</span><span class="chip">价格↓</span></div>
+          <div class="grid">
+            <div class="gc"><div class="im"></div><div class="t">蓝色监狱 凪 吧唧套组 Blue military</div><div class="p">¥47.87</div><div class="y">¥888 円</div></div>
+            <div class="gc"><div class="im b"></div><div class="t">蓝色监狱 吧唧 2 种套装</div><div class="p">¥30.80</div><div class="y">¥550 円</div></div>
+            <div class="gc"><div class="im b"></div><div class="t">凪 诚士郎 吧唧 Animate 特典<span class="tag">需人工确认</span></div><div class="p">¥78.75</div><div class="y">¥1,400 円</div></div>
+            <div class="gc"><div class="im"></div><div class="t">蓝色监狱 吧唧 乌旅人</div><div class="p">¥25.44</div><div class="y">¥444 円</div></div>
+          </div>
+        </div>
+        <div class="tabbar"><div><i></i>首页</div><div class="on"><i></i>煤炉</div><div><i></i>我的</div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="cap"><span class="k">C</span><h3>首页搜索框 + 热搜卡片</h3><p>A 的基础上，首页加一排预取的真实商品。首页每次打开都依赖日本服务。</p></div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●●●</span></div>
+        <div class="nav-t">谷子宇宙拼团</div>
+        <div class="scroll">
+          <div class="search"><span class="ic"></span>搜煤炉商品，或粘贴煤炉链接</div>
+          <div class="sec-t">煤炉热搜 · 蓝色监狱</div>
+          <div class="hscroll">
+            <div class="gc"><div class="im"></div><div class="p">¥47.87</div><div class="y">¥888 円</div></div>
+            <div class="gc"><div class="im b"></div><div class="p">¥30.80</div><div class="y">¥550 円</div></div>
+            <div class="gc"><div class="im"></div><div class="p">¥25.44</div><div class="y">¥444 円</div></div>
+          </div>
+          <div class="sec-t">进行中的场</div>
+          <div class="event"><div class="cv"></div><div class="eb"><b>9 月 Animate 快闪</b>09-28 ~ 10-08 · 进行中</div></div>
+        </div>
+        <div class="tabbar"><div class="on"><i></i>首页</div><div><i></i>我的</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="rec-box"><b>推荐 B</b>：拼团是「看店员上架了什么」，代切是「我要找某样东西」，两种找货心智分开放。B 的代价是一套 tabbar 图标 + 热门词空态（热门词直接取词表 term_type=ip）。C 会让首页的可用性依赖日本服务。</div>
+</section>
+
+<!-- ② 详情 -->
+<section id="detail">
+  <div class="sh"><h2>② 代切详情：价格透明到什么程度</h2><div class="q">到手价 = 日元价 × 汇率 × (1+加价比例) + 固定服务费 [+ 到付预估运费]。客人能看到多少，决定他会不会拿去逐项核算。图示为「到付 → 转人工」的商品，三个方案的准入提示条与底部按钮一致。</div></div>
+  <div class="cols">
+    <div class="col">
+      <div class="cap"><span class="k rec">A · 推荐</span><h3>到手价 + 日元参考</h3><p>大字到手价，小字煤炉原价；「价格说明」抽屉列三行构成，不显示汇率与加价比例。</p></div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●●●</span></div>
+        <div class="nav-t">商品详情</div>
+        <div class="scroll notab">
+          <div class="hero"></div>
+          <div class="card"><div class="live">实时价格 · 3 秒前</div><div class="big">¥78.75</div><div class="small">煤炉原价 ¥1,400 円 · <span class="link">价格说明</span></div><div class="ttl">凪 诚士郎 吧唧 Bloom Lock Animate 购入特典</div><div class="orig">ブルロ 凪 誠士郎 缶バッジ Bloom Lock アニメイト 購入特典 · 展开原文</div></div>
+          <div class="gate">运费到付：需日本员工先和卖家确认，付款后人工处理；谈不成全额退款，预估运费多退少不补。</div>
+          <div class="card meta">成色：新品、未使用<br>运费：到付（卖家不包邮）<br>卖家：r***</div>
+        </div>
+        <div class="dim"></div>
+        <div class="drawer"><h4>价格说明</h4><div class="rows"><div><span>商品价</span><span>¥70.75</span></div><div><span>代切服务费</span><span>¥3.00</span></div><div><span>到付预估运费（多退少不补）</span><span>¥5.00</span></div><div class="sum"><span>到手价</span><span>¥78.75</span></div></div></div>
+        <div class="cta"><div class="pr">¥78.75</div><div class="bt">立即购买</div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="cap"><span class="k">B</span><h3>全透明</h3><p>价格区平铺日元原价、汇率、服务费、预估运费四行。</p></div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●●●</span></div>
+        <div class="nav-t">商品详情</div>
+        <div class="scroll notab">
+          <div class="hero" style="height:150px"></div>
+          <div class="card"><div class="live">实时价格 · 3 秒前</div><div class="ttl" style="margin-top:0">凪 诚士郎 吧唧 Bloom Lock Animate 购入特典</div>
+            <div class="rows" style="margin-top:6px"><div><span>煤炉原价</span><span>¥1,400 円</span></div><div><span>汇率（每 100 円）</span><span>4.8123</span></div><div><span>折合 + 加价 5%</span><span>¥70.75</span></div><div><span>代切服务费</span><span>¥3.00</span></div><div><span>到付预估运费</span><span>¥5.00</span></div><div class="sum"><span>到手价</span><span>¥78.75</span></div></div></div>
+          <div class="gate">运费到付：需日本员工先和卖家确认，付款后人工处理。</div>
+        </div>
+        <div class="cta"><div class="pr">¥78.75</div><div class="bt">立即购买</div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="cap"><span class="k">C</span><h3>只给到手价</h3><p>只显示人民币价，不出现日元与构成。</p></div>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>●●●</span></div>
+        <div class="nav-t">商品详情</div>
+        <div class="scroll notab">
+          <div class="hero"></div>
+          <div class="card"><div class="live">实时价格 · 3 秒前</div><div class="big">¥78.75</div><div class="ttl">凪 诚士郎 吧唧 Bloom Lock Animate 购入特典</div><div class="orig">展开原文</div></div>
+          <div class="gate">运费到付：需日本员工先和卖家确认，付款后人工处理。</div>
+          <div class="card meta">成色：新品、未使用<br>卖家：r***</div>
+        </div>
+        <div class="cta"><div class="pr">¥78.75</div><div class="bt">立即购买</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="rec-box"><b>推荐 A</b>：代切客人多半同时开着煤炉原页面，看不到日元原价会不放心（C）；汇率与加价比例是甲方的定价口径，不必摊开逐项核算（B）。A 让多付的钱有解释，到付预估运费也有地方写「多退少不补」。</div>
+</section>
+
+<!-- ③ admin -->
+<section id="admin">
+  <div class="sh"><h2>③ 代切下单：日本员工的工作台怎么组织</h2><div class="q">日本员工每天三件事：处理人工代买、跟进已买到的交易（到仓 / 验货 / 评价）、偶尔看自动下单有没有卡住。admin 只拍组织方式，视觉走 Element Plus 默认。</div></div>
+  <div class="cols">
+    <div class="col wide">
+      <div class="cap"><span class="k rec">A · 推荐</span><h3>独立页 · 三个 tab</h3><p>顶部状态条 + 待人工 / 交易跟踪 / 自动任务三个 tab，每个 tab 一张表 + 行内操作。图示为「交易跟踪」tab，评价期限 12h 内的行标红置顶。</p></div>
+      <div class="desk">
+        <div class="bar">日本拼团 / 代切下单</div>
+        <div class="body">
+          <div class="state"><span>自动下单：<b>运行中</b></span><span>账号：acc01 正常 · acc02 <span class="bad">触发验证（已停用）</span></span><span>今日自动下单 14 / 40</span><span class="ebtn">账号管理 →</span></div>
+          <div class="etabs"><span>待人工<span class="badge">3</span></span><span class="on">交易跟踪<span class="badge">2</span></span><span>自动任务</span></div>
+          <table>
+            <tr><th>订单号</th><th>商品</th><th>锁定价</th><th>交易状态</th><th>到仓时间</th><th>评价期限</th><th>操作</th></tr>
+            <tr class="hot"><td>JPO-20261003-000123</td><td>凪 吧唧套组 m47053605018</td><td>¥888 円</td><td>已到仓</td><td>10-03 09:20</td><td>剩 6 小时</td><td><span class="ebtn">已评价</span><span class="ebtn">退货完成</span></td></tr>
+            <tr class="hot"><td>JPO-20261002-000097</td><td>乌旅人 吧唧 m18392072540</td><td>¥444 円</td><td>已到仓</td><td>10-02 21:05</td><td>剩 11 小时</td><td><span class="ebtn">已评价</span><span class="ebtn">退货完成</span></td></tr>
+            <tr><td>JPO-20261003-000131</td><td>吧唧 2 种套装 m24485584092</td><td>¥550 円</td><td>卖家已发货</td><td>—</td><td>—</td><td><span class="ebtn">已到仓</span></td></tr>
+            <tr><td>JPO-20261003-000140</td><td>呪術廻戦 立牌 m31110984421</td><td>¥1,200 円</td><td>待卖家发货</td><td>—</td><td>—</td><td><span class="ebtn">查看证据</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col wide">
+      <div class="cap"><span class="k">B</span><h3>独立页 · 泳道看板</h3><p>主体换成五条泳道，卡片带操作按钮。Element Plus 无现成看板组件，需自研。</p></div>
+      <div class="desk">
+        <div class="bar">日本拼团 / 代切下单</div>
+        <div class="body">
+          <div class="lanes">
+            <div class="lane"><h5>待人工 · 3</h5><div class="kc">JPO-…0151<br>到付 · ¥1,400 円<br><span class="ebtn">填成功</span><span class="ebtn">填失败</span></div><div class="kc">JPO-…0149<br>コメント必須 · ¥980 円<br><span class="ebtn">填成功</span><span class="ebtn">填失败</span></div></div>
+            <div class="lane"><h5>待卖家发货 · 6</h5><div class="kc">JPO-…0140<br>立牌 · ¥1,200 円</div></div>
+            <div class="lane"><h5>卖家已发货 · 2</h5><div class="kc">JPO-…0131<br><span class="ebtn">已到仓</span></div></div>
+            <div class="lane"><h5>已到仓待验货 · 2</h5><div class="kc" style="border-color:#f56c6c">JPO-…0123 · 剩 6h<br><span class="ebtn">已评价</span><span class="ebtn">退货完成</span></div></div>
+            <div class="lane"><h5>已评价 · 18</h5><div class="kc">交国内履约看板</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col wide">
+      <div class="cap"><span class="k">C</span><h3>并进现有履约看板</h3><p>不新开页，履约看板加「代切」来源筛选与代切列。履约看板按客人聚合、为批量发货设计。</p></div>
+      <div class="desk">
+        <div class="bar">日本拼团 / 履约看板</div>
+        <div class="body">
+          <div class="state"><span>来源：<b>全部</b> · 拼团 · 代切</span><span>客人：全部</span></div>
+          <table>
+            <tr><th></th><th>客人</th><th>来源</th><th>商品</th><th>履约状态</th><th>代切状态</th><th>操作</th></tr>
+            <tr><td>☐</td><td>小林（3 款）</td><td><span class="src">拼团</span></td><td>咒术回战 立牌 A</td><td>清关中</td><td>—</td><td><span class="ebtn">推进</span></td></tr>
+            <tr><td>☐</td><td>小林（3 款）</td><td><span class="src s">代切</span></td><td>凪 吧唧套组</td><td>等待官方发货</td><td>已到仓 · 剩 6h</td><td><span class="ebtn">已评价</span></td></tr>
+            <tr><td>☐</td><td>阿梨（1 款）</td><td><span class="src s">代切</span></td><td>凪 吧唧特典</td><td>购买中</td><td>待人工</td><td><span class="ebtn">填结果</span></td></tr>
+            <tr><td>☐</td><td>阿梨（1 款）</td><td><span class="src">拼团</span></td><td>一番赏 B 赏</td><td>日本仓库已发货</td><td>—</td><td><span class="ebtn">推进</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="rec-box"><b>推荐 A</b>：日本员工与国内店员是两拨人、两种节奏（按付款时间排队 vs 按客人聚合发货），C 会让日本员工被国内发货的行淹没；B 的可视化收益不抵自研看板成本。A 用 tab 角标表达各阶段堆积，评价期限临近的行标红置顶。</div>
+</section>
+</div>
+<script>
+  document.querySelectorAll('nav button').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('nav button').forEach(function(x){x.classList.toggle('on',x===b)});
+      document.querySelectorAll('section').forEach(function(s){s.classList.toggle('on',s.id===b.dataset.s)});
+    });
+  });
+</script>
+</body>
+</html>

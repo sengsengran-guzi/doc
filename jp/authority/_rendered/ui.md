@@ -27,6 +27,14 @@
 | `UI:admin.fulfill_board.batch_ship` |  |  |  |  |
 | `UI:admin.fulfill_board.mark_failed` |  |  |  |  |
 
+## 履约看板 · 代切行
+
+**锚 id**：`UI:admin.fulfill_board.snap`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-004, REQ-SNAP-033
+
+复用 UI:admin.fulfill_board。代切行带「代切」来源标签；trade_status 未到 rated 的代切行不可批量推进
+（勾选时置灰并提示「验货评价后才能推进」），rated 之后与拼团行完全同一套推进 / 发货操作。
+
 ## 订单管理
 
 **锚 id**：`UI:admin.order`（ticket 的 blueprint_refs 写这个）
@@ -43,6 +51,44 @@
 标准 ruoyi CRUD，顶部按场筛选。列：编号 / 主图 / 名称 / 所属场 / 价格 / 预计到货 / 状态 / 操作。
 支持多选批量上下架。表单：所属场 / 名称 / 主图 / 图集 / 价格 / 预计到货文本 / **注意事项** / 排序号。
 一期不做 Excel 导入导出、不做富文本编辑器、无库存字段。
+
+## 采购账号与自动下单开关
+
+**锚 id**：`UI:admin.snap_account`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-030, REQ-SNAP-042, REQ-SNAP-044
+
+照 gz-bean/store 范式：查询 + 裸 el-table。列 = 账号编码 / 昵称 / 健康 / 今日下单数/上限 / 最近心跳 / 停用原因；
+操作 = 启用 / 停用 / 改上限与冷却。页头一块「自动下单总开关」（开 / 关 + 暂停原因 + 恢复按钮，恢复需二次确认）+
+最近一次主动探测结果。
+
+## 代切配置（定价 / 过滤 / 准入规则 / 交易参数 / 汇率）
+
+**锚 id**：`UI:admin.snap_config`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-019, REQ-SNAP-020, REQ-SNAP-022, REQ-SNAP-023, REQ-SNAP-025, REQ-SNAP-034, REQ-SNAP-040, REQ-SNAP-061
+
+tab 表单页，每 tab 对应一个 sys_config 键（FLOW:F-JP-11）：定价（加价比例 / 固定服务费 / 到付预估运费 / 报价有效期）、
+过滤（分类白名单 / 关键词黑名单）、准入（屏蔽词 / 转人工词）、交易（评价期限 / 巡检间隔）、
+汇率（最新汇率与来源 / 抓取时间 / 手动录入）。定价三项为空时页头红字提示「未配置，小程序无法报价」。
+
+## 代切下单（人工代买队列 + 交易看板，★ 二期店员侧最重要的页）
+
+**锚 id**：`UI:admin.snap_purchase`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-029, REQ-SNAP-030, REQ-SNAP-031, REQ-SNAP-033, REQ-SNAP-034, REQ-SNAP-043
+
+**方案 A（Kevin 2026-10-03 选定）**：独立菜单页，顶部状态条 + 三个 tab「待人工（N）/ 交易跟踪 / 自动任务」，每 tab 一张裸 el-table + 行内操作。
+被否决：B 泳道看板（需自研）、C 并进履约看板（两种排序冲突）。
+① 人工代买队列（manual_pending，按付款时间升序，显示入队原因 / 商品原链接 / 锁定日元价 / 到付预估运费，
+操作「填成功」「填失败」弹窗）；② 交易跟踪（success 之后按 trade_status 分组，操作「已到仓」「已评价」「退货完成」，
+评价期限 12h 内置顶标红）；③ 自动下单任务只读视图（queued / executing / unknown，含对账次数与 last_error）。
+顶部状态条：自动下单开关状态 + 暂停原因 + 账号健康汇总，点进 UI:admin.snap_account。
+
+## 代切词表
+
+**锚 id**：`UI:admin.snap_term`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-014
+
+照 gz-bean/store 范式 CRUD：中文词 / 日文词 / 类型 / 启用 / 排序；支持按类型筛选；新增弹窗内可「试一试」——
+输入一句中文搜索词，返回替换后的日文查询串（调后端归一化接口），方便运营自测。
 
 ## 视觉基调（全局设计 token）
 
@@ -63,6 +109,14 @@ C 谷圈甜系（高饱和圆润，客群贴合度最高但与现有小程序视
 两者均 +0.5~1 天且需新写 token；未来若甲方要独立品牌视觉可复活。
 
 ★ 组件禁止硬编码 hex，一律走 token 变量。
+
+## 用户协议 · 代切条款
+
+**锚 id**：`UI:mp.agreement.snap`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-025, REQ-SNAP-036, REQ-SNAP-037
+
+pages/agreement 补「代切服务」一节：抢到后不可取消、未抢到全额原路退款、到付商品预估运费多退少不补、
+商品信息来自煤炉卖家（以实物为准）、验货不通过退款。★ 文案甲方过目后定稿。
 
 ## 购物车
 
@@ -107,6 +161,16 @@ banner 走 sys_config 后台可配（沿用现有 miniapp 的 gz.home.banners �
 | `UI:mp.home.event_card` |  |  |  |  |
 | `UI:mp.home.order_entry` |  |  |  |  |
 
+## 首页 · 代切入口
+
+**锚 id**：`UI:mp.home.snap_entry`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-003, REQ-SNAP-012
+
+**方案 B（Kevin 2026-10-03 选定）**：首页不加代切入口，代切入口 = tabbar 中间新增的「煤炉」格（pages.json tabBar.list
+由 [首页, 我的] 改为 [首页, 煤炉, 我的]；新增一套 tabbar 图标 static/tabbar/mercari.png / mercariHL.png，选中色走品牌绿 token）。
+首页保持一期形态不变（拼团场列表为主体）。被否决：A 首页搜索框（搜索框挂在场列表上会被当成「搜场」）、
+C 首页热搜卡片（首页可用性会依赖日本服务）。
+
 ## 下单确认
 
 **锚 id**：`UI:mp.order_confirm`（ticket 的 blueprint_refs 写这个）
@@ -118,6 +182,14 @@ banner 走 sys_config 后台可配（沿用现有 miniapp 的 gz.home.banners �
 | 步 | 谁 | 做什么 | 写什么 | 产出 |
 |---|---|---|---|---|
 | `UI:mp.order_confirm.summary` |  |  |  |  |
+
+## 下单确认 · 代切模式
+
+**锚 id**：`UI:mp.order_confirm.snap`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-021, REQ-SNAP-036, REQ-SNAP-037
+
+复用 UI:mp.order_confirm，snap 模式差异：只有一件商品；显示报价剩余有效时间（过期则按钮变「重新报价」）；
+金额区展开报价构成；提交按钮上方一个勾选「已知悉：抢到后不可取消；没抢到全额原路退款」，未勾不可提交（REQ-SNAP-037）。
 
 ## 我的订单 · 详情（★ 一期客人侧最重要的页）
 
@@ -135,6 +207,16 @@ banner 走 sys_config 后台可配（沿用现有 miniapp 的 gz.home.banners �
 | `UI:mp.order_detail.status_group` |  |  |  |  |
 | `UI:mp.order_detail.item_row` |  |  |  |  |
 | `UI:mp.order_detail.failed_group` |  |  |  |  |
+
+## 订单详情 · 代切状态
+
+**锚 id**：`UI:mp.order_detail.snap`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-004, REQ-SNAP-031, REQ-SNAP-033, REQ-SNAP-036, REQ-SNAP-038
+
+复用 UI:mp.order_detail。snap 行在一期履约状态之前多一段代切状态（取自 purchase_status / trade_status）：
+抢购中（自动下单中 / 对账中统一显示，不暴露「结果不明」）→ 已抢到 / 未抢到·已退款 / 人工处理中 →
+等待卖家发货 → 卖家已发货 → 已到日本仓 → 验货通过（之后接一期状态：日本仓库已发货 …）。
+抢购中页面 3s 轮询一次、最多 60s，之后改为手动刷新（REQ-SNAP-038）。
 
 ## 我的订单 · 列表
 
@@ -158,3 +240,40 @@ banner 走 sys_config 后台可配（沿用现有 miniapp 的 gz.home.banners �
 |---|---|---|---|---|
 | `UI:mp.product_detail.notice` |  |  |  |  |
 | `UI:mp.product_detail.cta` |  |  |  |  |
+
+## 代切 · 商品详情（★ 二期客人侧最重要的页）
+
+**锚 id**：`UI:mp.snap_detail`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-016, REQ-SNAP-020, REQ-SNAP-021, REQ-SNAP-022, REQ-SNAP-023, REQ-SNAP-024, REQ-SNAP-025, REQ-SNAP-035
+
+**方案 A（Kevin 2026-10-03 选定）**：到手价大字 + 小字「煤炉原价 ¥x 円」+「价格说明」抽屉（商品价 / 代切服务费 / 到付预估运费三行，
+**不显示汇率与加价比例**）。
+进入即实时查一次（顶部显示「实时价格 · x 秒前」）；中文标题可展开日文原文；
+价格区 = 人民币到手价（大字）+ 日元原价与汇率（小字，可展开看构成：商品价 / 服务费 / 到付预估运费）；
+成色 / 运费承担 / 卖家 / 描述（机翻，可看原文）；底部固定条「立即购买」（不进购物车，REQ-SNAP-035）。
+三种准入态：auto = 正常按钮；manual = 按钮可点 + 说明「需日本员工先和卖家确认，付款后人工处理，谈不成全额退款」；
+blocked / 非在售 = 按钮置灰 + 原因。
+
+| 步 | 谁 | 做什么 | 写什么 | 产出 |
+|---|---|---|---|---|
+| `UI:mp.snap_detail.price` |  |  |  |  |
+| `UI:mp.snap_detail.gate` |  |  |  |  |
+| `UI:mp.snap_detail.cta` |  |  |  |  |
+
+## 代切 · 搜索与结果（★ 二期客人侧入口页）
+
+**锚 id**：`UI:mp.snap_search`（ticket 的 blueprint_refs 写这个）
+**对应需求**：REQ-SNAP-003, REQ-SNAP-012, REQ-SNAP-013, REQ-SNAP-014, REQ-SNAP-016, REQ-SNAP-019, REQ-SNAP-040
+
+**方案 B（Kevin 2026-10-03 选定）**：tabbar 由两格改三格「首页 / 煤炉 / 我的」，煤炉 tab 即本页（tabbar 页，不是二级页）。
+首页 = 拼团（逛甲方上架的场），煤炉 = 代切（自己搜煤炉二手孤品），两种找货方式各占一个入口。
+空态（未输入）：热门词 chips（取 gz_jp_snap_term 中 term_type=ip、enabled=1 的前 12 条，按 sort_no）+ 贴链接提示。
+一个输入框同时接受中文 / 日文关键词与煤炉链接 / 商品 ID（粘贴即识别并直跳详情）；
+结果为商品网格（主图 + 中文标题 + 人民币价 + 日元小字），只出在售且过了白名单 / 黑名单的商品；
+上拉分页；日本服务不可用时显示最近缓存或「煤炉暂时访问不了」空态，不白屏。
+
+| 步 | 谁 | 做什么 | 写什么 | 产出 |
+|---|---|---|---|---|
+| `UI:mp.snap_search.input` |  |  |  |  |
+| `UI:mp.snap_search.result_grid` |  |  |  |  |
+| `UI:mp.snap_search.sort` |  |  |  |  |

@@ -6,7 +6,8 @@
     "blueprint": [
       "doc/jp/authority/flows.yaml",
       "doc/jp/authority/field-ssot.yaml",
-      "doc/jp/authority/ui-index.yaml"
+      "doc/jp/authority/ui-index.yaml",
+      "doc/jp/authority/ownership.yaml"
     ],
     "rendered": "doc/jp/authority/_rendered/",
     "tickets_dir": "doc/jp/tickets/",
@@ -14,10 +15,14 @@
       "一期范围": {
         "path": "doc/jp/confirmation/一期范围确认单.md",
         "status": "pending"
+      },
+      "二期代切": {
+        "path": "doc/jp/confirmation/二期代切确认单.md",
+        "status": "pending"
       }
     },
     "phase_plan": "doc/jp/phase-plan.md",
-    "round": 1,
+    "round": 2,
     "change_log": "doc/jp/change-log.md",
     "design_options": {
       "dir": "doc/jp/design-options/",
@@ -32,28 +37,41 @@
         "mp-order-detail": "A",
         "mp-home": "B",
         "mp-product-detail": "A",
-        "mp-cart": "A"
+        "mp-cart": "A",
+        "mp-snap-search": "B",
+        "mp-snap-detail": "A",
+        "admin-snap-purchase": "A"
       },
-      "all_selected": true
-    }
+      "all_selected": true,
+      "review_html_snap": "doc/jp/design-options/snap-review.html"
+    },
+    "domain_ownership": "doc/jp/authority/ownership.yaml",
+    "spec": "doc/jp/18-代切二期方案.md",
+    "adr": [
+      "doc/_adr/0025-jp-snap-mercari-gateway.md"
+    ],
+    "handoff": "doc/jp/HANDOFF-二期代切.md"
   },
   "coverage": {
-    "total": 27,
+    "total": 74,
     "covered": 26,
-    "rate": 0.963,
-    "missing": [],
+    "rate": 0.351,
+    "missing": [
+      "二期 SNAP 41 条 + REQ-ORDER-011 + REQ-FULFILL-008：设计门未过，ticket 未拆（预期）"
+    ],
     "clarify": [
-      "REQ-PROD-007",
-      "REQ-EVENT-002",
-      "REQ-FULFILL-007",
-      "REQ-SNAP-009"
+      "REQ-SNAP-009",
+      "REQ-SNAP-010",
+      "REQ-SNAP-060",
+      "REQ-SNAP-061",
+      "REQ-SNAP-062"
     ]
   },
-  "summary": "38 条需求（一期在范围 27）→ 24 个 ticket，编成 7 个任务 D0-D6，约 18 人日；设计方案 6 项全部选定（基调 A + 页面 A/A/A/A/B）；3 条 lint 全绿；剩 REQ-PROD-007 待甲方答复",
+  "summary": "二期代切：设计门已过（搜索 B / 详情 A / 员工工作台 A / 表结构确认）；下一步 3b 设计权威抽取 → 拆 ticket → phase-plan D7-D13 → 三条 lint",
   "needs_human": {
     "route": "client",
-    "why": "需求澄清项待甲方回复",
-    "what": "REQ-PROD-007（商品要不要多规格）是唯一有返工成本的澄清项，其余 3 项已按我方判断实现"
+    "why": "确认单待审",
+    "what": "把 confirmation/二期代切确认单.md 发甲方；第三部分 #1 #2（账号 / 转运仓）阻塞 D7 技术验证"
   },
-  "next": "zhixing"
+  "next": "xuqiu（续：3b 设计权威抽取 → 拆 ticket），交接见 HANDOFF-二期代切.md"
 }

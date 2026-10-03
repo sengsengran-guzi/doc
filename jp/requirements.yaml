@@ -17,6 +17,14 @@ meta:
     - file: doc/16-日本代购需求确认单.md
       version: "2026-08-05"
       note: 与甲方往返的整理版确认单（在线飞书文档同步）
+    - file: Kevin-会话-2026-10-02
+      version: "2026-10-03"
+      note: >
+        二期代切 /xuqiu §0.3 七问 + 「最终想法」（Kevin 2026-10-03 点头）。前置调研见
+        _evidence-代切-乐一番对标调研.md 与 18-代切二期方案.md §1（2026-10-01 东京 IP 实测）
+    - file: doc/jp/GO-LIVE-CHECKLIST.md
+      version: "2026-08-14"
+      note: 一期遗留缺口（未付款超时关单 / 退款卡单补偿），代切下变成主路径问题
   domains: [SYS, EVENT, PROD, ORDER, FULFILL, SNAP]
 
 requirements:
@@ -396,7 +404,7 @@ requirements:
     tickets: [GZ-JP-106, GZ-JP-108]
 
   # ══════════════════════════════════════════════════════════════════
-  # SNAP —— 代切（二期，全部 deferred）
+  # SNAP —— 代切（二期，2026-10-01 启动）
   # ══════════════════════════════════════════════════════════════════
 
   - id: REQ-SNAP-001
@@ -406,9 +414,8 @@ requirements:
       代切：前面的部分就是实时购买日本网站的东西（煤炉）
     domain: SNAP
     priority: P1
-    status: deferred
-    defer_to: 二期
-    note: 甲方 2026-08-05 明确拼团先做、代切后续加。
+    status: pending
+    note: 甲方 2026-08-05 明确拼团先做、代切后续加。2026-10-01 二期启动（A1 官方合作 / A2 接入官方合作商均已失败，走自建直连）。
     tickets: []
 
   - id: REQ-SNAP-002
@@ -418,8 +425,7 @@ requirements:
       （代切）没有上架部分
     domain: SNAP
     priority: P1
-    status: deferred
-    defer_to: 二期
+    status: pending
     tickets: []
 
   - id: REQ-SNAP-003
@@ -429,8 +435,7 @@ requirements:
       客人可以从国内 不搭梯子就查到煤炉的货品 然后买
     domain: SNAP
     priority: P1
-    status: deferred
-    defer_to: 二期
+    status: pending
     note: 需站内搜索浏览煤炉在售商品 + 图片经自有备案域名代理（微信 downloadFile 合法域名必须 ICP 备案）。
     tickets: []
 
@@ -441,8 +446,7 @@ requirements:
       后面的部分用同一个系统
     domain: SNAP
     priority: P1
-    status: deferred
-    defer_to: 二期
+    status: pending
     note: >
       ★ 虽 defer，但约束一期架构：订单与履约状态机必须能容纳二期代切来源。
       一期在订单行预留 source 维度（batch=拼团 / snap=代切），二期加值不改表。
@@ -455,8 +459,11 @@ requirements:
       Q4 煤炉的商品数据从哪来 —— C 自己直连煤炉 这样比较稳
     domain: SNAP
     priority: P1
-    status: deferred
-    defer_to: 二期
+    status: pending
+    note: >
+      A1（甲方自己拿煤炉官方合作）与 A2（接入已有官方合作代购商）均已确认失败（Kevin 2026-10-01），
+      只剩自建直连。读 = 网页版背后的 JSON 接口（mercapi 实现了 DPoP 签名）+ 无头浏览器兜底；
+      2026-10-01 从东京机房 IP 实测匿名搜索 / 详情 / 取图 / 无头渲染全部可用。见 ADR-0025。
     tickets: []
 
   - id: REQ-SNAP-006
@@ -466,9 +473,12 @@ requirements:
       Q5 抢单怎么执行 —— C 不是 C 的话这个项目推进不了 我会提供煤炉账号
     domain: SNAP
     priority: P1
-    status: deferred
-    defer_to: 二期
-    note: 甲方已知悉违反煤炉 TOS 与封号风险后仍选全自动下单，账号由甲方提供。
+    status: pending
+    note: >
+      甲方已知悉违反煤炉 TOS 与封号风险后仍选全自动下单，账号由甲方提供。
+      写 = 浏览器自动化（常驻登录态 + 固定日本 ISP 出口），遇验证 / 风控即停号转人工，
+      不接打码、不伪装指纹、不批量注册（风险边界见 ADR-0025 §4）。
+      ★ 上线前须甲方书面确认接受封号风险（REQ-SNAP-062）。
     tickets: []
 
   - id: REQ-SNAP-007
@@ -479,8 +489,10 @@ requirements:
       这样 国际汇率涨了会自动涨
     domain: SNAP
     priority: P1
-    status: deferred
-    defer_to: 二期
+    status: pending
+    note: >
+      「+0.05」单位有歧义（按每日元 ≈ 价格翻倍 / 按每百日元 ≈ 加价 1%）。公式结构已由 Kevin 定为
+      比例加价 + 每件固定费（REQ-SNAP-020），具体数值后台配置由甲方填，歧义随之消解。
     tickets: []
 
   - id: REQ-SNAP-008
@@ -490,11 +502,12 @@ requirements:
       应该需要日本有公司 这个后续我会让日本的员工去联系
     domain: SNAP
     priority: P1
-    status: deferred
-    defer_to: 二期
+    status: dropped
     note: >
       煤炉官方「越境EC事業者連携」计划：通过审核的事业者可获官方 API + 官方账号，
-      官方认可模式即「代理购入」。谈成则 REQ-SNAP-005/006 的灰色风险归零。甲方已安排日本员工推进。
+      官方认可模式即「代理购入」。谈成则 REQ-SNAP-005/006 的灰色风险归零。
+      ★ 2026-10-01 Kevin 确认：A1（官方合作）与 A2（接入官方合作代购商）均失败 → dropped，
+      代切走自建直连（REQ-SNAP-005/006）。行保留不删。
     tickets: []
 
   - id: REQ-SNAP-009
@@ -506,7 +519,6 @@ requirements:
     priority: P1
     status: clarify
     clarify: 甲方原话「代切还涉及到一个问题 我写到最后」但未写完，需补充。
-    defer_to: 二期
     note: 已在确认单中回问并给了三个猜测选项供甲方选编号。不阻塞一期。
     tickets: []
 
@@ -518,6 +530,688 @@ requirements:
       有些小公司也在做这个 是自己注册的小账号
     domain: SNAP
     priority: P1
+    status: clarify
+    clarify: >
+      甲方给的是哪种账号（大 app 的官方发放账号 / 自己注册的个人账号）？账号上绑的付款方式
+      （メルペイ残高 / 日本信用卡）与充值方式？账号是否能在网页版正常下单？——决定 S0 技术验证的
+      测试对象，也决定自动下单走浏览器（方案 A）还是 App 自动化（方案 C）。
+    note: 默认按「网页版可下单的普通账号 + 预充メルペイ残高」设计；S0 实测推翻则改 ADR-0025 §3。
+    tickets: []
+
+  # ── 二期代切 · Kevin 会话 2026-10-02 七问 + 「最终想法」（2026-10-03 点头）──────────
+  # source 定位：Q1-Q7 = §0.3 七问；FI-n = 「最终想法」第 n 条；FI-口径 = 「我替你定的实现口径」；
+  #             FI-不做 = 「明确不做」；FI-成功 = 「什么算成功」；FI-不确定 = 「已知的不确定点」；
+  #             方案§n = 2026-10-01 架构讨论各轮回复（落在 18-代切二期方案.md）
+
+  - id: REQ-SNAP-011
+    source: Kevin-会话-2026-10-02#Q1
+    module: 代切
+    text: >
+      完整一次交付：站内搜索 + 贴链接 + 自动下单 + 人工兜底 + 自动退款一起交付；
+      内部先做下单引擎、后做搜索，跟拼团一期一起上线
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 拼团一期卡在甲方行政项（ICP / 类目 / 商户号绑定）未上线，「先上简化版跑真实订单」无窗口。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: 10a0b223
+    tickets: []
+
+  - id: REQ-SNAP-012
+    source: Kevin-会话-2026-10-03#FI-1
+    module: 代切·找货
+    text: >
+      小程序内中文或日文搜索煤炉在售商品
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 实时透传查询 + Redis 短缓存（1-5 分钟）+ 同关键词在途请求合并；只查在售（status=on_sale）。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 15b4d27b
+    tickets: []
+
+  - id: REQ-SNAP-013
+    source: Kevin-会话-2026-10-03#FI-1
+    module: 代切·找货
+    text: >
+      支持粘贴煤炉商品链接或商品 ID 直接打开商品
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 识别 jp.mercari.com/item/m\d+ 与裸 ID m\d+；搜索框内粘贴即识别，不另设入口。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: d073e5cb
+    tickets: []
+
+  - id: REQ-SNAP-014
+    source: Kevin-会话-2026-10-02#Q7
+    module: 代切·找货
+    text: >
+      词表可以有 —— 中文搜索词先查后台维护的中日词表（IP 名 / 角色名 / 品类）转成日文
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 词表在 admin 维护（CRUD + 启停）；替换按最长匹配，命中多条按 sort 取一条。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: f1509dc0
+    tickets: []
+
+  - id: REQ-SNAP-015
+    source: Kevin-会话-2026-10-02#Q7b
+    module: 代切·找货
+    text: >
+      词表以外的词接阿里云机器翻译兜底
+    domain: SNAP
+    priority: P1
+    status: pending
+    note: 新增外部依赖（阿里云机器翻译），Kevin 已批准（CLAUDE.md §6 第 8 条）。翻译结果 Redis 缓存；接口失败降级为原词直搜，不阻断搜索。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: 9ac0f1e3
+    tickets: []
+
+  - id: REQ-SNAP-016
+    source: Kevin-会话-2026-10-02#Q7b
+    module: 代切·找货
+    text: >
+      商品标题机器翻译成中文显示并缓存，可以展开看日文原文
+    domain: SNAP
+    priority: P1
+    status: pending
+    note: 列表页懒翻译（首屏批量），详情页必翻；按 external_id + 标题 hash 缓存，标题改了才重翻。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: 3da5d8d9
+    tickets: []
+
+  - id: REQ-SNAP-017
+    source: Kevin-会话-2026-10-03#FI-2
+    module: 代切·数据
+    text: >
+      新建一个日本服务（新仓库，Python，部署在阿里云东京），实时查询煤炉，不做全量抓取
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: >
+      ruoyi 部署在阿里云（Kevin 2026-10-02 订正；此前方案里写的「腾讯云东京」作废）。
+      日本服务只和煤炉打交道、不存用户个人信息、不碰钱（ADR-0025 §1）。新仓 code/main/mercari-gateway/。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 11a5ce2d
+    tickets: []
+
+  - id: REQ-SNAP-018
+    source: Kevin-会话-2026-10-03#FI-2
+    module: 代切·数据
+    text: >
+      商品图转存后从备案域名出图
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: >
+      列表/详情图：阿里云 CDN（甲方备案域名）回源日本服务图片代理，长缓存（煤炉图 URL 带版本参数，不变）。
+      下单时主图另转存进 gz_file_object（订单快照不能依赖煤炉商品还在）。CDN 域名属甲方行政项（REQ-SNAP-060）。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 5ff0694c
+    tickets: []
+
+  - id: REQ-SNAP-019
+    source: Kevin-会话-2026-10-03#FI-2
+    module: 代切·数据
+    text: >
+      搜索结果只放行动漫周边相关分类
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 分类白名单后台可配（存煤炉 category_id 列表）；详情页同样判定，不在白名单的商品 ID 直接打开也拒。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 4a076e89
+    tickets: []
+
+  - id: REQ-SNAP-040
+    source: Kevin-会话-2026-10-03#FI-2
+    module: 代切·数据
+    text: >
+      搜索结果按关键词黑名单过滤
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 黑名单后台可配，匹配标题与描述；命中即不出现在结果里、详情页也拒。目的是防成人 / 同人违规图出现在小程序里导致整个小程序被处罚。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: aaf5a9cc
+    tickets: []
+
+  - id: REQ-SNAP-020
+    source: Kevin-会话-2026-10-02#Q2
+    module: 代切·定价
+    text: >
+      人民币价 = 日元价 × 实时汇率 × (1 + 加价比例) + 每件固定服务费，所有参数在后台配置
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: >
+      取代 REQ-SNAP-007 的「+0.05」表述（单位歧义随之消解）。汇率源默认中国银行外汇牌价日元现汇卖出价
+      （每 100 日元），后端定时抓取；超过 6 小时未更新则停止报价并告警，admin 可手动覆盖。
+      进位：最终价按分向上取整。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: 159d7299
+    tickets: []
+
+  - id: REQ-SNAP-021
+    source: Kevin-会话-2026-10-03#FI-3
+    module: 代切·定价
+    text: >
+      下单时锁定价格，报价 10 分钟内有效
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 报价（日元价 + 汇率 + 加价比例 + 固定费 + 预估运费）整体锁进订单行快照；报价过期须重新报价才能下单。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 6dd7b28b
+    tickets: []
+
+  - id: REQ-SNAP-022
+    source: Kevin-会话-2026-10-02#Q3
+    module: 代切·准入
+    text: >
+      标题含「専用」（已被别人预定）的直接屏蔽，不允许购买
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 匹配「専用」「様専用」「さん専用」；规则表后台可配（与 023 共用一张准入规则配置）。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: ae3344a5
+    tickets: []
+
+  - id: REQ-SNAP-023
+    source: Kevin-会话-2026-10-02#Q3
+    module: 代切·准入
+    text: >
+      卖家要求先留言、不许直接下单的（标题含「コメント必須」「即購入不可」等）转人工代买
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 关键词：コメント必須 / 即購入不可 / 即購入NG / 即購入NO / 即購入禁止 / 購入前コメント，标题与描述都扫。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: f8e0dd3b
+    tickets: []
+
+  - id: REQ-SNAP-024
+    source: Kevin-会话-2026-10-02#Q3
+    module: 代切·准入
+    text: >
+      运费到付的（「着払い」，和全包邮口径冲突）转人工代买
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 判定依据 = 商品详情 shipping_payer 字段（非「送料込み(出品者負担)」即到付）。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: 8149ce49
+    tickets: []
+
+  - id: REQ-SNAP-025
+    source: Kevin-会话-2026-10-02#Q4
+    module: 代切·定价
+    text: >
+      到付商品下单时加一笔预估运费（后台可配的固定运费），多退少不补
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: >
+      「多退」= 日本员工在人工代买结果里填实际到付运费，系统把 预估−实际（>0 时）按行部分退款；
+      「少不补」= 实际高于预估甲方承担。预估运费不进加价比例的计算基数。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: 8ce026fa
+    tickets: []
+
+  - id: REQ-SNAP-026
+    source: Kevin-会话-2026-10-03#FI-5
+    module: 代切·下单
+    text: >
+      用户付款后，系统自动在煤炉下单
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: >
+      支付回调同事务写下单任务、异步执行；同步调日本服务（超时 45s），超时即「结果不明」。
+      每次下单带订单号（JPO-…）作幂等键，日本服务下单前先查该账号购买记录（ADR-0025 §2）。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: c4965c61
+    tickets: []
+
+  - id: REQ-SNAP-027
+    source: Kevin-会话-2026-10-02#Q5
+    module: 代切·下单
+    text: >
+      卖家涨价的情况判为下单失败、全额退款
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 下单前日本服务再查一次实时价，高于锁定日元价即不点购买、返回 failed(price_up)。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: 62f6e5f5
+    tickets: []
+
+  - id: REQ-SNAP-028
+    source: Kevin-会话-2026-10-02#Q5
+    module: 代切·下单
+    text: >
+      降价照买，差价不退
+    domain: SNAP
+    priority: P1
+    status: pending
+    note: 实际成交日元价落库（审计用），不触发退款。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: 9bf21e81
+    tickets: []
+
+  - id: REQ-SNAP-029
+    source: Kevin-会话-2026-10-03#FI-5
+    module: 代切·下单
+    text: >
+      下单结果不明时不退款也不重试，先对账，对不上就转人工
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: >
+      对账 = 按商品 ID 查采购账号购买记录：查到 → 成功；确认没有且商品已售出/下架 → 失败退款；
+      其余 → 转人工。对账最多 3 次（30s / 2min / 10min），仍不明转人工。★ 本条是全链路正确性的核心。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 526bc628
+    tickets: []
+
+  - id: REQ-SNAP-030
+    source: Kevin-会话-2026-10-03#FI-5
+    module: 代切·下单
+    text: >
+      账号触发风控时，自动下单整体暂停，全部转人工
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: >
+      风控信号 = 出现验证码 / 登录验证 / 短信验证 / 连续 3 次非业务失败 / 心跳登录态失效。
+      暂停后只能 admin 手动恢复（不自动恢复）。暂停期间新付款订单直接进人工队列。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 15935a46
+    tickets: []
+
+  - id: REQ-SNAP-031
+    source: Kevin-会话-2026-10-03#FI-6
+    module: 代切·人工
+    text: >
+      日本员工在后台的人工代买队列里处理：和卖家沟通、手工下单、填写结果，谈不成就全额退款
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 入队来源：准入转人工（023/024）、结果不明对账不清（029）、风控暂停期间（030）。填结果 = 成功（煤炉交易号 + 实际日元价 + 实际到付运费）/ 失败（原因）。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 3f577056
+    tickets: []
+
+  - id: REQ-SNAP-032
+    source: Kevin-会话-2026-10-03#FI-7
+    module: 代切·履约
+    text: >
+      巡检交易状态，卖家取消就自动退款
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 巡检频率默认 20 分钟、只扫进行中的交易；卖家取消 → 订单行 purchase_failed + 行级退款（复用 GZ-JP-107 链路）。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: b9343744
+    tickets: []
+
+  - id: REQ-SNAP-033
+    source: Kevin-会话-2026-10-02#Q6
+    module: 代切·履约
+    text: >
+      验货：日本员工在后台点通过或不通过，煤炉上的评价和退货由员工在煤炉 App 里手工操作；
+      系统负责流转状态、给用户退款
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 验货通过 → 员工手工评价后在后台点「已评价」→ 行进入一期履约链（await_seller_ship 之后）。不通过 → 员工走煤炉退货，后台点「退货完成」→ 行级全额退款。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: 69492796
+    tickets: []
+
+  - id: REQ-SNAP-034
+    source: Kevin-会话-2026-10-02#Q6
+    module: 代切·履约
+    text: >
+      评价超时前提醒
+    domain: SNAP
+    priority: P1
+    status: pending
+    note: >
+      提醒形态 = admin 人工代买 / 交易看板置顶 + 角标（不做站外推送）。超时阈值后台可配（默认到仓后 48h）；
+      煤炉自动完成交易的确切时限未查证，S0 实测后回填。
+    decided_by: kevin
+    decided_at: 2026-10-02
+    decided_cr: CR-20261003-01
+    decided_text_sha: 1efe5b06
+    tickets: []
+
+  - id: REQ-SNAP-035
+    source: Kevin-会话-2026-10-03#FI-口径
+    module: 代切·下单
+    text: >
+      代切商品不进购物车：一个订单只含一件代切商品，在详情页「立即购买」
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 原因：孤品、实时价、报价有效期很短。AI 提议，Kevin 在「最终想法」中认可。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 15714384
+    tickets: []
+
+  - id: REQ-SNAP-036
+    source: Kevin-会话-2026-10-03#FI-口径
+    module: 代切·下单
+    text: >
+      下单失败时全额退款，每件固定服务费也一起退
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 即退该订单行 amount_cent 全额（含固定费、含预估运费）。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 9c3167c1
+    tickets: []
+
+  - id: REQ-SNAP-037
+    source: Kevin-会话-2026-10-03#FI-口径
+    module: 代切·下单
+    text: >
+      煤炉下单成功后用户不能取消，在页面和协议里写明
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 下单确认页勾选「已知悉抢到后不可取消」才能提交；用户协议（pages/agreement）补代切条款，文案甲方过目。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: c517b019
+    tickets: []
+
+  - id: REQ-SNAP-038
+    source: Kevin-会话-2026-10-03#FI-成功
+    module: 代切·验收标准
+    text: >
+      用户用中文搜到商品，付款后 1 分钟内看到「已抢到」或「未抢到，已退款」
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 「1 分钟」指自动下单通道正常时；转人工的订单显示「人工处理中」，不计入。全链路演练剧本的主断言。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 241354a8
+    tickets: []
+
+  - id: REQ-SNAP-039
+    source: Kevin-会话-2026-10-03#FI-成功
+    module: 代切·验收标准
+    text: >
+      任何下单结果不明的订单，都不会被重复下单，也不会被错误退款
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 用故障注入断言：下单请求发出后断网 / 日本服务超时 / 进程重启三种场景下，同一订单行至多一次煤炉购买、钱的状态与煤炉实际一致。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 848cb417
+    tickets: []
+
+  - id: REQ-SNAP-041
+    source: Kevin-会话-2026-10-01#方案§3②
+    module: 代切·下单
+    text: >
+      同一个商品 ID 同时只能有一笔「已付款或付款中」的订单，第二个用户在提交订单时就被拦下，不用等付完款再退
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 实现：gz_jp_snap_item 行锁 + active_order_item_id 互斥；订单取消 / 超时关单 / 下单失败时释放。
+    tickets: []
+
+  - id: REQ-SNAP-042
+    source: Kevin-会话-2026-10-01#方案§4
+    module: 代切·下单
+    text: >
+      账号池：每个账号的每日下单上限、冷却时间、健康监控（连续失败、碰到验证码或登录验证就自动停用并提醒）
+    domain: SNAP
+    priority: P1
+    status: pending
+    note: 二期甲方给 1-2 个账号；按账号串行执行（一个账号一个执行进程）。admin 可看状态、手动暂停/恢复。
+    tickets: []
+
+  - id: REQ-SNAP-043
+    source: Kevin-会话-2026-10-01#方案§5
+    module: 代切·下单
+    text: >
+      每一步都截图、保存页面快照，存档，出纠纷时靠这些说明当时发生了什么
+    domain: SNAP
+    priority: P1
+    status: pending
+    note: 证据由日本服务产出、回传后存 gz_file_object（usage_type=snap_evidence），保留 180 天。
+    tickets: []
+
+  - id: REQ-SNAP-044
+    source: Kevin-会话-2026-10-01#调研§4
+    module: 代切·运维
+    text: >
+      主动探测：每 10 分钟用一个固定关键词搜一次、查一个固定商品，失败就告警，并自动把下单切到人工
+    domain: SNAP
+    priority: P1
+    status: pending
+    note: 告警落 admin 账号状态页 + 后端 error 日志；无站外推送（与「不做订阅消息」一致）。
+    tickets: []
+
+  - id: REQ-SNAP-064
+    source: Kevin-会话-2026-10-03#FI-不确定
+    module: 代切·技术验证
+    text: >
+      自动下单在甲方账号上能不能跑通：任务计划第一项就是技术验证，跑不通就把自动下单降级为人工下单
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: >
+      S0 在独立东京服务器上做（不走 Kevin 个人代理出口）。验证项：读接口限速水平 / 甲方账号网页版下单全流程 /
+      下单耗时 / 验证出现频率 / 登录态保持时长 / 购买记录可查（对账前提）。go/no-go 结论写进 ADR-0025 §3。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: ad17fa91
+    tickets: []
+
+  # ── 二期代切 · 甲方侧待确认（不阻塞拆 ticket，阻塞 S0 或上线）──────────────
+
+  - id: REQ-SNAP-060
+    source: Kevin-会话-2026-10-03#FI-不确定
+    module: 代切·甲方事项
+    text: >
+      甲方的转运仓地址、谁负责验货
+    domain: SNAP
+    priority: P0
+    status: clarify
+    clarify: 日本转运仓收货地址（设为采购账号默认地址）？谁在日本做验货 / 评价 / 退货 / 人工代买（需开 admin 账号）？图片 CDN 用哪个已备案域名？
+    tickets: []
+
+  - id: REQ-SNAP-061
+    source: Kevin-会话-2026-10-02#Q2
+    module: 代切·甲方事项
+    text: >
+      具体数值一律在后台配置、甲方自己填
+    domain: SNAP
+    priority: P0
+    status: clarify
+    clarify: 加价比例、每件固定服务费、到付预估运费三个数的初值是多少？（上线前必须填，不填后台拒绝报价）
+    tickets: []
+
+  - id: REQ-SNAP-062
+    source: Kevin-会话-2026-10-03#FI-不确定
+    module: 代切·甲方事项
+    text: >
+      甲方书面确认接受封号风险：这一条是上线卡点
+    domain: SNAP
+    priority: P0
+    status: clarify
+    clarify: 请甲方书面确认：自动下单违反煤炉规约、账号可能被永久封禁且余额可能冻结，该风险由甲方承担；账号与资金归甲方。
+    note: 进 GO-LIVE-CHECKLIST 桶 2；不阻塞开发，阻塞上线。
+    tickets: []
+
+  # ── 二期代切 · 明确不做（FI-不做，逐条留档防范围长回来）──────────────────────
+
+  - id: REQ-SNAP-050
+    source: Kevin-会话-2026-10-03#FI-不做
+    module: 代切·不做
+    text: 订阅消息通知
+    domain: SNAP
+    priority: P2
     status: deferred
-    defer_to: 二期
+    defer_to: V2+
+    tickets: []
+
+  - id: REQ-SNAP-051
+    source: Kevin-会话-2026-10-03#FI-不做
+    module: 代切·不做
+    text: 收藏
+    domain: SNAP
+    priority: P2
+    status: deferred
+    defer_to: V2+
+    tickets: []
+
+  - id: REQ-SNAP-052
+    source: Kevin-会话-2026-10-03#FI-不做
+    module: 代切·不做
+    text: 降价提醒
+    domain: SNAP
+    priority: P2
+    status: deferred
+    defer_to: V2+
+    tickets: []
+
+  - id: REQ-SNAP-053
+    source: Kevin-会话-2026-10-03#FI-不做
+    module: 代切·不做
+    text: 议价和留言服务
+    domain: SNAP
+    priority: P2
+    status: deferred
+    defer_to: V2+
+    tickets: []
+
+  - id: REQ-SNAP-054
+    source: Kevin-会话-2026-10-03#FI-不做
+    module: 代切·不做
+    text: 自动在煤炉上评价
+    domain: SNAP
+    priority: P2
+    status: deferred
+    defer_to: V2+
+    tickets: []
+
+  - id: REQ-SNAP-055
+    source: Kevin-会话-2026-10-03#FI-不做
+    module: 代切·不做
+    text: 自动走煤炉退货
+    domain: SNAP
+    priority: P2
+    status: deferred
+    defer_to: V2+
+    tickets: []
+
+  - id: REQ-SNAP-056
+    source: Kevin-会话-2026-10-03#FI-不做
+    module: 代切·不做
+    text: 多账号自动轮换对抗风控
+    domain: SNAP
+    priority: P2
+    status: deferred
+    defer_to: 不做（风险边界，ADR-0025 §4）
+    note: 同一边界下也不接打码平台、不伪装浏览器指纹、不批量注册小号、不绕过登录或任何验证环节。
+    tickets: []
+
+  # ── 一期遗留缺口（代切下变成主路径问题，FI-8）────────────────────────────────
+
+  - id: REQ-ORDER-011
+    source: doc/jp/GO-LIVE-CHECKLIST.md#L151 + Kevin-会话-2026-10-03#FI-8
+    module: 下单
+    text: >
+      未付款订单超时自动关单（同时释放商品锁）
+    domain: ORDER
+    priority: P0
+    status: pending
+    note: >
+      走 GzLocalSchedulerConfig 本地调度（prod 未部署 SnailJob），照 GzLocalBeanScheduler.unpaidExpire 范式；
+      超时阈值 15 分钟可配；拼团单与代切单同一任务；激活死代码 GzJpOrderMapper.markCancelled。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: a186172d
+    tickets: []
+
+  - id: REQ-FULFILL-008
+    source: doc/jp/GO-LIVE-CHECKLIST.md#L152 + Kevin-会话-2026-10-03#FI-8
+    module: 退款
+    text: >
+      退款卡在中间状态时自动补偿重试
+    domain: FULFILL
+    priority: P0
+    status: pending
+    note: 扫 gz_jp_refund 中 refunding 超过静默期（10 分钟）且无回调的单 → 先查微信退款单状态再决定补发或落终态；复用 GzJpRefundServiceImpl.retry 的放行口径。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    decided_cr: CR-20261003-01
+    decided_text_sha: 2ec325d3
     tickets: []
