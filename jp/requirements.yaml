@@ -416,7 +416,7 @@ requirements:
     priority: P1
     status: pending
     note: 甲方 2026-08-05 明确拼团先做、代切后续加。2026-10-01 二期启动（A1 官方合作 / A2 接入官方合作商均已失败，走自建直连）。
-    tickets: []
+    tickets: [GZ-SNAP-601]
 
   - id: REQ-SNAP-002
     source: 客户微信-2026-08-03#代切
@@ -426,7 +426,7 @@ requirements:
     domain: SNAP
     priority: P1
     status: pending
-    tickets: []
+    tickets: [GZ-SNAP-501]
 
   - id: REQ-SNAP-003
     source: 客户微信-2026-08-03#代切
@@ -437,7 +437,7 @@ requirements:
     priority: P1
     status: pending
     note: 需站内搜索浏览煤炉在售商品 + 图片经自有备案域名代理（微信 downloadFile 合法域名必须 ICP 备案）。
-    tickets: []
+    tickets: [GZ-SNAP-501]
 
   - id: REQ-SNAP-004
     source: 客户微信-2026-08-03#代切
@@ -450,7 +450,7 @@ requirements:
     note: >
       ★ 虽 defer，但约束一期架构：订单与履约状态机必须能容纳二期代切来源。
       一期在订单行预留 source 维度（batch=拼团 / snap=代切），二期加值不改表。
-    tickets: [GZ-JP-105]
+    tickets: [GZ-JP-105, GZ-SNAP-102, GZ-SNAP-304, GZ-SNAP-405]
 
   - id: REQ-SNAP-005
     source: 客户微信-2026-08-04#Q4
@@ -464,7 +464,7 @@ requirements:
       A1（甲方自己拿煤炉官方合作）与 A2（接入已有官方合作代购商）均已确认失败（Kevin 2026-10-01），
       只剩自建直连。读 = 网页版背后的 JSON 接口（mercapi 实现了 DPoP 签名）+ 无头浏览器兜底；
       2026-10-01 从东京机房 IP 实测匿名搜索 / 详情 / 取图 / 无头渲染全部可用。见 ADR-0025。
-    tickets: []
+    tickets: [GZ-SNAP-202]
 
   - id: REQ-SNAP-006
     source: 客户微信-2026-08-04#Q5
@@ -479,7 +479,7 @@ requirements:
       写 = 浏览器自动化（常驻登录态 + 固定日本 ISP 出口），遇验证 / 风控即停号转人工，
       不接打码、不伪装指纹、不批量注册（风险边界见 ADR-0025 §4）。
       ★ 上线前须甲方书面确认接受封号风险（REQ-SNAP-062）。
-    tickets: []
+    tickets: [GZ-SNAP-001, GZ-SNAP-203]
 
   - id: REQ-SNAP-007
     source: 客户微信-2026-08-04#细节项答复
@@ -493,7 +493,7 @@ requirements:
     note: >
       「+0.05」单位有歧义（按每日元 ≈ 价格翻倍 / 按每百日元 ≈ 加价 1%）。公式结构已由 Kevin 定为
       比例加价 + 每件固定费（REQ-SNAP-020），具体数值后台配置由甲方填，歧义随之消解。
-    tickets: []
+    tickets: [GZ-SNAP-403]
 
   - id: REQ-SNAP-008
     source: 客户微信-2026-08-05#1
@@ -535,8 +535,10 @@ requirements:
       甲方给的是哪种账号（大 app 的官方发放账号 / 自己注册的个人账号）？账号上绑的付款方式
       （メルペイ残高 / 日本信用卡）与充值方式？账号是否能在网页版正常下单？——决定 S0 技术验证的
       测试对象，也决定自动下单走浏览器（方案 A）还是 App 自动化（方案 C）。
-    note: 默认按「网页版可下单的普通账号 + 预充メルペイ残高」设计；S0 实测推翻则改 ADR-0025 §3。
-    tickets: []
+    note: >
+      默认按「网页版可下单的普通账号 + 预充メルペイ残高」设计；S0 实测推翻则改 ADR-0025 §3。
+      2026-10-03 只读探测：有卖家写明「新規アカウントや評価0の方は購入しないで」——采购账号应是有交易记录与评价的老账号。
+    tickets: [GZ-SNAP-001]
 
   # ── 二期代切 · Kevin 会话 2026-10-02 七问 + 「最终想法」（2026-10-03 点头）──────────
   # source 定位：Q1-Q7 = §0.3 七问；FI-n = 「最终想法」第 n 条；FI-口径 = 「我替你定的实现口径」；
@@ -557,7 +559,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: 10a0b223
-    tickets: []
+    tickets: [GZ-SNAP-601]
 
   - id: REQ-SNAP-012
     source: Kevin-会话-2026-10-03#FI-1
@@ -572,7 +574,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 15b4d27b
-    tickets: []
+    tickets: [GZ-SNAP-302, GZ-SNAP-501]
 
   - id: REQ-SNAP-013
     source: Kevin-会话-2026-10-03#FI-1
@@ -582,12 +584,12 @@ requirements:
     domain: SNAP
     priority: P0
     status: pending
-    note: 识别 jp.mercari.com/item/m\d+ 与裸 ID m\d+；搜索框内粘贴即识别，不另设入口。
+    note: 识别 jp.mercari.com/item/m\d+、裸 ID m\d+、煤炉 App 分享短链 merc.li（经日本服务跟随跳转解析）；搜索框内粘贴即识别，不另设入口。
     decided_by: kevin
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: d073e5cb
-    tickets: []
+    tickets: [GZ-SNAP-202, GZ-SNAP-302, GZ-SNAP-501]
 
   - id: REQ-SNAP-014
     source: Kevin-会话-2026-10-02#Q7
@@ -602,7 +604,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: f1509dc0
-    tickets: []
+    tickets: [GZ-SNAP-101, GZ-SNAP-302, GZ-SNAP-404]
 
   - id: REQ-SNAP-015
     source: Kevin-会话-2026-10-02#Q7b
@@ -617,7 +619,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: 9ac0f1e3
-    tickets: []
+    tickets: [GZ-SNAP-302]
 
   - id: REQ-SNAP-016
     source: Kevin-会话-2026-10-02#Q7b
@@ -632,7 +634,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: 3da5d8d9
-    tickets: []
+    tickets: [GZ-SNAP-302, GZ-SNAP-502]
 
   - id: REQ-SNAP-017
     source: Kevin-会话-2026-10-03#FI-2
@@ -649,7 +651,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 11a5ce2d
-    tickets: []
+    tickets: [GZ-SNAP-201, GZ-SNAP-301]
 
   - id: REQ-SNAP-018
     source: Kevin-会话-2026-10-03#FI-2
@@ -666,7 +668,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 5ff0694c
-    tickets: []
+    tickets: [GZ-SNAP-202]
 
   - id: REQ-SNAP-019
     source: Kevin-会话-2026-10-03#FI-2
@@ -676,12 +678,14 @@ requirements:
     domain: SNAP
     priority: P0
     status: pending
-    note: 分类白名单后台可配（存煤炉 category_id 列表）；详情页同样判定，不在白名单的商品 ID 直接打开也拒。
+    note: >
+      分类白名单后台可配（存煤炉 category_id 列表，任意层级均可）；作为搜索条件传给煤炉收窄结果，详情页再按末级 / 父级 / 根分类复核，
+      不在白名单的商品 ID 直接打开也拒。实测：缶バッジ 975 → 父 745 キャラクターグッズ → 根 1328 ゲーム・おもちゃ・グッズ。
     decided_by: kevin
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 4a076e89
-    tickets: []
+    tickets: [GZ-SNAP-302, GZ-SNAP-403]
 
   - id: REQ-SNAP-040
     source: Kevin-会话-2026-10-03#FI-2
@@ -696,7 +700,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: aaf5a9cc
-    tickets: []
+    tickets: [GZ-SNAP-302, GZ-SNAP-403]
 
   - id: REQ-SNAP-020
     source: Kevin-会话-2026-10-02#Q2
@@ -714,7 +718,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: 159d7299
-    tickets: []
+    tickets: [GZ-SNAP-101, GZ-SNAP-303, GZ-SNAP-403]
 
   - id: REQ-SNAP-021
     source: Kevin-会话-2026-10-03#FI-3
@@ -729,7 +733,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 6dd7b28b
-    tickets: []
+    tickets: [GZ-SNAP-102, GZ-SNAP-303, GZ-SNAP-502]
 
   - id: REQ-SNAP-022
     source: Kevin-会话-2026-10-02#Q3
@@ -744,7 +748,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: ae3344a5
-    tickets: []
+    tickets: [GZ-SNAP-303, GZ-SNAP-403]
 
   - id: REQ-SNAP-023
     source: Kevin-会话-2026-10-02#Q3
@@ -759,7 +763,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: f8e0dd3b
-    tickets: []
+    tickets: [GZ-SNAP-303, GZ-SNAP-306]
 
   - id: REQ-SNAP-024
     source: Kevin-会话-2026-10-02#Q3
@@ -774,7 +778,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: 8149ce49
-    tickets: []
+    tickets: [GZ-SNAP-303, GZ-SNAP-306]
 
   - id: REQ-SNAP-025
     source: Kevin-会话-2026-10-02#Q4
@@ -785,13 +789,13 @@ requirements:
     priority: P0
     status: pending
     note: >
-      「多退」= 日本员工在人工代买结果里填实际到付运费，系统把 预估−实际（>0 时）按行部分退款；
+      「多退」= 货到转运仓时（着払い到仓才付、才知道金额）日本员工点「已到仓」并填实际到付运费，系统把 预估−实际（>0 时）按行部分退款；
       「少不补」= 实际高于预估甲方承担。预估运费不进加价比例的计算基数。
     decided_by: kevin
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: 8ce026fa
-    tickets: []
+    tickets: [GZ-SNAP-303, GZ-SNAP-306, GZ-SNAP-307, GZ-SNAP-502]
 
   - id: REQ-SNAP-026
     source: Kevin-会话-2026-10-03#FI-5
@@ -808,7 +812,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: c4965c61
-    tickets: []
+    tickets: [GZ-SNAP-203, GZ-SNAP-304, GZ-SNAP-305]
 
   - id: REQ-SNAP-027
     source: Kevin-会话-2026-10-02#Q5
@@ -823,7 +827,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: 62f6e5f5
-    tickets: []
+    tickets: [GZ-SNAP-203, GZ-SNAP-305]
 
   - id: REQ-SNAP-028
     source: Kevin-会话-2026-10-02#Q5
@@ -838,7 +842,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: 9bf21e81
-    tickets: []
+    tickets: [GZ-SNAP-305]
 
   - id: REQ-SNAP-029
     source: Kevin-会话-2026-10-03#FI-5
@@ -849,13 +853,15 @@ requirements:
     priority: P0
     status: pending
     note: >
-      对账 = 按商品 ID 查采购账号购买记录：查到 → 成功；确认没有且商品已售出/下架 → 失败退款；
-      其余 → 转人工。对账最多 3 次（30s / 2min / 10min），仍不明转人工。★ 本条是全链路正确性的核心。
+      对账 = 按商品 ID 查采购账号购买记录：查到 → 成功；查不到（无论商品是否还在售）/ 对账本身失败 → 下一轮，
+      不判失败、不退款（Kevin 2026-10-03：购买记录可能滞后，「已售出」也可能是被我们买走，误退不可逆）。
+      对账最多 3 次（30s / 2min / 10min），给购买记录留出刷新时间（最常见的不明是「点了购买、超时、其实买到了」）；仍不明转人工。
+      对账只会自动得出「成功」，从不自动得出「失败」。★ 本条是全链路正确性的核心。
     decided_by: kevin
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 526bc628
-    tickets: []
+    tickets: [GZ-SNAP-204, GZ-SNAP-305]
 
   - id: REQ-SNAP-030
     source: Kevin-会话-2026-10-03#FI-5
@@ -872,7 +878,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 15935a46
-    tickets: []
+    tickets: [GZ-SNAP-203, GZ-SNAP-305, GZ-SNAP-402]
 
   - id: REQ-SNAP-031
     source: Kevin-会话-2026-10-03#FI-6
@@ -887,7 +893,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 3f577056
-    tickets: []
+    tickets: [GZ-SNAP-306, GZ-SNAP-401, GZ-SNAP-504]
 
   - id: REQ-SNAP-032
     source: Kevin-会话-2026-10-03#FI-7
@@ -902,7 +908,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: b9343744
-    tickets: []
+    tickets: [GZ-SNAP-204, GZ-SNAP-307]
 
   - id: REQ-SNAP-033
     source: Kevin-会话-2026-10-02#Q6
@@ -918,7 +924,7 @@ requirements:
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: 69492796
-    tickets: []
+    tickets: [GZ-SNAP-307, GZ-SNAP-401, GZ-SNAP-405, GZ-SNAP-504]
 
   - id: REQ-SNAP-034
     source: Kevin-会话-2026-10-02#Q6
@@ -929,13 +935,13 @@ requirements:
     priority: P1
     status: pending
     note: >
-      提醒形态 = admin 人工代买 / 交易看板置顶 + 角标（不做站外推送）。超时阈值后台可配（默认到仓后 48h）；
+      提醒形态 = admin 人工代买 / 交易看板置顶 + 角标（不做站外推送）。超时阈值后台可配（默认到仓后 24h——2026-10-03 只读探测见到卖家写明「到货 24 小时内评价」）；
       煤炉自动完成交易的确切时限未查证，S0 实测后回填。
     decided_by: kevin
     decided_at: 2026-10-02
     decided_cr: CR-20261003-01
     decided_text_sha: 1efe5b06
-    tickets: []
+    tickets: [GZ-SNAP-307, GZ-SNAP-401]
 
   - id: REQ-SNAP-035
     source: Kevin-会话-2026-10-03#FI-口径
@@ -950,7 +956,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 15714384
-    tickets: []
+    tickets: [GZ-SNAP-304, GZ-SNAP-502]
 
   - id: REQ-SNAP-036
     source: Kevin-会话-2026-10-03#FI-口径
@@ -965,7 +971,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 9c3167c1
-    tickets: []
+    tickets: [GZ-SNAP-305, GZ-SNAP-503]
 
   - id: REQ-SNAP-037
     source: Kevin-会话-2026-10-03#FI-口径
@@ -980,7 +986,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: c517b019
-    tickets: []
+    tickets: [GZ-SNAP-304, GZ-SNAP-503]
 
   - id: REQ-SNAP-038
     source: Kevin-会话-2026-10-03#FI-成功
@@ -995,7 +1001,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 241354a8
-    tickets: []
+    tickets: [GZ-SNAP-504, GZ-SNAP-601]
 
   - id: REQ-SNAP-039
     source: Kevin-会话-2026-10-03#FI-成功
@@ -1010,7 +1016,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 848cb417
-    tickets: []
+    tickets: [GZ-SNAP-201, GZ-SNAP-305, GZ-SNAP-601]
 
   - id: REQ-SNAP-041
     source: Kevin-会话-2026-10-01#方案§3②
@@ -1021,7 +1027,7 @@ requirements:
     priority: P0
     status: pending
     note: 实现：gz_jp_snap_item 行锁 + active_order_item_id 互斥；订单取消 / 超时关单 / 下单失败时释放。
-    tickets: []
+    tickets: [GZ-SNAP-101, GZ-SNAP-304]
 
   - id: REQ-SNAP-042
     source: Kevin-会话-2026-10-01#方案§4
@@ -1032,7 +1038,7 @@ requirements:
     priority: P1
     status: pending
     note: 二期甲方给 1-2 个账号；按账号串行执行（一个账号一个执行进程）。admin 可看状态、手动暂停/恢复。
-    tickets: []
+    tickets: [GZ-SNAP-301, GZ-SNAP-402]
 
   - id: REQ-SNAP-043
     source: Kevin-会话-2026-10-01#方案§5
@@ -1043,7 +1049,7 @@ requirements:
     priority: P1
     status: pending
     note: 证据由日本服务产出、回传后存 gz_file_object（usage_type=snap_evidence），保留 180 天。
-    tickets: []
+    tickets: [GZ-SNAP-203, GZ-SNAP-305, GZ-SNAP-401]
 
   - id: REQ-SNAP-044
     source: Kevin-会话-2026-10-01#调研§4
@@ -1054,7 +1060,22 @@ requirements:
     priority: P1
     status: pending
     note: 告警落 admin 账号状态页 + 后端 error 日志；无站外推送（与「不做订阅消息」一致）。
-    tickets: []
+    tickets: [GZ-SNAP-301, GZ-SNAP-402]
+
+  - id: REQ-SNAP-045
+    source: 设计门-2026-10-03#mp-snap-search-B
+    module: 代切·找货
+    text: >
+      tabbar 新增「煤炉」一格，需要一套图标（常态 / 选中态）
+    domain: SNAP
+    priority: P1
+    status: pending
+    note: >
+      设计门选 B（tabbar 三格）带出的素材需求。Kevin 2026-10-03 定：AI 按现有 home / me 图标的线性风格先画
+      static/tabbar/mercari.png / mercariHL.png（选中态走品牌绿），上线前甲方要换随时替换。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    tickets: [GZ-SNAP-501]
 
   - id: REQ-SNAP-064
     source: Kevin-会话-2026-10-03#FI-不确定
@@ -1067,11 +1088,13 @@ requirements:
     note: >
       S0 在独立东京服务器上做（不走 Kevin 个人代理出口）。验证项：读接口限速水平 / 甲方账号网页版下单全流程 /
       下单耗时 / 验证出现频率 / 登录态保持时长 / 购买记录可查（对账前提）。go/no-go 结论写进 ADR-0025 §3。
+      排期（Kevin 2026-10-03 订正）：技术验证要等甲方账号，不阻塞前面的工作——数据底座、日本服务只读、
+      ruoyi 下单引擎（对假驱动）、admin、mp 先做；账号到位即插队做技术验证；只有日本服务的真下单与真对账等它的结论。
     decided_by: kevin
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: ad17fa91
-    tickets: []
+    tickets: [GZ-SNAP-001]
 
   # ── 二期代切 · 甲方侧待确认（不阻塞拆 ticket，阻塞 S0 或上线）──────────────
 
@@ -1095,7 +1118,7 @@ requirements:
     priority: P0
     status: clarify
     clarify: 加价比例、每件固定服务费、到付预估运费三个数的初值是多少？（上线前必须填，不填后台拒绝报价）
-    tickets: []
+    tickets: [GZ-SNAP-303, GZ-SNAP-403]
 
   - id: REQ-SNAP-062
     source: Kevin-会话-2026-10-03#FI-不确定
@@ -1108,6 +1131,20 @@ requirements:
     clarify: 请甲方书面确认：自动下单违反煤炉规约、账号可能被永久封禁且余额可能冻结，该风险由甲方承担；账号与资金归甲方。
     note: 进 GO-LIVE-CHECKLIST 桶 2；不阻塞开发，阻塞上线。
     tickets: []
+
+  - id: REQ-SNAP-065
+    source: Kevin-会话-2026-10-03#交接审查Q3
+    module: 代切·甲方事项
+    text: >
+      日本服务用的东京服务器和固定日本 ISP 代理由甲方采购、付费，我们负责配置
+    domain: SNAP
+    priority: P0
+    status: clarify
+    clarify: >
+      请甲方开通阿里云东京服务器一台（账号归甲方）+ 固定日本住宅 / ISP 代理一条（下单出口），
+      开好后把登录方式给我们配置。这两项是持续性月费。
+    note: 阻塞技术验证（REQ-SNAP-064）与上线。不用 Kevin 本机代理出口做任何下单或批量请求。
+    tickets: [GZ-SNAP-001]
 
   # ── 二期代切 · 明确不做（FI-不做，逐条留档防范围长回来）──────────────────────
 
@@ -1199,7 +1236,7 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: a186172d
-    tickets: []
+    tickets: [GZ-JP-110]
 
   - id: REQ-FULFILL-008
     source: doc/jp/GO-LIVE-CHECKLIST.md#L152 + Kevin-会话-2026-10-03#FI-8
@@ -1214,4 +1251,61 @@ requirements:
     decided_at: 2026-10-03
     decided_cr: CR-20261003-01
     decided_text_sha: 2ec325d3
-    tickets: []
+    tickets: [GZ-JP-111]
+
+  - id: REQ-ORDER-012
+    source: 纸面推演-2026-10-03#K1
+    module: 支付
+    text: >
+      支付单过期后客人不能再付款；万一付了，系统不能把这笔钱吞掉
+    domain: ORDER
+    priority: P0
+    status: pending
+    note: >
+      纸面推演发现的现存问题（拼豆 / 回收 / 拼团共用的支付链路）：本地 5 分钟标超时但没关微信侧支付单、下单也没带过期时间，
+      超时后付款的回调会被当成重复回调吞掉。Kevin 2026-10-03 定：D7 修，动共享支付通道（只新增参数与分支，不改既有方法签名）。
+      已查 prod（2026-10-03，只读）：2664 笔支付单中 432 笔超时单全部是拼豆，没有任何一笔收到过付款回调——历史上未造成实际损失。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    tickets: [GZ-PAY-106]
+
+  - id: REQ-SNAP-046
+    source: 纸面推演-2026-10-03#K1
+    module: 代切·下单
+    text: >
+      客人关掉收银台后再点购买同一件商品，能继续支付原来那张订单，不会被自己的订单挡住
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: 一期小程序没有「继续支付」入口。代切下未付款订单还锁着孤品，不处理的话客人会被提示「已被其他用户下单」。依赖 REQ-ORDER-012（过期支付单不能再付）。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    tickets: [GZ-SNAP-304]
+
+  - id: REQ-SNAP-047
+    source: 纸面推演-2026-10-03#K2
+    module: 代切·找货
+    text: >
+      这一期只卖煤炉个人卖家的商品，煤炉 Shops（企业店铺）的商品不卖
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: Shops 商品 ID 格式与下单页都和个人卖家不同，技术验证也只验个人卖家。搜索结果里过滤掉；粘贴 Shops 链接提示「暂不支持煤炉 Shops 商品」。以后要卖单独评估。
+    decided_by: kevin
+    decided_at: 2026-10-03
+    tickets: [GZ-SNAP-202, GZ-SNAP-302]
+
+  - id: REQ-SNAP-048
+    source: 只读探测-2026-10-03#新发现1 + Kevin-会话-2026-10-04
+    module: 代切·准入
+    text: >
+      卖家写明拒绝代购的商品不可购买，商品页提示「卖家不接受代购」
+    domain: SNAP
+    priority: P0
+    status: pending
+    note: >
+      实测有卖家在描述里写「楽一番など越境取引代行業者は即購入不可」。硬买违背卖家写明的意愿，且卖家发现收货地址是转运仓后可能取消交易。
+      判定扫标题、描述与卖家个人简介（拒代购词后台可配），先于「转人工」判定。Kevin 2026-10-04 选「直接不可购买」（否决：转人工 / 照常下单）。
+    decided_by: kevin
+    decided_at: 2026-10-04
+    tickets: [GZ-SNAP-202, GZ-SNAP-303, GZ-SNAP-403]

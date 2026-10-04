@@ -50,28 +50,27 @@
     "adr": [
       "doc/_adr/0025-jp-snap-mercari-gateway.md"
     ],
-    "handoff": "doc/jp/HANDOFF-二期代切.md"
+    "tickets_snap": "GZ-JP-110/111 + GZ-SNAP-001/101/102/201-204/301-307/401-405/501-504/601",
+    "simulation": "doc/jp/19-代切链路纸面推演.md",
+    "read_probe": "doc/jp/_spike/mercari-probe/READ-PROBE-2026-10-03.md"
   },
   "coverage": {
-    "total": 74,
-    "covered": 26,
-    "rate": 0.351,
-    "missing": [
-      "二期 SNAP 41 条 + REQ-ORDER-011 + REQ-FULFILL-008：设计门未过，ticket 未拆（预期）"
-    ],
+    "total": 80,
+    "covered": 77,
+    "rate": 0.963,
+    "missing": [],
     "clarify": [
       "REQ-SNAP-009",
-      "REQ-SNAP-010",
       "REQ-SNAP-060",
-      "REQ-SNAP-061",
       "REQ-SNAP-062"
-    ]
+    ],
+    "note": "在范围 76 条，漏拆 0 / 镀金 0；3 条待澄清为甲方侧事项（二期确认单）。REQ-SNAP-010 / 061 / 065 亦为 clarify，但已有 ticket 承接"
   },
-  "summary": "二期代切：设计门已过（搜索 B / 详情 A / 员工工作台 A / 表结构确认）；下一步 3b 设计权威抽取 → 拆 ticket → phase-plan D7-D13 → 三条 lint",
+  "summary": "二期代切：27 ticket / D7–D15；纸面推演完成并回流，K1（D7 修共享支付通道）/ K2（只卖个人卖家）已定；三条 lint 全绿",
   "needs_human": {
     "route": "client",
     "why": "确认单待审",
-    "what": "把 confirmation/二期代切确认单.md 发甲方；第三部分 #1 #2（账号 / 转运仓）阻塞 D7 技术验证"
+    "what": "把 confirmation/二期代切确认单.md 发甲方；第三部分 #1 #2 #3（账号 / 转运仓 / 东京服务器与代理）阻塞 D13 技术验证，不阻塞 D7–D12"
   },
-  "next": "xuqiu（续：3b 设计权威抽取 → 拆 ticket），交接见 HANDOFF-二期代切.md"
+  "next": "zhixing"
 }

@@ -47,3 +47,26 @@
 | admin 代切下单 | ★ 是（日本员工主操作页） | ✅ [已选定 A](admin-snap-purchase.md) | 人工代买与交易跟踪的组织方式 |
 | mp 下单确认 / 订单详情代切态 | 否 | 不出 | 复用一期已选定页面，只加区块（`UI:mp.order_confirm.snap` / `UI:mp.order_detail.snap`） |
 | admin 账号 / 配置 / 词表 | 否 | 不出 | 照 gz-bean/store 范式的 CRUD / 表单页 |
+
+### 设计权威（实现以此为准，草图只作参考）
+
+**token**：沿用 `code/main/miniapp-jp/src/style/c-tokens.scss` + `uno.config.ts`，不新建主题、不新增 token；
+组件禁止硬编码 hex。admin 走 Element Plus 默认审美。
+
+**草图里会变的内容块，来源一律可算，禁止手填 / 写死**：
+
+| 内容块 | 来源 |
+|---|---|
+| 煤炉 tab 空态热门词 chips | `gz_jp_snap_term` 中 `term_type=ip`、`enabled=1`，按 `sort_no` 取前 12 条（无新配置） |
+| 详情「实时价格 · x 秒前」 | `gz_jp_snap_item.fetched_at` 与当前时间之差 |
+| 「需人工确认」角标 / 详情准入提示条 | `gz_jp_snap_item.gate_result`（manual / blocked）+ `gate_reason` |
+| 详情「煤炉原价 ¥x 円」与「价格说明」三行 | 报价（`quote:{quoteId}`）的 `price_jpy` / 商品价 / `fixed_fee_cent` / `est_shipping_cent`；**不出现汇率与加价比例** |
+| 下单确认页报价剩余时间 | 报价 `quoted_at` + `quoteTtlSec` |
+| 订单详情代切状态段 | `gz_jp_snap_purchase.purchase_status` / `trade_status` 映射（unknown 与 executing 统一显示「抢购中」） |
+| 订单详情「运费差价已退 ¥x」 | `gz_jp_refund` 中 `refund_type=shipping_diff` 且已退款 |
+| admin 各 tab 数字角标 / 今日下单数 / 上限 / 评价期限剩余 | count 查询 / `today_count` / `daily_limit` / `rate_deadline_at` |
+| 煤炉 tab 图标 | 新素材 `static/tabbar/mercari.png` / `mercariHL.png`：AI 按 home / me 的线性风格先画，甲方可替换（REQ-SNAP-045） |
+| 代切协议条款 | `UI:mp.agreement.snap`，文案甲方过目后定稿（确认单第三部分） |
+
+**误导料**：[snap-review.html](snap-review.html) 里未选中的方案（搜索 A / C、详情 B / C、admin B / C）是被否决的方向，不是实现依据。
+草图里的示例商品、价格、汇率数字都是假数据。

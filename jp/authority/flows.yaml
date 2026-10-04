@@ -220,7 +220,8 @@ records:
         actor: 客人(mp)
         action: 在代切搜索页输入关键词，或粘贴煤炉商品链接 / 商品 ID
         produces: >
-          识别 `jp.mercari.com/item/m\d+` 与裸 `m\d+` → 直接进详情（step5）；其余按关键词搜（step2）
+          识别 `jp.mercari.com/item/m\d+`、裸 `m\d+`、煤炉 App 分享短链 `merc.li/…`（经日本服务跟随跳转解析出商品 ID，FLOW:F-JP-12.step3）
+          → 直接进详情（step5）；煤炉 Shops 商品链接（jp.mercari.com/shops/product/…）→ 提示「暂不支持煤炉 Shops 商品」（REQ-SNAP-047）；其余按关键词搜（step2）
       - id: FLOW:F-JP-05.step2
         actor: ruoyi
         action: 关键词归一化 —— 中文先按词表最长匹配替换成日文，未覆盖部分走阿里云机器翻译；纯日文原样
@@ -232,13 +233,16 @@ records:
         actor: ruoyi → 日本服务
         action: 实时搜索（只查在售），结果 Redis 缓存 3 分钟，同查询串在途请求合并为一次
         produces: >
-          GET /v1/search（HMAC 签名，超时 3s 熔断）→ items[]：external_id / title_ja / price_jpy / thumb / category_id / status。
-          日本服务侧：网页版 JSON 接口为主，失效自动降级无头浏览器解析（ADR-0025 §3）
+          GET /v1/search（HMAC 签名，超时 3s 熔断，带 category_ids = 分类白名单）→ items[]：external_id / item_type / title_ja / price_jpy / thumb / category_id / status。
+          分类白名单作为搜索条件传给煤炉（白名单可配任意层级的分类 ID，煤炉按层级匹配；实测 2026-10-03：缶バッジ 975 → 父 745 キャラクターグッズ → 根 1328），
+          结果网格里的图片因此只来自白名单分类。
+          日本服务侧：网页版 JSON 接口为主，失效自动降级无头浏览器解析（ADR-0025 §3）。
+          ★ ruoyi 侧先按用户限流（未登录按 IP），超限直接返回「搜得太快了」，不打日本服务——防止被刷时耗光日本服务的全局额度、连累煤炉封 IP
       - id: FLOW:F-JP-05.step4
         actor: ruoyi
         action: 过滤 + 翻译 + 出图
         produces: >
-          ① category_id 不在白名单 → 丢弃 ② 标题命中关键词黑名单 → 丢弃 ③ 首屏标题批量机翻中文（按 external_id+标题 hash 缓存）
+          ⓪ item_type=shops（煤炉 Shops 企业店铺商品）→ 丢弃（REQ-SNAP-047，这一期只卖个人卖家）① 分类白名单已在搜索条件里收窄（step3），详情再按末级 / 父级 / 根分类复核 ② 标题命中关键词黑名单 → 丢弃 ③ 首屏标题批量机翻中文（按 external_id+标题 hash 缓存）
           ④ 图片 URL 改写为 CDN（甲方备案域名）地址，CDN 回源日本服务 /v1/img 图片代理。
           ★ 过滤在 ruoyi 做、不信任日本服务（白名单 / 黑名单是 ruoyi 的配置）
       - id: FLOW:F-JP-05.step5
@@ -246,10 +250,14 @@ records:
         action: 详情实时查询（不走缓存）→ upsert gz_jp_snap_item → 准入判定 → 报价
         writes: [FIELD:gz_jp_snap_item.external_id, FIELD:gz_jp_snap_item.price_jpy, FIELD:gz_jp_snap_item.item_status, FIELD:gz_jp_snap_item.shipping_payer, FIELD:gz_jp_snap_item.gate_result, FIELD:gz_jp_snap_item.gate_reason, FIELD:gz_jp_snap_item.fetched_at]
         produces: >
-          准入（REQ-SNAP-022/023/024）：标题含「専用」或分类 / 黑名单不过 → blocked（详情可看、按钮置灰写原因）；
-          标题 / 描述含「コメント必須」「即購入不可」类，或 shipping_payer≠seller（到付）→ manual（可下单，付款后进人工队列）；
-          其余 → auto。item_status≠on_sale → 不可下单。报价见 FLOW:F-JP-06.step1
-    related_reqs: [REQ-SNAP-002, REQ-SNAP-003, REQ-SNAP-005, REQ-SNAP-012, REQ-SNAP-013, REQ-SNAP-014, REQ-SNAP-015, REQ-SNAP-016, REQ-SNAP-017, REQ-SNAP-018, REQ-SNAP-019, REQ-SNAP-040, REQ-SNAP-022, REQ-SNAP-023, REQ-SNAP-024]
+          准入按顺序判，先命中先定（REQ-SNAP-022/023/024/048）：
+          ① blocked：标题含「専用」；分类（末级 / 父级 / 根都不在白名单）或黑名单不过；item_type=shops；
+             **卖家拒绝代购**——标题、描述或卖家个人简介命中拒代购词（代行業者 / 代行NG / 代行不可 / 代行お断り / 越境 / 転売業者 / 業者NG / 楽一番 / 公式パートナー 等，后台可配）
+             → 详情可看、按钮置灰，提示「卖家不接受代购」。★ 必须先于 ② 判：这类描述里常同时写着「必ずコメント」
+          ② manual：标题或描述含「コメント必須」「即購入不可」类，或 shipping_payer=buyer（到付）→ 可下单，付款后进人工队列；
+          ③ 其余 → auto。item_status≠on_sale → 不可下单。报价见 FLOW:F-JP-06.step1。
+          卖家个人简介经日本服务 GET /v1/sellers/{seller_id} 取，ruoyi 按卖家缓存 24 小时（同一卖家多件商品只查一次）；取不到 → 只按商品本身判，不阻断
+    related_reqs: [REQ-SNAP-002, REQ-SNAP-003, REQ-SNAP-005, REQ-SNAP-012, REQ-SNAP-013, REQ-SNAP-014, REQ-SNAP-015, REQ-SNAP-016, REQ-SNAP-017, REQ-SNAP-018, REQ-SNAP-019, REQ-SNAP-040, REQ-SNAP-022, REQ-SNAP-023, REQ-SNAP-024, REQ-SNAP-047, REQ-SNAP-048]
 
   - id: FLOW:F-JP-06
     title: 代切报价、锁商品与支付
@@ -277,13 +285,28 @@ records:
         writes: [FIELD:gz_jp_snap_item.active_order_item_id, FIELD:gz_jp_order.order_no, FIELD:gz_jp_order_item.source, FIELD:gz_jp_order_item.snap_item_id, FIELD:gz_jp_order_item.product_snapshot_json, FIELD:gz_jp_order_item.amount_cent]
         produces: >
           ① 报价不存在 / 过期 / 不属于本商品 → 拒（前端重新报价）
-          ② `SELECT … FROM gz_jp_snap_item WHERE id=? FOR UPDATE`；active_order_item_id 非空且该行订单仍为 created/paid 且未失败 → 拒「已被其他用户下单」（REQ-SNAP-041）
+          ①' 实时复查一次（GET /v1/items，在锁之前做，不占事务）：已不在售 → 拒「商品已售出」；当前价 > 报价日元价 → 拒「价格变了，请重新报价」；
+          运费承担与报价时不一致 → 拒并要求重新报价；当前价 ≤ 报价价照常（降价归甲方）；日本服务不可用 → 拒「煤炉暂时访问不了」。
+          目的：把「报价之后被买走 / 涨价」拦在付款之前，不让它变成「先收钱再退款」（退款率直接影响商户号风控）
+          ② `SELECT … FROM gz_jp_snap_item WHERE id=? FOR UPDATE`；active_order_item_id 非空且该行订单仍为 created/paid 且未失败：
+          占用者是**本人**且订单仍 created → 不新建订单，返回原订单并重新下发支付参数（原支付单仍 pending 未过期 → 复用；已过期 → 新建一笔支付单）（REQ-SNAP-046）；
+          占用者是别人，或本人订单已 paid → 拒「已被其他用户下单」/「你已购买过这件商品」（REQ-SNAP-041）
           ③ 建 gz_jp_order + 1 行 gz_jp_order_item（source=snap、product_id 空、snap_item_id 有值、qty=1、amount_cent=报价 total_cent）
           ④ 报价整体写进 product_snapshot_json 的 snap 段 ⑤ 回写 active_order_item_id ⑥ 主图转存 gz_file_object（失败不阻断，快照留原 URL 兜底）
       - id: FLOW:F-JP-06.step4
         actor: 客人(mp)
         action: 微信支付（复用 GZ-PAY，business_type='jp'）
-        produces: 与拼团同一支付链路；未付款 15 分钟后由 FLOW:F-JP-10.step1 关单并释放商品锁
+        produces: >
+          与拼团同一支付链路；未付款 15 分钟后由 FLOW:F-JP-10.step1 关单并释放商品锁。
+          ★ GZ-PAY 统一下单带 time_expire = 本地 expire_time（5 分钟）：到点后微信侧拒绝付款，「本地已超时、微信仍可付」不再可能（REQ-ORDER-012）
+      - id: FLOW:F-JP-06.step4b
+        actor: ruoyi(GZ-PAY)
+        action: 迟到付款兜底 —— 回调或主动查单发现「微信说已付款，本地支付单已是 timeout / closed」
+        produces: >
+          不再当成重复回调吞掉：回调日志 process_status=late_paid + error 日志；admin 支付流水列表可筛出「迟到付款」，
+          由人工在商户平台原路退款或补单（理论上 time_expire 之后不会发生，这是兜底）。
+          GZ-PAY 超时任务标 timeout 时同时调 closeOrder 关微信侧支付单（覆盖修复前创建、没带 time_expire 的在途单）。
+          只新增参数、状态值与分支，不改既有方法签名（拼豆 / 回收线上在用）
       - id: FLOW:F-JP-06.step5
         actor: ruoyi
         action: 支付回调 —— 订单 paid、行 purchasing，同事务写下单任务
@@ -291,7 +314,7 @@ records:
         produces: >
           mode = gate_result=manual 或 自动下单总开关关闭 → manual（purchase_status=manual_pending）；否则 auto（queued, next_action_at=now）。
           ★ 回调里**不调**日本服务（ADR-0025 §2：回调超时 → 微信重推 → 重复下单）。任务唯一键 order_item_id，重复回调幂等
-    related_reqs: [REQ-SNAP-020, REQ-SNAP-021, REQ-SNAP-025, REQ-SNAP-035, REQ-SNAP-037, REQ-SNAP-041, REQ-SNAP-004, REQ-SNAP-007]
+    related_reqs: [REQ-SNAP-020, REQ-SNAP-021, REQ-SNAP-025, REQ-SNAP-035, REQ-SNAP-037, REQ-SNAP-041, REQ-SNAP-046, REQ-SNAP-004, REQ-SNAP-007, REQ-ORDER-012]
 
   - id: FLOW:F-JP-07
     title: 自动下单与结果判定
@@ -303,19 +326,28 @@ records:
     steps:
       - id: FLOW:F-JP-07.step1
         actor: ruoyi(本地调度)
-        action: 每 5s 扫 queued 且 next_action_at≤now 的任务，选一个 admin_enabled=1 且 health=healthy、未超日限、过了冷却的账号，置 executing
-        writes: [FIELD:gz_jp_snap_purchase.purchase_status, FIELD:gz_jp_snap_purchase.account_code, FIELD:gz_jp_snap_purchase.executed_at]
+        action: 每 5s 扫 queued 且 next_action_at≤now 的任务，选一个 admin_enabled=1、health=healthy、pause_reason 为空、未超日限、过了冷却的账号，置 executing
+        writes: [FIELD:gz_jp_snap_purchase.purchase_status, FIELD:gz_jp_snap_purchase.account_code, FIELD:gz_jp_snap_purchase.executed_at, FIELD:gz_jp_snap_purchase.next_action_at, FIELD:gz_jp_snap_purchase.manual_reason]
         produces: >
           走 GzLocalSchedulerConfig（prod 未部署 SnailJob）。抢任务用条件更新（WHERE purchase_status='queued' AND version=?）防多实例双取。
-          无可用账号 → 任务转 manual_pending（不排队等，REQ-SNAP-030）。执行线程池独立于 Web 线程池
+          账号选择分两种「没有可用账号」：
+          ① 有健康账号、只是都在冷却中 → 任务留 queued，next_action_at = 最早一个账号的冷却结束时间（等，不转人工）；
+          ② 没有健康且启用的账号，或健康账号都已到当日上限 → 转 manual_pending，manual_reason=no_account（不排队等，REQ-SNAP-030）。
+          执行线程池独立于 Web 线程池
       - id: FLOW:F-JP-07.step2
         actor: ruoyi → 日本服务
         action: POST /v1/purchases {order_no, external_id, max_price_jpy, account_code}（超时 45s）
         produces: >
           日本服务内部：① 按 order_no 查本地幂等记录，有 → 直接返回原结果 ② 查账号购买记录有该商品 → success
-          ③ 打开商品页核对在售 / 当前价 ≤ max_price_jpy / 送料込み ④ 进购买页确认默认付款方式与收货地址 → 点「購入する」
-          ⑤ 判结果：跳交易页 = success（取交易号）；売り切れ / 削除 = failed；当前价 > max = failed(price_up)；其他任何情况 = unknown
+          ③ 打开商品页核对在售 / 当前价 ≤ max_price_jpy / 运费承担与报价时一致（expect_shipping_payer）④ 进购买页确认默认付款方式与收货地址 → 点「購入する」
+          ⑤ 判结果：跳交易页 = success（取交易号）；売り切れ / 削除 = failed(sold_out / deleted)；当前价 > max = failed(price_up)；
+          运费承担变了（报价时包邮、现在到付）= failed(shipping_changed)，未点购买；
+          购买页显示余额不足 / 付款方式不可用 = failed(account_unpayable)，未点购买；其他任何情况 = unknown。
+          ★ 只有「没点『購入する』就停下」的情况才允许返回 failed；点过之后拿不到交易页一律 unknown
           ⑥ 每步截图 + 页面快照回传（REQ-SNAP-043）⑦ 遇验证码 / 登录验证 / 短信验证 → 返回 unknown + risk_signal=true
+          ruoyi 侧：failed(shipping_changed) 不退款，转 manual_pending（manual_reason=shipping_changed），由日本员工决定买不买；
+          failed(account_unpayable) 不退款，转 manual_pending（manual_reason=account_unpayable）+ 该账号停用（pause_reason=余额不足 / 付款方式不可用）+ error 日志，
+          其他健康账号继续派单（不关总开关——这是账号的钱的问题，不是风控）
       - id: FLOW:F-JP-07.step3
         actor: ruoyi
         action: success → 任务成功、订单行进交易跟踪
@@ -325,18 +357,23 @@ records:
           actual_price_jpy 落库，低于锁定价差价不退（REQ-SNAP-028）；商品锁保持（商品已归我们）
       - id: FLOW:F-JP-07.step4
         actor: ruoyi
-        action: failed → 任务失败、行级全额退款、释放商品锁
+        action: failed（sold_out / deleted / price_up）→ 任务失败、行级全额退款、释放商品锁
         writes: [FIELD:gz_jp_snap_purchase.purchase_status, FIELD:gz_jp_snap_purchase.fail_reason, FIELD:gz_jp_order_item.fulfill_status, FIELD:gz_jp_order_item.refund_status, FIELD:gz_jp_snap_item.active_order_item_id]
         produces: >
           fulfill_status=purchase_failed → 复用 GZ-JP-107 行级退款，退 amount_cent 全额（含固定费 / 预估运费，REQ-SNAP-036）；
-          涨价也走这里（REQ-SNAP-027）。active_order_item_id 置空
+          涨价也走这里（REQ-SNAP-027）。active_order_item_id 置空。shipping_changed 不走这里（见 step2）
       - id: FLOW:F-JP-07.step5
         actor: ruoyi
         action: unknown → 不动钱，排对账；对账最多 3 次（+30s / +2min / +10min）
-        writes: [FIELD:gz_jp_snap_purchase.purchase_status, FIELD:gz_jp_snap_purchase.reconcile_count, FIELD:gz_jp_snap_purchase.next_action_at]
+        writes: [FIELD:gz_jp_snap_purchase.purchase_status, FIELD:gz_jp_snap_purchase.reconcile_count, FIELD:gz_jp_snap_purchase.next_action_at, FIELD:gz_jp_snap_purchase.manual_reason]
         produces: >
-          对账 = GET /v1/purchases/{order_no}/reconcile：found → 按 step3；not_found 且商品已非在售 → 按 step4；
-          not_found 且商品仍在售 / 对账本身失败 → reconcile_count+1；3 次后仍不明 → manual_pending。
+          对账 = GET /v1/purchases/{order_no}/reconcile：
+          found → 按 step3（成功）；
+          not_found（无论商品是否还在售）/ 对账调用本身失败 → reconcile_count+1，按 +2min / +10min 排下一轮；**不判失败、不退款**
+          ——购买记录可能滞后，「已售出 / 交易中」也可能正是被我们自己买走（Kevin 2026-10-03），等满 3 轮给购买记录留出刷新时间；
+          满 3 轮仍未 found → manual_pending：最后一次看到商品已不在售 → manual_reason=reconcile_sold，否则 reconcile_exhausted
+          （区分只为给日本员工提示：前者大概率要去账号里核实是否其实买到了）。
+          ★ 对账只会自动得出「成功」，从不自动得出「失败」。
           ★ unknown 状态下**绝不**再次 POST /v1/purchases（REQ-SNAP-029/039）
       - id: FLOW:F-JP-07.step6
         actor: ruoyi
@@ -360,11 +397,12 @@ records:
         produces: 入队原因写在 fail_reason 之外的 manual_reason（准入 = gate_reason；对账 = reconcile_exhausted；暂停 = auto_paused）
       - id: FLOW:F-JP-08.step2
         actor: 日本员工(admin)
-        action: 填成功 —— 煤炉交易号（必填）+ 实际日元价 + 实际到付运费（日元，到付商品必填）
-        writes: [FIELD:gz_jp_snap_purchase.purchase_status, FIELD:gz_jp_snap_purchase.mercari_txn_id, FIELD:gz_jp_snap_purchase.actual_price_jpy, FIELD:gz_jp_snap_purchase.actual_shipping_jpy, FIELD:gz_jp_snap_purchase.manual_operator]
+        action: 填成功 —— 煤炉交易号（必填）+ 实际日元价
+        writes: [FIELD:gz_jp_snap_purchase.purchase_status, FIELD:gz_jp_snap_purchase.mercari_txn_id, FIELD:gz_jp_snap_purchase.actual_price_jpy, FIELD:gz_jp_snap_purchase.manual_operator]
         produces: >
-          出口同 FLOW:F-JP-07.step3。到付：多退 = est_shipping_cent − ceil(actual_shipping_jpy × 锁定汇率/100 × 100)，>0 时按行部分退款
-          （gz_jp_refund 新增一条 reason=shipping_diff，行 fulfill_status 不变）；≤0 不补收（REQ-SNAP-025）
+          出口同 FLOW:F-JP-07.step3。
+          ★ 实际日元价 > 锁定日元价 → 不允许填成功（与自动下单的涨价口径一致，REQ-SNAP-027），只能填失败（price_up）全额退款。
+          ★ 到付运费此时还不知道（着払い是货到转运仓时才付），不在这一步填；到付差价退款在 FLOW:F-JP-09.step2「已到仓」时处理
       - id: FLOW:F-JP-08.step3
         actor: 日本员工(admin)
         action: 填失败（谈不成 / 已售出 / 卖家拒绝）+ 备注
@@ -385,18 +423,37 @@ records:
         writes: [FIELD:gz_jp_snap_purchase.trade_status]
         produces: >
           卖家已发货 → shipped；卖家取消 → cancelled → 订单行 purchase_failed（★ 状态机放开 await_seller_ship→purchase_failed，
-          仅限 source=snap）→ 行级全额退款 + 释放商品锁（REQ-SNAP-032）。巡检失败只记日志、不改状态
+          仅限 source=snap）→ 行级退款 + 释放商品锁（REQ-SNAP-032）。退款额 = amount_cent − 该行已成功的 shipping_diff 退款额
+          （即客人实付里还没退的部分，全额退清）。巡检失败只记日志、不改状态
+      - id: FLOW:F-JP-09.step1b
+        actor: 日本员工(admin)
+        action: 手工标记「卖家已发货」/「交易取消」（巡检漏掉、技术验证 no-go 不跑巡检、已发货后丢件或煤炉事务局取消交易时的人工通道）
+        writes: [FIELD:gz_jp_snap_purchase.trade_status, FIELD:gz_jp_snap_purchase.fail_reason, FIELD:gz_jp_snap_purchase.manual_operator]
+        produces: >
+          与巡检同一出口：卖家已发货 → shipped（只能从 await_ship 出发）；
+          交易取消 → cancelled、fail_reason=seller_cancel → 同 step1 的退款与释放锁，可从 await_ship 或 shipped 出发
+          （已发货后丢件 / 事务局判取消，煤炉会把货款退回采购账号）；arrived 之后不能再标取消（走 step4 退货）。重复点击幂等
       - id: FLOW:F-JP-09.step2
         actor: 日本员工(admin)
-        action: 货到转运仓 → 点「已到仓」
-        writes: [FIELD:gz_jp_snap_purchase.trade_status, FIELD:gz_jp_snap_purchase.arrived_at, FIELD:gz_jp_snap_purchase.rate_deadline_at]
-        produces: rate_deadline_at = arrived_at + 评价期限小时数（配置，默认 48h，REQ-SNAP-034）
+        action: 货到转运仓 → 点「已到仓」（到付商品同时填实际到付运费）
+        writes: [FIELD:gz_jp_snap_purchase.trade_status, FIELD:gz_jp_snap_purchase.arrived_at, FIELD:gz_jp_snap_purchase.rate_deadline_at, FIELD:gz_jp_snap_purchase.actual_shipping_jpy]
+        produces: >
+          rate_deadline_at = arrived_at + 评价期限小时数（配置，默认 24h——实测有卖家要求「到货 24 小时内评价」，REQ-SNAP-034）。
+          到付商品（快照 shippingPayer=buyer）：实际到付运费（日元）必填 → 多退 = est_shipping_cent − ceil(actual_shipping_jpy × 锁定汇率/100 × 100)，
+          >0 时按行部分退款（gz_jp_refund 新增一条 refund_type=shipping_diff）；≤0 不补收，甲方承担（REQ-SNAP-025）。
+          ★ shipping_diff 退款只是「退差价」，不是这一行退款：发起与回调都**不改**订单行的 refund_status / refund_amount_cent /
+          fulfill_status，**不参与**订单 business_status 的 rollup（否则一单一件的代切单退完差价就被汇总成 refunded）。
+          客人侧在订单详情单列一行「运费差价已退 ¥x」（取自 gz_jp_refund）
       - id: FLOW:F-JP-09.step3
         actor: 日本员工(admin)
         action: 验货通过 → 在煤炉 App 手工评价 → 后台点「已评价」
         writes: [FIELD:gz_jp_snap_purchase.trade_status, FIELD:gz_jp_snap_purchase.rated_at]
         produces: >
           trade_status=rated；订单行仍是 await_seller_ship，此后由店员在履约看板按一期流程推进（jp_shipped → … → delivered）。
+          ★ 后端守卫：source=snap 且 trade_status≠rated 的行，一期的批量推进 / 批量发货 / 标记购买失败接口一律拒绝
+          （整批失败并指出是哪几行，不静默跳过）——不能只靠前端置灰。
+          守卫只加在这三个 **admin 批量入口**；代切自己的系统路径（自动下单失败、卖家取消、退货完成）把行改成 purchase_failed
+          时调用守卫之下的内部方法，不受它拦截。
           ★ 系统不自动评价（REQ-SNAP-054 不做）
       - id: FLOW:F-JP-09.step4
         actor: 日本员工(admin)
@@ -407,7 +464,7 @@ records:
         actor: 系统
         action: 评价超时提醒 —— rate_deadline_at 前 12h 未评价的交易在 admin 代切看板置顶 + 菜单角标
         produces: 不做站外推送（REQ-SNAP-050 不做）
-    related_reqs: [REQ-SNAP-004, REQ-SNAP-032, REQ-SNAP-033, REQ-SNAP-034]
+    related_reqs: [REQ-SNAP-004, REQ-SNAP-025, REQ-SNAP-032, REQ-SNAP-033, REQ-SNAP-034, REQ-SNAP-064]
 
   - id: FLOW:F-JP-10
     title: 未付款超时关单与退款补偿（一期遗留，代切下变成主路径）
@@ -421,15 +478,21 @@ records:
         action: 每 5 分钟扫 business_status=created 且 create_time 早于 15 分钟前的订单 → 关单
         writes: [FIELD:gz_jp_order.business_status, FIELD:gz_jp_order.cancelled_time, FIELD:gz_jp_snap_item.active_order_item_id]
         produces: >
-          激活 GzJpOrderMapper.markCancelled（条件更新 created→cancelled，防与支付回调竞态）；关单前先查支付单——
-          已支付按回调补处理，不关（REQ-ORDER-011）
+          逐单：① 查微信支付单（IWechatPayClient.queryByOutTradeNo）——已支付 → 按回调补处理，不关；
+          ② 未支付 → 先调 IWechatPayClient.closeOrder 关掉微信侧支付单（正常情况下 time_expire 已让它过期，这一步是兜底，
+          覆盖 GZ-PAY-106 上线前创建、没带 time_expire 的在途单——那种单不关的话客人仍能付款，而孤品锁已释放给别人）；
+          closeOrder 失败本轮跳过、下轮再试，不关本地单；
+          ③ 激活 GzJpOrderMapper.markCancelled（条件更新 created→cancelled，防与支付回调竞态），同事务释放代切商品锁（REQ-ORDER-011）。
+          从未拉起过支付（无支付流水）的单跳过 ①②，直接 ③
       - id: FLOW:F-JP-10.step2
         actor: ruoyi(本地调度)
         action: 每 5 分钟扫 gz_jp_refund.status=refunding 且超过 10 分钟的单 → 查单 → 补偿
         produces: >
           调 IWechatPayClient 查退款单：SUCCESS → 走与回调相同的落账（幂等）；ABNORMAL/CLOSED → refund_failed；
-          NOT_FOUND → 用同一 out_refund_no 补发（微信按 out_refund_no 幂等）（REQ-FULFILL-008）
-    related_reqs: [REQ-ORDER-011, REQ-FULFILL-008]
+          NOT_FOUND → 用同一 out_refund_no 补发（微信按 out_refund_no 幂等）（REQ-FULFILL-008）。
+          ★ IWechatPayClient 现无「按 out_refund_no 查退款单」方法，需在 gz-common 新增 queryRefund（mock / real 两个实现都补；
+          只新增方法，不改既有方法签名——拼豆 / 回收在用这个接口）
+    related_reqs: [REQ-ORDER-011, REQ-ORDER-012, REQ-FULFILL-008]
 
   - id: FLOW:F-JP-11
     title: 代切运营配置、汇率与运维探测
@@ -439,9 +502,9 @@ records:
       定时拉账号心跳。配置键（config_id 用 1404xxxx 段）：
         gz.jp.snap.pricing  = {markupRatio, fixedFeeCent, estShippingCent, quoteTtlSec=600}
         gz.jp.snap.filter   = {categoryWhitelist[], keywordBlacklist[]}
-        gz.jp.snap.gate     = {blockKeywords[専用…], manualKeywords[コメント必須 / 即購入不可…]}
+        gz.jp.snap.gate     = {blockKeywords[専用…], proxyRefuseKeywords[代行業者 / 代行NG / 越境 / 楽一番…], manualKeywords[コメント必須 / 即購入不可…]}
         gz.jp.snap.auto     = {enabled, pausedReason, pausedAt}
-        gz.jp.snap.trade    = {rateDeadlineHours=48, patrolMinutes=20}
+        gz.jp.snap.trade    = {rateDeadlineHours=24, patrolMinutes=20}
     steps:
       - id: FLOW:F-JP-11.step1
         actor: ruoyi(本地调度)
@@ -458,3 +521,77 @@ records:
         action: 每 10 分钟主动探测 —— 固定关键词搜一次、固定商品查一次详情
         produces: 失败 → admin 账号页告警 + error 日志 + 自动下单总开关关闭（REQ-SNAP-044）
     related_reqs: [REQ-SNAP-020, REQ-SNAP-030, REQ-SNAP-042, REQ-SNAP-044, REQ-SNAP-019, REQ-SNAP-040, REQ-SNAP-022, REQ-SNAP-023, REQ-SNAP-061]
+
+  - id: FLOW:F-JP-12
+    title: ruoyi ↔ 日本服务接口契约（mercari-gateway /v1）
+    status: active
+    body: |
+      日本服务（code/main/mercari-gateway/，Python，阿里云东京）对 ruoyi 暴露的全部接口。ruoyi 单向同步调用，日本服务不回调（ADR-0025 §2）。
+      日本服务不存用户个人信息、不碰钱、不持有过滤 / 准入规则（OWN:snap_runtime_config）。
+      驱动模式 GATEWAY_DRIVER：real（真煤炉）/ fake（dev 与 QA：下单 / 对账 / 巡检按脚本返回预设结果，用于 ruoyi 侧开发与故障注入）/
+      disabled（技术验证 no-go：下单接口恒返回 503 driver_disabled，ruoyi 侧自动下单总开关保持关闭）。
+      读源 GATEWAY_READ_SOURCE：live（真煤炉匿名读，staging / prod）/ replay（dev 与 QA 默认：search / items / sellers / resolve / img 全部回放录制样本，
+      样本覆盖 包邮 auto / 到付 / コメント必須 / 拒代购 / 専用 / Shops / 已售出 / 白名单外分类 各至少一件，结果确定、不发任何外网请求）。
+      两个开关正交：dev / QA = replay + fake；技术验证与 staging = live + real。
+      ★ replay 是为了不让开发与 QA 的反复运行打真煤炉（dev 出口是 Kevin 的个人代理 IP，被拦会影响他本人），也让 E2E 数据确定；
+      真煤炉只在显式的 live 测试里读（单次运行 ≤5 次请求）。
+    steps:
+      - id: FLOW:F-JP-12.step0
+        actor: ruoyi → 日本服务
+        action: 鉴权 —— 除 /v1/img 外所有接口带 HMAC 签名
+        produces: >
+          头 X-GW-Ts（unix 秒）+ X-GW-Sign = hex(HMAC-SHA256(secret, ts + "\n" + METHOD + "\n" + path_with_query + "\n" + sha256hex(body)))；
+          时间偏差 >60s 或签名不符 → 401。secret 按环境配置，ruoyi 走 yml 占位 + 环境变量，不进 git。
+          错误统一 {code, message}；非 2xx 在 ruoyi 侧一律视为「调用失败」，对下单而言即 unknown
+      - id: FLOW:F-JP-12.step1
+        actor: ruoyi → 日本服务
+        action: GET /v1/health
+        produces: >
+          {driver, version, egress_ok, accounts:[{account_code, session: ok|logged_out|challenge, checked_at}]}。
+          ruoyi 心跳任务据此写 gz_jp_snap_account.health_status（session ok→healthy / logged_out→logged_out / challenge→challenge；调用失败→unreachable）
+      - id: FLOW:F-JP-12.step2
+        actor: ruoyi → 日本服务
+        action: GET /v1/search?q=&sort=created_desc|price_asc|price_desc&page=&category_ids=
+        produces: >
+          {items:[{external_id, item_type: c2c|shops, title_ja, price_jpy, thumb_url, category_id, status}], has_next, via: api|browser}。只返回在售。
+          item_type 原样转述（不在日本服务里过滤，过滤是 ruoyi 的规则）。
+          字段来源（实测 2026-10-03，mercapi 0.5.0）：itemType ITEM_TYPE_MERCARI→c2c / ITEM_TYPE_BEYOND→shops；shippingPayerId 2→seller / 1→buyer / 0=Shops；
+          status ITEM_STATUS_ON_SALE→on_sale；categoryId 为末级分类；个人卖家图片域名 static.mercdn.net
+          日本服务侧：网页版 JSON 接口为主，失效自动降级无头浏览器；全局限速（令牌桶）超限 → 429，ruoyi 视为暂时不可用走缓存兜底
+      - id: FLOW:F-JP-12.step3
+        actor: ruoyi → 日本服务
+        action: GET /v1/items/{external_id}
+        produces: >
+          {external_id, item_type: c2c|shops, title_ja, description_ja, price_jpy, status: on_sale|trading|sold_out|deleted, shipping_payer: seller|buyer,
+          condition_text, category_id, seller_id, image_urls[]}；商品不存在 → 404 + {status: deleted}。
+          另有 GET /v1/resolve?url= —— 跟随煤炉分享短链（merc.li 等，只跟随煤炉域名白名单内的跳转，最多 3 跳）返回 {external_id}，解析不出 → 404
+      - id: FLOW:F-JP-12.step3b
+        actor: ruoyi → 日本服务
+        action: GET /v1/sellers/{seller_id}
+        produces: >
+          {seller_id, intro, num_ratings}——卖家个人简介原文 + 评价数，供 ruoyi 判「卖家拒绝代购」（FLOW:F-JP-05.step5）。只读、匿名可取
+      - id: FLOW:F-JP-12.step4
+        actor: CDN → 日本服务
+        action: GET /v1/img/{煤炉图片路径} —— 图片代理（CDN 回源）
+        produces: >
+          只代理煤炉静态图域名白名单（如 static.mercdn.net），白名单外 → 403；不做签名（CDN 回源不带签名），靠白名单 + 限速防滥用；
+          响应带长缓存头（煤炉图 URL 自带版本参数，内容不变）
+      - id: FLOW:F-JP-12.step5
+        actor: ruoyi → 日本服务
+        action: POST /v1/purchases {order_no, external_id, max_price_jpy, expect_shipping_payer, account_code}（ruoyi 侧超时 45s）
+        produces: >
+          {result: success|failed|unknown, reason, mercari_txn_id, actual_price_jpy, risk_signal, evidence:[{name, content_type, base64}]}。
+          reason（failed 时）∈ sold_out / deleted / price_up / shipping_changed / account_unpayable。
+          幂等键 = order_no：同一 order_no 重复调用返回首次结果，绝不二次点击购买（执行步骤见 FLOW:F-JP-07.step2）
+      - id: FLOW:F-JP-12.step6
+        actor: ruoyi → 日本服务
+        action: GET /v1/purchases/{order_no}/reconcile?external_id=&account_code=
+        produces: >
+          {found, mercari_txn_id, actual_price_jpy, item_status}。found 依据 = 采购账号购买记录里有这件商品（OWN:mercari_purchase_fact）；
+          只读，不会触发任何购买动作
+      - id: FLOW:F-JP-12.step7
+        actor: ruoyi → 日本服务
+        action: GET /v1/trades?account_code=
+        produces: >
+          {trades:[{mercari_txn_id, external_id, trade_status: await_ship|shipped|cancelled|completed}]}——只返回进行中与最近 7 天内结束的交易
+    related_reqs: [REQ-SNAP-005, REQ-SNAP-006, REQ-SNAP-017, REQ-SNAP-018, REQ-SNAP-026, REQ-SNAP-029, REQ-SNAP-032, REQ-SNAP-039, REQ-SNAP-042, REQ-SNAP-043]

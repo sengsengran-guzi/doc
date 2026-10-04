@@ -366,7 +366,7 @@
 
 **锚 id**：`FIELD:gz_jp_refund.refund_type`（ticket 的 blueprint_refs 写这个）
 
-{"comment": "★ 二期新增：purchase_failed 购买失败全额（存量行回填此值）/ shipping_diff 到付预估运费多退（REQ-SNAP-025）。一行至多各一条", "default": "purchase_failed", "dict": "gz_jp_refund_type", "length": 20, "name": "refund_type", "nullable": false, "type": "dict", "unique": "uk_item_type"}
+{"comment": "★ 二期新增：purchase_failed 购买失败全额（存量行回填此值）/ shipping_diff 到付预估运费多退（REQ-SNAP-025）。一行至多各一条。★ 只有 purchase_failed 会写订单行 refund_status / refund_amount_cent 并参与订单 business_status rollup；shipping_diff 发起与回调都不碰订单行、不参与 rollup（FLOW:F-JP-08.step2）", "default": "purchase_failed", "dict": "gz_jp_refund_type", "length": 20, "name": "refund_type", "nullable": false, "type": "dict", "unique": "uk_item_type"}
 
 ## gz_jp_snap_account.account_code
 
@@ -480,13 +480,13 @@
 
 **锚 id**：`FIELD:gz_jp_snap_item.gate_reason`（ticket 的 blueprint_refs 写这个）
 
-{"comment": "命中的规则（如 kw:専用 / kw:コメント必須 / shipping:buyer / category / blacklist），admin 与人工队列展示", "length": 64, "name": "gate_reason", "nullable": true, "type": "str"}
+{"comment": "命中的规则（如 kw:専用 / proxy_refuse:<命中词>@title|desc|profile / kw:コメント必須 / shipping:buyer / category / blacklist / shops），admin 与人工队列展示", "length": 64, "name": "gate_reason", "nullable": true, "type": "str"}
 
 ## gz_jp_snap_item.gate_result
 
 **锚 id**：`FIELD:gz_jp_snap_item.gate_result`（ticket 的 blueprint_refs 写这个）
 
-{"comment": "准入 auto可自动下单/manual转人工/blocked不可购买（REQ-SNAP-022/023/024）", "dict": "gz_jp_snap_gate", "length": 16, "name": "gate_result", "nullable": false, "type": "dict"}
+{"comment": "准入 auto可自动下单/manual转人工/blocked不可购买（REQ-SNAP-022/023/024/048）", "dict": "gz_jp_snap_gate", "length": 16, "name": "gate_result", "nullable": false, "type": "dict"}
 
 ## gz_jp_snap_item.id
 
@@ -570,7 +570,7 @@
 
 **锚 id**：`FIELD:gz_jp_snap_purchase.actual_shipping_jpy`（ticket 的 blueprint_refs 写这个）
 
-{"comment": "到付实际运费（日元，人工填），用于多退少不补（REQ-SNAP-025）", "name": "actual_shipping_jpy", "nullable": true, "type": "bigint"}
+{"comment": "到付实际运费（日元）：货到转运仓时日本员工点「已到仓」一并填（着払い到仓才付、才知道金额），用于多退少不补（REQ-SNAP-025）；包邮商品恒空", "name": "actual_shipping_jpy", "nullable": true, "type": "bigint"}
 
 ## gz_jp_snap_purchase.arrived_at
 
@@ -636,7 +636,7 @@
 
 **锚 id**：`FIELD:gz_jp_snap_purchase.manual_reason`（ticket 的 blueprint_refs 写这个）
 
-{"comment": "转人工原因：gate:<规则> / reconcile_exhausted / auto_paused / no_account", "length": 64, "name": "manual_reason", "nullable": true, "type": "str"}
+{"comment": "转人工原因：gate:<规则> / reconcile_sold（对账满 3 轮未查到，且最后一次看到商品已不在售——大概率要核实是否其实买到了）/ reconcile_exhausted（对账满 3 轮未查到，商品仍在售或对账调用失败）/ auto_paused（总开关关闭）/ no_account（无健康账号或都到日限；仅冷却中不转人工）/ shipping_changed（下单前发现运费改到付）/ account_unpayable（采购账号余额不足或付款方式不可用，该账号同时停用）", "length": 64, "name": "manual_reason", "nullable": true, "type": "str"}
 
 ## gz_jp_snap_purchase.mercari_txn_id
 
@@ -708,7 +708,7 @@
 
 **锚 id**：`FIELD:gz_jp_snap_purchase.trade_status`（ticket 的 blueprint_refs 写这个）
 
-{"comment": "none未成交/await_ship待卖家发货/shipped卖家已发货/arrived已到仓/rated已评价/returned已退货/cancelled卖家取消", "default": "none", "dict": "gz_jp_snap_trade_status", "length": 20, "name": "trade_status", "nullable": false, "type": "dict"}
+{"comment": "none未成交/await_ship待卖家发货/shipped卖家已发货/arrived已到仓/rated已评价/returned已退货/cancelled交易取消（卖家取消、已发货后丢件、事务局取消，可从 await_ship 或 shipped 进入）", "default": "none", "dict": "gz_jp_snap_trade_status", "length": 20, "name": "trade_status", "nullable": false, "type": "dict"}
 
 ## gz_jp_snap_purchase.version
 
