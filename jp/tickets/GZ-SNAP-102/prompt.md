@@ -16,13 +16,13 @@ blueprint_refs:
   - FLOW:F-JP-09.step1
   - OWN:gz_jp_snap_item
 accept:
-  - name: 状态机 await_seller_ship→purchase_failed 只对代切行放开，拼团行仍被拒
+  - name: 按来源判定的状态机入口：snap 行 await_seller_ship→purchase_failed 允许；batch 行全部状态对与一期结果逐一相同
     form: STATE
     run: |
       cd code/main/RuoYi-Vue-Plus && rm -f ruoyi-modules/ruoyi-gz-jp/target/surefire-reports/*GzJpFulfillStateMachineSnapTest* && \
       mvn -q test -DskipTests=false -pl ruoyi-modules/ruoyi-gz-jp -am -Dtest=GzJpFulfillStateMachineSnapTest -Dsurefire.failIfNoSpecifiedTests=false && \
       grep -qE 'tests="[1-9][0-9]*" .*failures="0"' ruoyi-modules/ruoyi-gz-jp/target/surefire-reports/TEST-*GzJpFulfillStateMachineSnapTest.xml
-    counterfeit: 把转移全局放开（拼团行也能从 await_seller_ship 回到 purchase_failed）→ 用例「batch 行非法转移被拒」红
+    counterfeit: 按来源入口对 batch 行任一 (from,to) 的结果偏离一期 checkAdvance(from,to)（如顺手收紧或放宽拼团行），或 snap 行该转移被拒 → 穷举用例红
   - name: 订单行 source 与两个外键互斥校验 + 快照 snap 段往返不丢字段
     form: DATA
     run: |
@@ -55,7 +55,7 @@ accept:
 2. 枚举：`GzJpItemSource.SNAP`；`SnapPurchaseStatus` / `SnapTradeStatus` / `SnapGate` / `SnapMode` / `SnapFailReason` / `SnapAccountHealth`，值与 101 的字典一一对应。
 3. 订单行快照新增 `snap` 段 DTO（字段见 `FIELD:gz_jp_order_item.product_snapshot_json`），序列化 / 反序列化往返测试。
 4. 应用层不变量（订单行写入的统一入口里校验）：`source=batch ⇔ product_id 非空且 snap_item_id 为空`；`source=snap ⇔ snap_item_id 非空且 product_id 为空`。
-5. 履约状态机：新增 `await_seller_ship → purchase_failed`，**仅当 source=snap**；拼团行维持一期规则。
+5. 履约状态机：加按来源判定的入口（如 `checkAdvance(source, from, to)`）——snap 行 `await_seller_ship → purchase_failed` 允许；batch 行对全部 7×7 (from,to) 与一期 `checkAdvance(from,to)` 结果逐一相同（一期 GZ-JP-106 有意允许任意非终态→purchase_failed，不收紧；Kevin 2026-10-05 定方案 A）。顺手修正 `GzJpFulfillStatus` 枚举注释里「purchase_failed 只挂在 purchasing 下」的误导图。
 6. 一期查询兼容：履约看板、admin 订单、mp 订单列表 / 详情凡是 JOIN `gz_jp_product` 的改 LEFT JOIN 或按 source 分支；代切行的名称 / 图片取快照 `snap` 段。
 
 ## AC

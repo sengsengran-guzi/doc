@@ -422,8 +422,8 @@ records:
         action: 每 20 分钟巡检 trade_status ∈ {await_ship, shipped} 的交易（GET /v1/trades?account=）
         writes: [FIELD:gz_jp_snap_purchase.trade_status]
         produces: >
-          卖家已发货 → shipped；卖家取消 → cancelled → 订单行 purchase_failed（★ 状态机放开 await_seller_ship→purchase_failed，
-          仅限 source=snap）→ 行级退款 + 释放商品锁（REQ-SNAP-032）。退款额 = amount_cent − 该行已成功的 shipping_diff 退款额
+          卖家已发货 → shipped；卖家取消 → cancelled → 订单行 purchase_failed（状态机按来源判定：snap 行 await_seller_ship→purchase_failed 允许；
+          batch 行沿用一期规则——一期本就允许任意非终态→purchase_failed，结果与一期逐一相同）→ 行级退款 + 释放商品锁（REQ-SNAP-032）。退款额 = amount_cent − 该行已成功的 shipping_diff 退款额
           （即客人实付里还没退的部分，全额退清）。巡检失败只记日志、不改状态
       - id: FLOW:F-JP-09.step1b
         actor: 日本员工(admin)

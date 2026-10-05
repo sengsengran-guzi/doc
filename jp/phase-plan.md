@@ -209,7 +209,7 @@
 **QA 范围**：
 - DDL：5 张新表公共字段全集（含 `tenant_id`）；`gz_jp_refund` 旧唯一键已删、新唯一键含 `refund_type`、存量回填
 - DATA：5 个配置键全在 1001 租户；定价三项为空；自动下单默认关
-- STATE：`await_seller_ship→purchase_failed` 只对代切行放开
+- STATE：按来源判定的状态机入口——snap 行 `await_seller_ship→purchase_failed` 允许；batch 行在全部状态对上与一期 `checkAdvance(from,to)` 结果逐一相同（一期本就允许任意非终态→purchase_failed）
 - **一期全量回归**：gz-jp 全部单测 + miniapp-jp `run.mjs all` + plus-ui `e2e/gz-jp` 全绿（ALTER 一期表之后最容易伤到的就是一期）
 - `git diff` 证明 `IWechatPayClient` / `GzPayTransactionServiceImpl` 既有方法签名不变、`PayRefund*` 三个类零改动（拼豆 / 回收线上资金链路）
 - **支付回归**：gz-common / gz-bean / gz-recycle / gz-jp 全部单测 + 现有小程序 `code/main/miniapp` 支付相关 E2E 不回归；统一下单请求体带 time_expire；timeout 单收到成功回调记 late_paid 不被吞

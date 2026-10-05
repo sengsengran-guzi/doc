@@ -193,7 +193,7 @@ success 进交易跟踪；failed 判失败、行级全额退款、释放商品�
 
 | 步 | 谁 | 做什么 | 写什么 | 产出 |
 |---|---|---|---|---|
-| `FLOW:F-JP-09.step1` | ruoyi(本地调度) → 日本服务 | 每 20 分钟巡检 trade_status ∈ {await_ship, shipped} 的交易（GET /v1/trades?account=） | FIELD:gz_jp_snap_purchase.trade_status | 卖家已发货 → shipped；卖家取消 → cancelled → 订单行 purchase_failed（★ 状态机放开 await_seller_ship→purchase_failed， 仅限 source=snap）→ 行级退款 + 释放商品锁（REQ-SNAP-032）。退款额 = amount_cent − 该行已成功的 shipping_diff 退款额 （即客人实付里还没退的部分，全额退清）。巡检失败只记日志、不改状态
+| `FLOW:F-JP-09.step1` | ruoyi(本地调度) → 日本服务 | 每 20 分钟巡检 trade_status ∈ {await_ship, shipped} 的交易（GET /v1/trades?account=） | FIELD:gz_jp_snap_purchase.trade_status | 卖家已发货 → shipped；卖家取消 → cancelled → 订单行 purchase_failed（状态机按来源判定：snap 行 await_seller_ship→purchase_failed 允许； batch 行沿用一期规则——一期本就允许任意非终态→purchase_failed，结果与一期逐一相同）→ 行级退款 + 释放商品锁（REQ-SNAP-032）。退款额 = amount_cent − 该行已成功的 shipping_diff 退款额 （即客人实付里还没退的部分，全额退清）。巡检失败只记日志、不改状态
  |
 | `FLOW:F-JP-09.step1b` | 日本员工(admin) | 手工标记「卖家已发货」/「交易取消」（巡检漏掉、技术验证 no-go 不跑巡检、已发货后丢件或煤炉事务局取消交易时的人工通道） | FIELD:gz_jp_snap_purchase.trade_status, FIELD:gz_jp_snap_purchase.fail_reason, FIELD:gz_jp_snap_purchase.manual_operator | 与巡检同一出口：卖家已发货 → shipped（只能从 await_ship 出发）； 交易取消 → cancelled、fail_reason=seller_cancel → 同 step1 的退款与释放锁，可从 await_ship 或 shipped 出发 （已发货后丢件 / 事务局判取消，煤炉会把货款退回采购账号）；arrived 之后不能再标取消（走 step4 退货）。重复点击幂等
  |
