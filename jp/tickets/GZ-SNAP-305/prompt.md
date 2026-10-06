@@ -11,6 +11,7 @@ touches:
   - code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/application-dev.yml
   - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-common/src/main/java/org/dromara/gz/common/enums/GzFileUsageType.java
   - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-common/src/main/java/org/dromara/gz/common/service/impl/GzFileServiceImpl.java
+  - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-common/src/test/java/org/dromara/gz/common/service/GzFileServiceImplTest.java
 blueprint_refs:
   - FLOW:F-JP-07.step1
   - FLOW:F-JP-07.step2
