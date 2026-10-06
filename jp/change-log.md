@@ -76,3 +76,6 @@
 ## 2026-10-06 — 502详情快照时间公共契约
 - 详情此前未下发蓝图已有顶部秒数所需的真实快照时间。追加可空fetchedAt epoch毫秒公共只读字段，取既有gz_jp_snap_item.fetched_at按Asia/Shanghai转换；保留旧构造与null兼容，不改变DB字段、查询/报价时间或金额。502票卡补精确字段锚。
 - authority_lint impact反查2张：GZ-SNAP-302 / GZ-SNAP-502。302既有时间写入不变、原accept不依赖详情投影，非受害者，不重做；502是本次产出方，由真实模拟器与contract测试落实，D12独立QA核对。
+
+## 2026-10-06 — D12验证范围与只读红线收敛
+- D12 QA旧行仍写一期all及两小程序串行，与最新减少无关重复测试、主miniapp只读冲突。改为四个代切flow及直接影响home/checkout/orders，同源码已绿证据可复用；仅miniapp-jp串行运行。关键订单金额/权限/协议/倒计时/状态与独立QA门仍保留；不降低产品判据。纯执行范围调整，未改authority锚，无ticket需失效。

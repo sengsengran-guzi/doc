@@ -316,7 +316,7 @@
 | GZ-SNAP-504 | 订单列表 / 详情代切状态 + 抢购中轮询 + 运费差价行 | M |
 
 **QA 范围**：
-- mp 模拟器 E2E：`snap-search` / `snap-detail` / `snap-checkout` / `snap-order` + 一期 `all` 回归（与现有小程序**串行**跑）
+- mp 模拟器 E2E：`snap-search` / `snap-detail` / `snap-checkout` / `snap-order`，以及直接受影响的一期 `home` / `checkout` / `orders`；按Kevin 2026-10-06授权复用同源码已绿证据，不重跑无关一期 `all`。所有flow串行，只运行miniapp-jp；主miniapp整个目录只读、不构建不测试。
 - vitest：确认页 snap 逻辑、订单详情状态映射（不暴露「结果不明」）
 - 详情页源码与文案不出现汇率与加价比例
 - token 走 `c-tokens.scss`，组件不硬编码 hex
