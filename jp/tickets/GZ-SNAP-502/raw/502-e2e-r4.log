@@ -1,0 +1,33 @@
+[preflight] 硬 gate 体检（无降级）
+  ✓ devtools cli: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
+  ✓ devtools 服务端口开着 (http://127.0.0.1:26863)
+  ✓ devtools 已登录
+  ✓ dist 完整: /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin/app.json
+  ✓ dist = dev profile（本地后端 + wxMOCK + jp clientid）
+  ✓ 后端可达: http://localhost:8080 (HTTP 401)
+  ✓ 后端认 clientid=mp-applet-gz-jp（openid=mock-jp-tester）
+[preflight] ✓ 通过
+
+=== flow: snap-detail ===
+[run] launch automation  dist=/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin
+[run] ✓ automation launched
+[run] ✓ 小程序侧 wx.request 能打到本地后端（域名校验已放开）
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  ✓m50217912791138471 gate=auto reason=buy enabled; real snapshot=1791279114558; MP title/JPY/3-row sum/CTA backed by Spring+gateway
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  ✓pricing exact bytes+audit restored config_id=14040001; admin and quote runtime cache readback passed; FX 99030500024 removed; owned snapshots/cache/replay cleaned; real Mercari requests=0
+[FAIL] snap-detail: timeout waiting for automator response
+
+[run] 结束：0/1 flow 通过

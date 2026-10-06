@@ -1,0 +1,61 @@
+[preflight] 硬 gate 体检（无降级）
+  ✓ devtools cli: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
+  ✓ devtools 服务端口开着 (http://127.0.0.1:26863)
+  ✓ devtools 已登录
+  ✓ dist 完整: /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin/app.json
+  ✓ dist = dev profile（本地后端 + wxMOCK + jp clientid）
+  ✓ 后端可达: http://localhost:8080 (HTTP 401)
+  ✓ 后端认 clientid=mp-applet-gz-jp（openid=mock-jp-tester）
+[preflight] ✓ 通过
+
+=== flow: snap-detail ===
+[run] launch automation  dist=/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin
+[run] ✓ automation launched
+[run] ✓ 小程序侧 wx.request 能打到本地后端（域名校验已放开）
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  step 2: navigate detail
+  step 2: title/age/JPY rendered
+  step 2: open price sheet
+  ✓m50217912792322772 gate=manual reason=buy enabled; real snapshot=1791279233072; MP title/JPY/3-row sum/CTA backed by Spring+gateway
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  step 3: navigate detail
+  step 3: title/age/JPY rendered
+  ✓m50217912792322773 gate=blocked reason=卖家不接受代购; real snapshot=1791279241945; MP title/JPY/3-row sum/CTA backed by Spring+gateway
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  step 4: navigate detail
+  step 4: title/age/JPY rendered
+  ✓m50217912792322774 gate=blocked reason=该商品已被预定; real snapshot=1791279248359; MP title/JPY/3-row sum/CTA backed by Spring+gateway
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  step 5: navigate detail
+  step 5: title/age/JPY rendered
+  ✓m50217912792322775 gate=auto reason=已售出; real snapshot=1791279254838; MP title/JPY/3-row sum/CTA backed by Spring+gateway
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  step 1: navigate detail
+  step 1: title/age/JPY rendered
+  step 1: open price sheet
+  ✓m50217912792322771 gate=auto reason=buy enabled; real snapshot=1791279261286; MP title/JPY/3-row sum/CTA backed by Spring+gateway
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  ✓pricing exact bytes+audit restored config_id=14040001; admin and quote runtime cache readback passed; FX 99030500026 removed; owned snapshots/cache/replay cleaned; real Mercari requests=0
+[PASS] snap-detail
+
+[run] 结束：1/1 flow 通过

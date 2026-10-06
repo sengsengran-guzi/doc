@@ -1,0 +1,6 @@
+2026-10-06: pnpm type-check exit 0; scoped eslint exit 0.
+Vitest: src/pages/snap/detail.logic.test.ts (4 tests) 2ms
+Test Files 1 passed (1); Tests 4 passed (4).
+Source guard (detail.vue AND snap.zh-CN.ts word rate|markup|markupRatio|ratePer100Jpy + 汇率|加价): exit 0, scheme-A-source-guard-pass.
+Both code repositories git diff --check: exit 0.
+Source navigation: definePage in detail.vue registers pages/snap/detail and enablePullDownRefresh=true in generated ignored src/pages.json/app.json; test/e2e/run.mjs registers snap-detail flow.

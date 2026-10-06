@@ -1,0 +1,48 @@
+[preflight] 硬 gate 体检（无降级）
+  ✓ devtools cli: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
+  ✓ devtools 服务端口开着 (http://127.0.0.1:26863)
+  ✓ devtools 已登录
+  ✓ dist 完整: /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin/app.json
+  ✓ dist = dev profile（本地后端 + wxMOCK + jp clientid）
+  ✓ 后端可达: http://localhost:8080 (HTTP 401)
+  ✓ 后端认 clientid=mp-applet-gz-jp（openid=mock-jp-tester）
+[preflight] ✓ 通过
+
+=== flow: snap-detail ===
+[run] launch automation  dist=/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin
+[run] ✓ automation launched
+[run] ✓ 小程序侧 wx.request 能打到本地后端（域名校验已放开）
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  step 1: navigate detail
+  step 1: title/age/JPY rendered
+  step 1: open price sheet
+  ✓m50217912791697641 gate=auto reason=buy enabled; real snapshot=1791279170584; MP title/JPY/3-row sum/CTA backed by Spring+gateway
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  step 2: navigate detail
+  product assertion: Error: timeout waiting for automator response
+    at Connection.onMessage (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/node_modules/miniprogram-automator/out/Connection.js:1:985)
+    at Transport.emit (node:events:508:28)
+    at WebSocket.<anonymous> (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/node_modules/miniprogram-automator/out/Transport.js:1:220)
+    at WebSocket.onMessage (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/node_modules/ws/lib/event-target.js:120:16)
+    at WebSocket.emit (node:events:508:28)
+    at Receiver.receiverOnMessage (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/node_modules/ws/lib/websocket.js:807:20)
+    at Receiver.emit (node:events:508:28)
+    at Receiver.dataMessage (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/node_modules/ws/lib/receiver.js:448:14)
+    at Receiver.getData (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/node_modules/ws/lib/receiver.js:377:17)
+    at Receiver.startLoop (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/node_modules/ws/lib/receiver.js:158:22)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  ✓pricing exact bytes+audit restored config_id=14040001; admin and quote runtime cache readback passed; FX 99030500025 removed; owned snapshots/cache/replay cleaned; real Mercari requests=0
+[FAIL] snap-detail: timeout waiting for automator response
+
+[run] 结束：0/1 flow 通过

@@ -1,0 +1,55 @@
+Compiling...
+(node:95192) Warning: Accessing non-existent property 'finally' of module exports inside circular dependency
+(Use `node --trace-warnings ...` to show where the warning was created)
+command, mode ->  build development
+UNI_PLATFORM ->  mp-weixin
+环境变量 env ->  {
+  VITE_APP_TITLE: '谷子宇宙拼团',
+  VITE_APP_PORT: '9100',
+  VITE_UNI_APPID: '__UNI__GZJP01',
+  VITE_APP_PUBLIC_BASE: '/',
+  VITE_APP_PROXY_ENABLE: 'false',
+  VITE_APP_PROXY_PREFIX: '/dev-api',
+  VITE_AUTH_MODE: 'single',
+  VITE_APP_CLIENT_ID: 'mp-applet-gz-jp',
+  VITE_APP_TENANT_ID: '1001',
+  VITE_FALLBACK_LOCALE: 'zh-Hans',
+  VITE_COPY_NATIVE_RES_ENABLE: 'false',
+  VITE_SERVER_BASEURL: 'http://localhost:8080',
+  VITE_SERVER_BASEURL_SECONDARY: 'http://localhost:8080',
+  VITE_WX_APPID: 'wxMOCKMOCKMOCKMOCK',
+  VITE_MOCK_PAY: 'true',
+  VITE_DELETE_CONSOLE: 'false',
+  VITE_SHOW_TEST_TAB: 'false',
+  VITE_CJS_IGNORE_WARNING: 'true',
+  VITE_USER_NODE_ENV: 'production',
+  VITE_ROOT_DIR: '/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp'
+}
+已忽略静态资源目录：static/app/。详见：https://uniapp.dcloud.net.cn/tutorial/platform.html#static
+​[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`​
+  [38;5;69;1muni-ku:bundle-optimizer [INFO] [optimization] 分包优化开启状态: true
+
+uni-app 有新版本发布，请执行 `npx @dcloudio/uvm@latest` 更新，更新日志详见：https://download1.dcloud.net.cn/hbuilderx/changelog/5.26.2026091802.html
+node:internal/fs/watchers:214
+      const error = new UVException({
+                    ^
+
+Error: EMFILE: too many open files, watch
+    at FSWatcher._handle.onchange (node:internal/fs/watchers:214:21)
+Emitted 'error' event on FSWatcher instance at:
+    at FSWatcher._handleError (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/chokidar@4.0.3/node_modules/chokidar/esm/index.js:534:18)
+    at NodeFsHandler._boundHandleError (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/chokidar@4.0.3/node_modules/chokidar/esm/handler.js:295:49)
+    at file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/chokidar@4.0.3/node_modules/chokidar/esm/handler.js:144:9
+    at Set.forEach (<anonymous>)
+    at foreach (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/chokidar@4.0.3/node_modules/chokidar/esm/handler.js:73:13)
+    at fsWatchBroadcast (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/chokidar@4.0.3/node_modules/chokidar/esm/handler.js:143:5)
+    at FSWatcher.<anonymous> (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/chokidar@4.0.3/node_modules/chokidar/esm/handler.js:191:17)
+    at FSWatcher.emit (node:events:508:28)
+    at FSWatcher._handle.onchange (node:internal/fs/watchers:220:12) {
+  errno: -24,
+  syscall: 'watch',
+  code: 'EMFILE',
+  filename: null
+}
+
+Node.js v24.11.1
