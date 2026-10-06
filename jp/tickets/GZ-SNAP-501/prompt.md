@@ -6,6 +6,8 @@ size: L
 req_refs: [REQ-SNAP-002, REQ-SNAP-003, REQ-SNAP-012, REQ-SNAP-013, REQ-SNAP-045]
 depends_on: [GZ-SNAP-405]
 touches:
+  - code/main/miniapp-jp/pages.config.ts
+  - code/main/miniapp-jp/src/tabbar/config.ts
   - code/main/miniapp-jp/src/pages.json
   - code/main/miniapp-jp/src/pages/snap/**
   - code/main/miniapp-jp/src/static/tabbar/**
@@ -13,6 +15,8 @@ touches:
   - code/main/miniapp-jp/src/locale/**
   - code/main/miniapp-jp/src/components/biz/**
   - code/main/miniapp-jp/test/e2e/flows/**
+  - code/main/miniapp-jp/test/e2e/run.mjs
+  - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-jp/**
 blueprint_refs:
   - UI:mp.snap_search
   - UI:mp.snap_search.input
@@ -43,6 +47,8 @@ accept:
    `snap-review.html` 只看方案 B，A / C 是被否决方向。
 3. token 真源 `src/style/c-tokens.scss` + `uno.config.ts`；页面只用 `components/biz/Biz*` + `var(--c-*)`，不直接撒 `<wd-*>`，不硬编码 hex。
 4. 现有 `static/tabbar/home.png` / `me.png` 的尺寸与线条风格（新图标照它画）。
+5. `pages.json` 是生成产物，导航源为根 `pages.config.ts` 与 `src/tabbar/config.ts`；新增 flow 必须注册现有 `test/e2e/run.mjs`。
+6. 现有 search Card 尚未返回准入提示；为落实设计权威，可补只读字段从 `gz_jp_snap_item.gate_result/gate_reason` 读取已知快照，不能在前端编造 manual，也不能为每张搜索卡额外调详情/真实服务。详情仍实时判定。
 
 ## What
 
