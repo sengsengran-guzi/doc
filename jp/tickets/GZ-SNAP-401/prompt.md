@@ -8,6 +8,7 @@ depends_on: [GZ-SNAP-307]
 touches:
   - code/main/plus-ui/src/views/gz-jp/snap/purchase/**
   - code/main/plus-ui/src/api/gz-jp/**
+  - code/main/plus-ui/src/layout/components/Sidebar/SidebarItem.vue
   - code/main/plus-ui/src/lang/zh_CN.ts
   - code/main/plus-ui/src/lang/en_US.ts
   - code/main/plus-ui/e2e/gz-jp/**

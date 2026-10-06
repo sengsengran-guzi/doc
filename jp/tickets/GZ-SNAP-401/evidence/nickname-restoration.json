@@ -1,0 +1,9 @@
+{
+  "source": "binlog.000008",
+  "position": 2199834,
+  "userId": 14,
+  "exactBeforeNickname": "QA客户B",
+  "guardedAffectedRows": 1,
+  "verified": true,
+  "otherColumnsWritten": false
+}

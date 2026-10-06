@@ -1,0 +1,8 @@
+Before allocation: live sys_menu 14040..14099 empty; migration scan max14039.
+After migration:
+Invalid path/component/parent count: 0
+14050 C parent14040 count: 1
+14051..14059 F snap permission count: 4
+Migration applied: V202610061555__GZ-SNAP-401-purchase-menu.sql
+Successfully validated 188 migrations; apply1; owner role100 tenant1001 authorized.
+Owner getRouters contains gz-jp/snap/purchase/index (real API E2E pass).

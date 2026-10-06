@@ -1,0 +1,178 @@
+[WebServer] (node:18927) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:18941) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 3 tests using 1 worker
+
+(node:19000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] e2e/gz-jp/snap-purchase.spec.ts:18:1 › manual success rejects price increase; failure has confirmation and true refund
+e2e/gz-jp/snap-purchase.spec.ts:18:1 › manual success rejects price increase; failure has confirmation and true refund
+fixtures: 4 API quote→submit→mock callback orders; gateway fake/replay; live Mercari=0
+
+cleanup: 4 owned orders/items/tasks/payments/refunds removed; address and FX removed; 3 config values restored byte-for-byte; no account mutations
+
+  1) e2e/gz-jp/snap-purchase.spec.ts:18:1 › manual success rejects price increase; failure has confirmation and true refund 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByTestId('snap-summary')
+    Expected substring: "SNAP401 fixture"
+    Received string:    "自动下单: 开启暂停原因: 无采购账号 0 个刷新"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 15000ms
+      - waiting for getByTestId('snap-summary')
+        - locator resolved to <div data-v-30dee0cf="" data-test="snap-summary" class="el-card is-always-shadow mb-4">…</div>
+        - unexpected value "自动下单: 关闭暂停原因: 无采购账号 0 个刷新"
+        28 × locator resolved to <div data-v-30dee0cf="" data-test="snap-summary" class="el-card is-always-shadow mb-4">…</div>
+           - unexpected value "自动下单: 开启暂停原因: 无采购账号 0 个刷新"
+
+
+       9 |   await expect(page).not.toHaveURL(/login/);
+      10 |   await page.goto('/gz-jp/snap/purchase');
+    > 11 |   await expect(page.getByTestId('snap-summary')).toContainText('SNAP401 fixture');
+         |                                                  ^
+      12 | }
+      13 | async function confirmRefund(page: Page) {
+      14 |   const box = page.locator('.el-message-box');
+        at open (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/snap-purchase.spec.ts:11:50)
+        at /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/snap-purchase.spec.ts:19:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/gz-jp-snap-purchase-manual-84b33-onfirmation-and-true-refund/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/gz-jp-snap-purchase-manual-84b33-onfirmation-and-true-refund/error-context.md
+
+    Error Context: test-results/gz-jp-snap-purchase-manual-84b33-onfirmation-and-true-refund/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/gz-jp-snap-purchase-manual-84b33-onfirmation-and-true-refund/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/gz-jp-snap-purchase-manual-84b33-onfirmation-and-true-refund/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:19474) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/3] e2e/gz-jp/snap-purchase.spec.ts:43:1 › trade cancel confirmation, arrival shipping required, deadline priority, rating and return confirmation
+e2e/gz-jp/snap-purchase.spec.ts:43:1 › trade cancel confirmation, arrival shipping required, deadline priority, rating and return confirmation
+fixtures: 4 API quote→submit→mock callback orders; gateway fake/replay; live Mercari=0
+
+cleanup: 4 owned orders/items/tasks/payments/refunds removed; address and FX removed; 3 config values restored byte-for-byte; no account mutations
+
+  2) e2e/gz-jp/snap-purchase.spec.ts:43:1 › trade cancel confirmation, arrival shipping required, deadline priority, rating and return confirmation 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByTestId('snap-summary')
+    Expected substring: "SNAP401 fixture"
+    Received string:    "自动下单: 开启暂停原因: 无采购账号 0 个刷新"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 15000ms
+      - waiting for getByTestId('snap-summary')
+        - locator resolved to <div data-v-30dee0cf="" data-test="snap-summary" class="el-card is-always-shadow mb-4">…</div>
+        - unexpected value "自动下单: 关闭暂停原因: 无采购账号 0 个刷新"
+        30 × locator resolved to <div data-v-30dee0cf="" data-test="snap-summary" class="el-card is-always-shadow mb-4">…</div>
+           - unexpected value "自动下单: 开启暂停原因: 无采购账号 0 个刷新"
+
+
+       9 |   await expect(page).not.toHaveURL(/login/);
+      10 |   await page.goto('/gz-jp/snap/purchase');
+    > 11 |   await expect(page.getByTestId('snap-summary')).toContainText('SNAP401 fixture');
+         |                                                  ^
+      12 | }
+      13 | async function confirmRefund(page: Page) {
+      14 |   const box = page.locator('.el-message-box');
+        at open (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/snap-purchase.spec.ts:11:50)
+        at /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/snap-purchase.spec.ts:47:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/gz-jp-snap-purchase-trade--89ec7-ing-and-return-confirmation/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/gz-jp-snap-purchase-trade--89ec7-ing-and-return-confirmation/error-context.md
+
+    Error Context: test-results/gz-jp-snap-purchase-trade--89ec7-ing-and-return-confirmation/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/gz-jp-snap-purchase-trade--89ec7-ing-and-return-confirmation/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/gz-jp-snap-purchase-trade--89ec7-ing-and-return-confirmation/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:19860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/3] e2e/gz-jp/snap-purchase.spec.ts:73:1 › automatic tasks read real queued task, no write actions; owner routers, reminder badge and denied staff
+e2e/gz-jp/snap-purchase.spec.ts:73:1 › automatic tasks read real queued task, no write actions; owner routers, reminder badge and denied staff
+fixtures: 4 API quote→submit→mock callback orders; gateway fake/replay; live Mercari=0
+
+cleanup: 4 owned orders/items/tasks/payments/refunds removed; address and FX removed; 3 config values restored byte-for-byte; no account mutations
+
+  3) e2e/gz-jp/snap-purchase.spec.ts:73:1 › automatic tasks read real queued task, no write actions; owner routers, reminder badge and denied staff 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByTestId('snap-summary')
+    Expected substring: "SNAP401 fixture"
+    Received string:    "自动下单: 开启暂停原因: 无采购账号 0 个刷新"
+    Timeout: 15000ms
+
+    Call log:
+      - Expect "toContainText" with timeout 15000ms
+      - waiting for getByTestId('snap-summary')
+        - locator resolved to <div data-v-30dee0cf="" data-test="snap-summary" class="el-card is-always-shadow mb-4">…</div>
+        - unexpected value "自动下单: 关闭暂停原因: 无采购账号 0 个刷新"
+        31 × locator resolved to <div data-v-30dee0cf="" data-test="snap-summary" class="el-card is-always-shadow mb-4">…</div>
+           - unexpected value "自动下单: 开启暂停原因: 无采购账号 0 个刷新"
+
+
+       9 |   await page.goto('/index');
+      10 |   await expect(page).not.toHaveURL(/login/);
+    > 11 |   await page.goto('/gz-jp/snap/purchase');
+         |                                           ^
+      12 |   await expect(page.getByTestId('snap-summary')).toContainText('采购账号 0 个');
+      13 | }
+      14 | async function confirmRefund(page: Page) {
+        at open (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/snap-purchase.spec.ts:11:50)
+        at /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/snap-purchase.spec.ts:74:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/gz-jp-snap-purchase-automa-87389-nder-badge-and-denied-staff/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/gz-jp-snap-purchase-automa-87389-nder-badge-and-denied-staff/error-context.md
+
+    Error Context: test-results/gz-jp-snap-purchase-automa-87389-nder-badge-and-denied-staff/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/gz-jp-snap-purchase-automa-87389-nder-badge-and-denied-staff/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/gz-jp-snap-purchase-automa-87389-nder-badge-and-denied-staff/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  3 failed
+    e2e/gz-jp/snap-purchase.spec.ts:18:1 › manual success rejects price increase; failure has confirmation and true refund 
+    e2e/gz-jp/snap-purchase.spec.ts:43:1 › trade cancel confirmation, arrival shipping required, deadline priority, rating and return confirmation 
+    e2e/gz-jp/snap-purchase.spec.ts:73:1 › automatic tasks read real queued task, no write actions; owner routers, reminder badge and denied staff 
