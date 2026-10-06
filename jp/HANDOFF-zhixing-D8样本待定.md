@@ -1,4 +1,6 @@
-# /zhixing 续跑交接：D8 样本口径待定
+# /zhixing 历史断点：D8 样本口径待定
+
+> 已解除：Kevin 2026-10-06 授权继续并自行调整类似技术问题。202 已完成（真实请求2次、其余明确合成），D8 QA r1 PASS，网关已合入 feat/jp-snap，当前进入 D9。以下为原停工时记录，不能作为当前状态；当前状态以 waves/state.json 与 qa/D8-r1.md 为准。
 
 执行范围仍为 D8–D12，D12 QA 通过后停；不派 D13，不 push、不合 staging，主 miniapp 只读。
 
