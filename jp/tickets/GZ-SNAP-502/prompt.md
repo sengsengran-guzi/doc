@@ -16,6 +16,7 @@ touches:
   - code/main/miniapp-jp/test/e2e/run.mjs
   - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-jp/**
 blueprint_refs:
+  - FIELD:gz_jp_snap_item.fetched_at
   - UI:mp.snap_detail
   - UI:mp.snap_detail.price
   - UI:mp.snap_detail.gate

@@ -474,7 +474,7 @@
 
 **锚 id**：`FIELD:gz_jp_snap_item.fetched_at`（ticket 的 blueprint_refs 写这个）
 
-{"comment": "最近一次实时查询时间", "name": "fetched_at", "nullable": false, "type": "datetime"}
+{"comment": "最近一次实时查询时间。mp详情公共投影为可空fetchedAt（epoch毫秒，服务端按Asia/Shanghai转换既有DATETIME），仅取该字段，不用客户端取数时刻冒充快照时间；旧调用缺值时保持null", "name": "fetched_at", "nullable": false, "type": "datetime"}
 
 ## gz_jp_snap_item.gate_reason
 

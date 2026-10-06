@@ -72,3 +72,7 @@
 
 ## 2026-10-06 — D10合流前touches闭合
 - 分仓对账31个后端文件，仅305公共上传的既有测试GzFileServiceImplTest（17行新增，证据下载MIME/后台图片拒HTML/后缀匹配3条）未列touches；已补该准确路径，与已授权公共层兼容验证同范围。没有额外产品越界，不重新执行已绿用例。
+
+## 2026-10-06 — 502详情快照时间公共契约
+- 详情此前未下发蓝图已有顶部秒数所需的真实快照时间。追加可空fetchedAt epoch毫秒公共只读字段，取既有gz_jp_snap_item.fetched_at按Asia/Shanghai转换；保留旧构造与null兼容，不改变DB字段、查询/报价时间或金额。502票卡补精确字段锚。
+- authority_lint impact反查2张：GZ-SNAP-302 / GZ-SNAP-502。302既有时间写入不变、原accept不依赖详情投影，非受害者，不重做；502是本次产出方，由真实模拟器与contract测试落实，D12独立QA核对。

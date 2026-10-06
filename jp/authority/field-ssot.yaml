@@ -189,7 +189,7 @@ tables:
       - { name: gate_reason, type: str, length: 64, nullable: true, comment: "命中的规则（如 kw:専用 / proxy_refuse:<命中词>@title|desc|profile / kw:コメント必須 / shipping:buyer / category / blacklist / shops），admin 与人工队列展示" }
       - { name: main_image_id, type: id, nullable: true, comment: "下单时转存的主图 FK gz_file_object.id（未下单过为空）" }
       - { name: raw_json, type: text, nullable: true, comment: "最近一次详情原始返回（审计 / 排障）" }
-      - { name: fetched_at, type: datetime, nullable: false, comment: "最近一次实时查询时间" }
+      - { name: fetched_at, type: datetime, nullable: false, comment: "最近一次实时查询时间。mp详情公共投影为可空fetchedAt（epoch毫秒，服务端按Asia/Shanghai转换既有DATETIME），仅取该字段，不用客户端取数时刻冒充快照时间；旧调用缺值时保持null" }
       - { name: active_order_item_id, type: id, nullable: true, comment: "★ 孤品互斥锁：占用中的订单行 FK gz_jp_order_item.id；提交订单时 FOR UPDATE 判定，关单 / 失败 / 退款时置空（REQ-SNAP-041）" }
       - { name: version, type: int, nullable: false, default: "0", comment: "乐观锁版本号 @Version" }
     indexes:
