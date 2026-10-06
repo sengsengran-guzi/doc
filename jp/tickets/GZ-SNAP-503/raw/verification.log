@@ -1,0 +1,45 @@
+Initial frontend targeted command: pnpm exec vitest run src/pages/order/confirm.logic.test.ts src/pages/order/confirm.snap.logic.test.ts
+Captured tool output:
+ ✓ src/pages/order/confirm.snap.logic.test.ts (4 tests) 4ms
+ ✓ src/pages/order/confirm.logic.test.ts (41 tests) 5ms
+ Test Files  2 passed (2)
+ Tests  45 passed (45)
+ Duration 776ms
+Sandbox Vite HMR binding emitted EPERM but tests executed normally (exit0); no need to rerun green tests.
+
+Backend command: JAVA_TOOL_OPTIONS=-javaagent:<existing mockito-core5.17.0.jar> mvn -o test -DskipTests=false -Dtest=GzJpSnapQuotePreviewTest -Dsurefire.failIfNoSpecifiedTests=false -pl ruoyi-modules/ruoyi-gz-jp -am
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.832 s -- in org.dromara.gz.jp.service.internal.GzJpSnapQuotePreviewTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+
+Final pnpm exec eslint (six changed source files), exit0:
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[@antfu/eslint-config] Detected running in editor, some rules are disabled.
+
+Final pnpm type-check, exit0:
+
+> sensenran-guzi-miniapp-jp@0.1.0 type-check /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp
+> vue-tsc --noEmit
+
+
+Development build exit0:
+✔ open IDE
+
+✅ 微信小程序开发者工具已打开
+DONE  Build complete.
+Run method: open Weixin Mini Program Devtools, import dist/build/mp-weixin run.
+
+Final exact restoration readback:
+14040001|7B226D61726B7570526174696F223A6E756C6C2C22666978656446656543656E74223A6E756C6C2C226573745368697070696E6743656E74223A6E756C6C2C2271756F746554746C536563223A3630307D|1|2026-10-06 16:50:24
+99030500002	boc
+0
+0
+0
+0
+0
+0
+
+Counts after pricing/FX lines: own snap items=0; orders74-76=0; items74-76=0; pays152/154/156=0; callbacks=0; files69/70=0. Both owned MinIO keys removed and mc stat confirms absent.
+Pre-final-QA dev artifact SHA256 app.json: 565a5571a69fb31975b2ceecc961164651ce5ff9f3412d4c2952da388c880fca
+Pre-final-QA dev artifact SHA256 pages/order/confirm.js: 8b6912c26465e3d0fe97cc8698cd69200661248782db2665ac90763cb584b64e
+Pre-final-QA dev artifact SHA256 pages/order/confirm.wxml: 6912f595715ec231bda47fab21d9108d36b482c92ccd0935840e59bbb27b6bb6

@@ -1,0 +1,39 @@
+[preflight] 硬 gate 体检（无降级）
+  ✓ devtools cli: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
+  ✓ devtools 服务端口开着 (http://127.0.0.1:26863)
+  ✓ devtools 已登录
+  ✓ dist 完整: /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin/app.json
+  ✓ dist = dev profile（本地后端 + wxMOCK + jp clientid）
+  ✓ 后端可达: http://localhost:8080 (HTTP 401)
+  ✓ 后端认 clientid=mp-applet-gz-jp（openid=[withheld]）
+[preflight] ✓ 通过
+
+=== flow: checkout ===
+[run] launch automation  dist=/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin
+[run] ✓ automation launched
+[run] ✓ 小程序侧 wx.request 能打到本地后端（域名校验已放开）
+  ✓ 已登录，取到 app 的 token（319 字符）
+  后端 fixture：场="QA-独立场B" 商品="QA商品B1-色纸" 单价=8000分
+  ✓ 起点：清掉 0 款残留后加购「QA商品B1-色纸」× 2
+  ✓ ★ 第 1 跳：购物车 →「去结算」→ 下单确认页，带的是购物车项 id ["233"]
+  ✓ 自动选中默认收货地址：[recipient withheld]
+  ✓ 新增收货地址真落库并立刻选中：[test recipient/mobile/detail withheld]
+  ✓ 商品清单文案来自后端真数据：["QA商品B1-色纸"]
+  ✓ 商品清单是只读的（无操作区 / 无 stepper / 无删除，数量静态展示 ["×2"]）
+  ✓ ★★ 金额区只有商品合计与实付两行、无运费，实付 ¥160（16000 分）
+  ✓ ★★ 「已阅读不支持退款」闸门双向正确：未勾→置灰，勾上→可点
+  ✓ ★ 提交订单真落库：JPO-20261006-000155 实付 16000 分 款数=1
+  ✓ ★ 提交后落到支付结果页 pages/order/result
+  ✓ ★★ mock 支付走完结算：订单=已支付(paid) 付款时间=2026-10-06 18:26:37 商品行=["purchasing"]
+  ✓ 支付结果页显示：["支付成功"]
+  ✓ ★ 下单后购物车已清空
+  截图 → /tmp/gz-jp-e2e-shots
+  ✓ 去结算带对购物车项 id + 地址选择/新增真落库 + 清单只读 + 金额两行无运费 + 已阅读闸门双向 + 提交真落库 + mock 支付走完结算 + 车已清空
+  ✓exact cleanup order=99101000076/JPO-20261006-000155 itemIds=99101000076 payNos=JPO-20261006-000156; tenant1001 exact IDs only
+  ✓gz_user full-row+audit SHA256 before=after=459a3cbd94452eeccb2cff8378846c592ed4b1c15953570f6b0fb9fa6fc7e959
+  ✓gz_user_address full-row+audit SHA256 before=after=50f45f33e119d9e85e3246ce5ee5c628f3bb8cbc796320e4a30fd95590534ae5
+  ✓gz_jp_cart_item full-row+audit SHA256 before=after=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  ✓user14 original profile/address/cart bytes+audit restored; owned checkout orders=1
+[PASS] checkout
+
+[run] 结束：1/1 flow 通过
