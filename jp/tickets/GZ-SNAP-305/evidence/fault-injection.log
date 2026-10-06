@@ -1,0 +1,16 @@
+isolated fake+replay ready: /tmp/snap305-fake-ihj8bcz2
+BACKEND UP (commit 3788c2796, branch task/D10)
+[0;39m - Successfully validated 187 migrations (execution time 00:00.112s)
+fresh: current JP jar and running JVM; fake gateway verified
+success: order=JPO-20261006-000007 clicks=1 status=success refunds=0 evidence=13
+fake success latency=2s (<60s)
+timeout: order=JPO-20261006-000009 clicks=1 status=success refunds=0 evidence=NULL
+disconnect: order=JPO-20261006-000011 clicks=1 status=success refunds=0 evidence=NULL
+restart: fake click=1, DB executing before shared restart
+BACKEND UP (commit 931216ced, branch task/D10)
+[0;39m - Successfully validated 187 migrations (execution time 00:00.125s)
+fresh: current JP jar and running JVM; fake gateway verified
+restart: order=JPO-20261006-000013 clicks=1 status=success refunds=0 evidence=NULL
+BACKEND UP (commit 931216ced, branch task/D10)
+[0;39m - Successfully validated 187 migrations (execution time 00:00.101s)
+restored: scheduler=false, gateway=8700, exact configs/cache/accounts/fixture data; real Mercari=0

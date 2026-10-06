@@ -1,0 +1,45 @@
+INFO:     Started server process [77836]
+INFO:     Waiting for application startup.
+2026-10-06 15:13:13,317 INFO gateway gateway 0.1.0 up driver=fake read_source=replay accounts=2
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8712 (Press CTRL+C to quit)
+INFO:     127.0.0.1:53205 - "GET /v1/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53251 - "GET /v1/items/m99000000001 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53254 - "GET /v1/items/m99000000001 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53256 - "POST /v1/_fake/script HTTP/1.1" 200 OK
+2026-10-06 15:13:59,393 INFO gateway.fake fake click order_no=JPO-20261006-000007 outcome=success clicks=1
+2026-10-06 15:13:59,393 INFO gateway.purchase purchase order_no=JPO-20261006-000007 external_id=m99000000001 account=acc01 result=success reason=None risk=False
+INFO:     127.0.0.1:53261 - "POST /v1/purchases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53262 - "GET /v1/_fake/ledger?order_no=JPO-20261006-000007 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53265 - "GET /v1/items/m99000000003 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53268 - "GET /v1/items/m99000000003 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53270 - "POST /v1/_fake/script HTTP/1.1" 200 OK
+2026-10-06 15:14:04,663 INFO gateway.fake fake click order_no=JPO-20261006-000009 outcome=timeout clicks=1
+INFO:     127.0.0.1:53291 - "GET /v1/purchases/JPO-20261006-000009/reconcile?external_id=m99000000003&account_code=acc01 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53292 - "GET /v1/_fake/ledger?order_no=JPO-20261006-000009 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53295 - "GET /v1/items/m99000000004 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53298 - "GET /v1/items/m99000000004 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53301 - "POST /v1/_fake/script HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53307 - "GET /v1/search?q=%E3%83%96%E3%83%AB%E3%83%BC%E3%83%AD%E3%83%83%E3%82%AF%20%E7%BC%B6%E3%83%90%E3%83%83%E3%82%B8&sort=created_desc&page=1&category_ids= HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53306 - "GET /v1/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53309 - "GET /v1/items/m99000000001 HTTP/1.1" 200 OK
+2026-10-06 15:14:54,666 INFO gateway.purchase purchase order_no=JPO-20261006-000009 external_id=m99000000003 account=acc01 result=unknown reason=None risk=False
+INFO:     127.0.0.1:53273 - "POST /v1/purchases HTTP/1.1" 200 OK
+2026-10-06 15:14:56,369 INFO gateway.fake fake click order_no=JPO-20261006-000011 outcome=unknown clicks=1
+2026-10-06 15:14:56,370 INFO gateway.purchase purchase order_no=JPO-20261006-000011 external_id=m99000000004 account=acc01 result=unknown reason=None risk=False
+INFO:     127.0.0.1:53312 - "POST /v1/purchases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53319 - "GET /v1/purchases/JPO-20261006-000011/reconcile?external_id=m99000000004&account_code=acc01 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53320 - "GET /v1/_fake/ledger?order_no=JPO-20261006-000011 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53323 - "GET /v1/items/m99000000005 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53326 - "GET /v1/items/m99000000005 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53329 - "POST /v1/_fake/script HTTP/1.1" 200 OK
+2026-10-06 15:15:06,791 INFO gateway.fake fake click order_no=JPO-20261006-000013 outcome=unknown clicks=1
+2026-10-06 15:15:06,791 INFO gateway.purchase purchase order_no=JPO-20261006-000013 external_id=m99000000005 account=acc01 result=unknown reason=None risk=False
+INFO:     127.0.0.1:53334 - "POST /v1/purchases HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53522 - "GET /v1/purchases/JPO-20261006-000013/reconcile?external_id=m99000000005&account_code=acc01 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53527 - "GET /v1/_fake/ledger?order_no=JPO-20261006-000013 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53566 - "GET /v1/_fake/ledger HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [77836]

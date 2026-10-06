@@ -1,0 +1,3 @@
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+15:02:27.666 [main] INFO org.dromara.gz.common.service.impl.GzFileServiceImpl -- [GZ-SYS-005] file uploaded: fileId=1001, usageType=news_cover, size=24, key=gz/2026/05/uuid.png
+15:02:27.677 [main] INFO org.dromara.gz.common.service.impl.GzFileServiceImpl -- [GZ-SYS-005] file uploaded: fileId=305, usageType=snap_evidence, size=21, key=snap/evidence.html
