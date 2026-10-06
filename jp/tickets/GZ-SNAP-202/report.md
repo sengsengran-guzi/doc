@@ -1,66 +1,129 @@
-# GZ-SNAP-202 预算与样本冲突报告
+# GZ-SNAP-202 完工报告
 
-STATUS: SPEC_CONFLICT
+STATUS: DONE
 
-日期：2026-10-06。分支 `mercari-gateway/task/D8`，接手 HEAD `f8b984693fee55e845b4f214600d08f1e28ffa52`，代码工作区干净。本轮没有实现、没有代码提交、没有迁移；仅写本报告，doc 不提交。主 miniapp 未改，8080 与 Docker 未重启。
+- 实现仓：`code/main/mercari-gateway`，分支 `task/D8`。
+- commit：`0feff65`（`feat(jp-snap): GZ-SNAP-202 anonymous reads and sourced replay fixtures`）。未push、未merge、未切分支；提交后工作区干净。
+- 新迁移：none。越界：none（报告本身由流程要求落doc，doc未提交）。主miniapp未改。
+- 按Kevin最新授权，用2次少量真实采集 + 明确标注合成夹具完成；没有为样本类别重复联网或扩大穷举测试。此前SPEC_CONFLICT历史已留change-log，本报告表示最终当前结果。
 
-## 冲突与已核实证据
+## 实现
 
-已读 impl-brief、ticket 全文、ADR-0025、FLOW:F-JP-12.step2/3/3b/4、OWN:mercari_item_live、纸面推演相关链路、phase-plan 二期执行口径、READ-PROBE-2026-10-03、pitfalls、201 报告及现有读源。
+- JSON匿名search/items/sellers：使用锁定mercapi 0.5.0的DPoP请求构造器、httpx零重试且不跟随跳转，解析原始响应为FLOW:F-JP-12字段。搜索仅在售、Shops原样转述；三种排序映射、category_ids传入；分页沿平台不透明nextPageToken，无前页token时400且不额外爬前页。
+- shipping_payer按文案映射seller/buyer，404带`status=deleted`。附加`category_lineage`，兼容真实`parent_category_id/root_category_id`和嵌套合成结构。真实Shops普通详情400 `shops_unsupported`，回放Shops供下游拒绝。
+- JSON异常/非业务HTTP失败/解析缺字段降级Playwright匿名新上下文；连续失败2次开路、10秒后自动探测恢复。网页读取渲染JSON状态，缺完整字段503，不猜测。401/403/429和网页验证挑战停当前匿名路径、需人工确认恢复，不绕验证。
+- 全局匿名读令牌桶（含unsigned图片），`GATEWAY_READ_RPS`默认10，超限429/Retry-After；当前部署单worker。HTTP CONNECT读代理可配`GATEWAY_READ_PROXY`，不使用采购登录态。
+- 图片只放行精确静态域名，禁止任意目标/用户信息/非HTTPS/非443端口/路径穿越；不跟随图片跳转，校验image MIME，限10MiB，带`public, max-age=31536000, immutable`。
+- 短链逐跳验证精确Mercari域名、最多3跳；不允许跳出白名单。replay使用同一URL安全约束，零联网。
+- `pyproject.toml`默认排除live；唯一live测试需显式GATEWAY_LIVE_ALLOW，仅search+detail，transport hook最多5，本机账本最多2轮，未跑第二轮。
 
-ticket What 6 要求同商品/同关键词 JSON 与 HTML 各一份；What 6b 要求 2~3 个关键词搜索、8 类各至少一件详情及卖家简介，录制一次性真实请求 ≤15。主线程进一步明确底层网络请求、重定向与 fallback 都计入预算，不能按业务调用计数。
+## 文件（按仓）
 
-本地 `fixtures/replay/{search,items,sellers,img}` 仅有 `.gitkeep`；`tests/fixtures` 不存在。`doc/jp/_spike/mercari-probe` 只有脚本、报告与两张截图，无 `probe-out` 原始响应。READ-PROBE 明写原始 JSON 含昵称、未入库。全项目只读扫描（排除 node_modules、.venv、.git、target、dist）未发现 probe-out、mercari JSON 或 replay JSON。截图不能代替完整 JSON/HTML/简介。
+mercari-gateway：
 
-按 8 类各一件分别录制的常规计划：8 个详情 JSON + 8 个详情 HTML + 8 个卖家 profile + 2 个关键词的 JSON/HTML（4）= 28 次，尚未计浏览器渲染子请求和跳转。这是常规独立样本计划的账本，并非声称数学上禁止一件商品覆盖多类或多个商品共用卖家。**当前没有可证实类别重叠、简介覆盖与商品 ID 的本地原始样本，无法事先构造保证完整覆盖的 ≤15 有限计划。**不得先打真搜索赌重叠，也不得把缺类合成数据冒充录制。
+- `app/read_sources/{live,parsing,security,replay}.py`：匿名适配、原始JSON/HTML解析、安全白名单、replay校验。
+- `app/{rate_limit,main,settings}.py`：全局读桶、接线/关闭HTTP client、环境配置。
+- `docker-compose.yml`、`.env.example`、`pyproject.toml`、`README.md`：运行配置、默认live排除、来源/分类/下游用法。
+- `tests/{test_parse_parity,test_replay_coverage,test_img_proxy,test_resolve,test_live_read}.py`与`test_read_source.py`：关键离线契约、来源场景、白名单/限速/降级/恢复、有限真实契约。上游placeholder测试更新为注入离线API，不触网。
+- `fixtures/replay/{README.md,provenance.json,live-budget.json,resolve.json}`，及`raw/`、`items/`、`search/`、`sellers/`、`img/item/synthetic.png`：真实脱敏子集与合成夹具。具体逐件路径见provenance。
 
-READ-PROBE 还证实 Shops 通过普通 items/get 返回 400，因此该请求本身不能满足 Shops 详情录制；不能把它算成已完成详情。
+## accept 命令与 raw output
 
-## 有限请求计划与实际账本
+#0（从项目根执行原命令）：
 
-录制候选计划 28 次已在执行前发主线程，因超过硬上限被否决，未执行。
-
-| 用途 | 上限 | 实际真实请求 | 运行次数 |
-|---|---:|---:|---:|
-| live 契约 | 单次 ≤5，最多2次 | 0 | 0 次有效测试；原样 pytest 因文件不存在而未收集 |
-| 一次性录制 | ≤15，最多1次 | 0 | 0 |
-| QA/返工/E2E | 0 | 0 | 0 |
-
-无代理凭据/secret 被读取输出、提交或写入报告，无登录、购买、验证绕过。未写外部循环/批量请求。
-
-## 原样 accept（bash -c，项目根）
-
-#0：`cd code/main/mercari-gateway && .venv/bin/pytest -q tests/test_parse_parity.py tests/test_replay_coverage.py`，exit 4：
-
-```text
-no tests ran in 0.00s
-ERROR: file or directory not found: tests/test_parse_parity.py
+```bash
+cd code/main/mercari-gateway && .venv/bin/pytest -q tests/test_parse_parity.py tests/test_replay_coverage.py
 ```
 
-#1：`cd code/main/mercari-gateway && .venv/bin/pytest -q tests/test_img_proxy.py tests/test_resolve.py`，exit 4：
-
 ```text
-ERROR: file or directory not found: tests/test_img_proxy.py
-
-no tests ran in 0.00s
+......                                                                   [100%]
+6 passed in 0.07s
 ```
 
-#2：`cd code/main/mercari-gateway && .venv/bin/pytest -q -m live tests/test_live_read.py`，exit 4，0 次真实请求：
+#1：
 
-```text
-ERROR: file or directory not found: tests/test_live_read.py
-
-no tests ran in 0.00s
+```bash
+cd code/main/mercari-gateway && .venv/bin/pytest -q tests/test_img_proxy.py tests/test_resolve.py
 ```
 
-现有上游基线 `cd code/main/mercari-gateway && .venv/bin/pytest -q`，exit 0；74 条属于 201 基线，不是 202 验收：
-
 ```text
-........................................................................ [ 97%]
-..                                                                       [100%]
-74 passed in 3.19s
+....                                                                     [100%]
+4 passed in 0.08s
 ```
 
-## 下游与状态
+#2：先在已授权采集shell设置`export GATEWAY_LIVE_ALLOW=1`，再执行原命令；只执行1轮。
 
-无样本用途清单可交付：当前没有任何真实录制样本，8 类均未完成。默认运行容器仍 replay+fake，live 源仍为201的501占位。没有越界代码文件；本报告是票据要求的文档交付。主线程应将首次冲突登记为 spec_conflict 并取得明确口径后再续作；不得把74条基线测试当本票绿，302/303/501/502 的完整回放依赖未满足。
+```bash
+cd code/main/mercari-gateway && .venv/bin/pytest -q -m live tests/test_live_read.py
+```
+
+```text
+.                                                                        [100%]
+1 passed in 1.25s
+```
+
+最终默认离线pytest：
+
+```bash
+cd code/main/mercari-gateway && .venv/bin/pytest -q
+```
+
+```text
+........................................................................ [ 85%]
+............                                                             [100%]
+84 passed, 1 deselected in 3.47s
+```
+
+无Java改动，无surefire报告。没有0条假绿：上述实际执行数分别6、4、1、84。
+
+## 少量真实采集预算账本
+
+`fixtures/replay/live-budget.json`按底层httpx发送记录，不按业务方法猜测。此次时间`2026-10-06T01:13:07.238157+00:00`。
+
+| 次序 | 方法 | host/path | 结果/用途 |
+|---|---|---|---|
+| 1 | POST | api.mercari.jp/v2/entities:search | 搜索「ブルーロック 缶バッジ」在售；验证字段，脱敏保存前三件字段子集 |
+| 2 | GET | api.mercari.jp/items/get | 首个c2c `m23375959964`；验证shipping_payer/category_id/图片；保存脱敏字段子集 |
+
+live：1轮/最多2轮，实际2/单轮5请求。一次性独立录制：0/15请求，未另起录制；live同时保存子集。总真实请求**2**，跳转0、重试0、fallback真实请求0、真实seller/image/shortlink/browser请求0。没有任何登录/购买/验证绕过。代理和secret未输出/未入git。
+
+真实search子集含`itemType/categoryId/status/thumbnails/price`；真实详情分类`980→745→1328`。详情卖家id替换、描述全文脱敏，个人昵称/照片等未保存。不是完整原始响应存档。
+
+其余八类及关键词/简介/HTML/短链/图片明确标为synthetic；真实JSON结构已验证，**真实网页HTML、真实简介、实际浏览器降级、真实App分享短链未联网验证**。不能把合成HTML一致性视为真实网页已验收。
+
+## Docker真实API验证（0外部请求）
+
+```bash
+docker compose -f code/main/mercari-gateway/docker-compose.yml up -d --build gateway
+```
+
+实际产物：镜像`sha256:8b150b8a50fa1d7036b9b4aa90bd34e9e22d1518ae01597269f0e05da3ebf33c`；容器`mercari-gateway-gateway-1`重建/启动。随后容器内urllib请求localhost8700，按HMAC签名实际调用search/item/seller/resolve及unsigned image、断返回内容与cache header：
+
+```text
+Docker replay+fake: search=7 on_sale; item=buyer; seller=reject_proxy; resolve=m99000000001; unsigned image=200 immutable; external requests=0
+```
+
+容器保留在`127.0.0.1:8700`，默认`replay+fake`，后端8080未启动/未动，供独立QA直接使用。无额外重复测试。
+
+## 下游302/303/501/502
+
+| 场景 | external_id | seller_id |
+|---|---|---|
+| 包邮auto | m99000000001 | 99000001 |
+| 到付 | m99000000002 | 99000002 |
+| コメント必須 | m99000000003 | 99000003 |
+| 拒代购 | m99000000004 | 99000004 |
+| 専用 | m99000000005 | 99000005 |
+| Shops | SYNTHETICshops01 | 99000006 |
+| 已售出 | m99000000007 | 99000007 |
+| 白名单外 | m99000000008 | 99000008 |
+
+- 合成搜索关键词：`缶バッジ`、`アクリルスタンド`、`ブルーロック 缶バッジ`；`sort=created_desc&page=1&category_ids=`。
+- 真实搜索前三件回放别名：`ブルーロック 缶バッジ 実録`（实际请求不含`実録`，README明示别名）。真实脱敏详情`m23375959964`可回放；没有真实profile。
+- 短链：`https://merc.li/synthetic202`→`m99000000001`。图片：`/v1/img/item/synthetic.png`。
+- 分类候选：975父745根1328（10-03probe）；980父745根1328（本次真实）。974/10868/7339/7506只是观察ID、未确认全为可售类；勿直接全放1328根。302需复核白名单，303用`category_id/category_lineage`复核，网关不替ruoyi决策准入。
+- QA/返工/E2E只读本地样本，真实请求0；不能重跑live或为补类别联网。Shops仅回放拒绝用途，不是支持Shops购买/真实详情承诺。
+
+## 限制与风险
+
+网页状态结构仅合成夹具验证，真实React改版/页面没有完整JSON状态时会503，需要后续在明确授权预算中验证和适配；未伪报为真实HTML绿。商品/卖家真实数据会变，真实采集子集只代表此次契约。token bucket是单进程，跨worker需部署侧分配总速率。分页token存内存，重启后须从第一页开始；无随机页补爬。出现验证停匿名读后人工确认并重启，不自动规避。
