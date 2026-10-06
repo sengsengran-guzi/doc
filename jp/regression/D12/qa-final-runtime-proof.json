@@ -1,0 +1,25 @@
+{
+  "time": "2026-10-06 21:15:27",
+  "pid": "81440",
+  "jvmClasspathJp": "/Users/wkui/.m2/repository/org/dromara/ruoyi-gz-jp/5.6.1/ruoyi-gz-jp-5.6.1.jar",
+  "runtimeJarSHA": "281e817c27e3574577ff0c9341a0fc32acbfa0023ad4f90dbee52425cc7c538e",
+  "boot": [
+    "\u001b[0;39m - Successfully validated 191 migrations (execution time 00:00.122s)",
+    "\u001b[0;39m - Started DromaraApplication in 12.825 seconds (process running for 13.022)",
+    "(\u2665\u25e0\u203f\u25e0)\uff89\uff9e  RuoYi-Vue-Plus\u542f\u52a8\u6210\u529f   \u10da(\u00b4\u06a1`\u10da)\uff9e"
+  ],
+  "scheduler": "false",
+  "applicationJSONPresent": false,
+  "mpFinalHead": "e1bee8f3d12555ce72e4eb74b2e03f4fd6769e08",
+  "productionSourceHead": "f742beb841c07e0aa5f0d046531514710c9d280c",
+  "finalChanges": "QA test-only snap-search.mjs",
+  "developmentDist": {
+    "sha256": "7b3ad8a21e8dd0cecd495e278ee078e19af5cf44943668d32d7303df8d91cf0e",
+    "files": 242
+  },
+  "classMatch": {
+    "org/dromara/gz/jp/service/internal/GzJpSnapOrderDisplayService.class": true,
+    "org/dromara/gz/jp/service/internal/GzJpSnapQuotePreviewService.class": true
+  },
+  "mainSourceNewerThanInstalledJar": []
+}

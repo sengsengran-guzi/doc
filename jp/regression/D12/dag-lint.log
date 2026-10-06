@@ -1,0 +1,93 @@
+dag_lint: 扫描 51 个 ticket
+
+🟡 WARNING (85) — 建议修，不阻塞：
+  [GZ-DOC-003] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-002] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-101] accept[1](MENU): MENU 断言断了 path，但没断路由下发可达（getRouters 等价物）
+  [GZ-JP-101] accept[2](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-102] accept[1](DDL): DDL 断言（剥注释后）没提到任何公共字段——「建了表但漏公共字段」会骗绿。本项目公共字段集: create_by, create_time, update_by, update_time, create_dept, del_flag。若本 ticket 的表/栈不适用这套字段，在 doc/lint-profile.yaml 里按 system 配置该系统的 public_fields
+  [GZ-JP-102] accept[2](MENU): MENU 断言断了 path，但没断路由下发可达（getRouters 等价物）
+  [GZ-JP-104] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-105] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-105] accept[2](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-106] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-106] accept[2](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-107] accept[0](DATA): DATA 断言看不出「两侧独立算、断差值为 0」的对账形态。合法形态包括：跨表 JOIN / 跨系统两个 API 对账 / 同表流水累计 vs 快照
+  [GZ-JP-107] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-107] accept[2](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-108] accept[0](MENU): MENU 断言断了 path，但没断路由下发可达（getRouters 等价物）
+  [GZ-JP-108] accept[2](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-109] accept[0](MENU): MENU 断言断了 path，但没断路由下发可达（getRouters 等价物）
+  [GZ-JP-110] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-110] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-111] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-JP-201] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-201] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-202] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-203] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-204] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-205] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-205] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-301] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-301] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-JP-301] accept[2](DATA): DATA 断言看不出「两侧独立算、断差值为 0」的对账形态。合法形态包括：跨表 JOIN / 跨系统两个 API 对账 / 同表流水累计 vs 快照
+  [GZ-PAY-106] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-101] accept[1](DDL): DDL 断言（剥注释后）没提到任何公共字段——「建了表但漏公共字段」会骗绿。本项目公共字段集: create_by, create_time, update_by, update_time, create_dept, del_flag。若本 ticket 的表/栈不适用这套字段，在 doc/lint-profile.yaml 里按 system 配置该系统的 public_fields
+  [GZ-SNAP-102] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-102] accept[1](DATA): DATA 断言看不出「两侧独立算、断差值为 0」的对账形态。合法形态包括：跨表 JOIN / 跨系统两个 API 对账 / 同表流水累计 vs 快照
+  [GZ-SNAP-201] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-201] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-202] accept[0](DATA): DATA 断言看不出「两侧独立算、断差值为 0」的对账形态。合法形态包括：跨表 JOIN / 跨系统两个 API 对账 / 同表流水累计 vs 快照
+  [GZ-SNAP-202] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-202] accept[2](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-203] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-203] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-204] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-301] accept[0](DATA): DATA 断言看不出「两侧独立算、断差值为 0」的对账形态。合法形态包括：跨表 JOIN / 跨系统两个 API 对账 / 同表流水累计 vs 快照
+  [GZ-SNAP-301] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-302] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-302] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-303] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-303] accept[1](DATA): DATA 断言看不出「两侧独立算、断差值为 0」的对账形态。合法形态包括：跨表 JOIN / 跨系统两个 API 对账 / 同表流水累计 vs 快照
+  [GZ-SNAP-304] accept[0].run: run 调外部脚本，形态无法静态校验——确保脚本内满足 DATA 形态（本 lint 看不见脚本内容）
+  [GZ-SNAP-304] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-304] accept[2](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-305] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-305] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-305] accept[2].run: run 调外部脚本，形态无法静态校验——确保脚本内满足 DATA 形态（本 lint 看不见脚本内容）
+  [GZ-SNAP-306] accept[0](DATA): DATA 断言看不出「两侧独立算、断差值为 0」的对账形态。合法形态包括：跨表 JOIN / 跨系统两个 API 对账 / 同表流水累计 vs 快照
+  [GZ-SNAP-306] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-307] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-307] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-401] accept[0](MENU): MENU 断言断了 path，但没断路由下发可达（getRouters 等价物）
+  [GZ-SNAP-401] accept[2](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-402] accept[0](MENU): MENU 断言断了 path，但没断路由下发可达（getRouters 等价物）
+  [GZ-SNAP-402] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-402] accept[2](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-403] accept[0](MENU): MENU 断言断了 path，但没断路由下发可达（getRouters 等价物）
+  [GZ-SNAP-403] accept[1](DATA): DATA 断言看不出「两侧独立算、断差值为 0」的对账形态。合法形态包括：跨表 JOIN / 跨系统两个 API 对账 / 同表流水累计 vs 快照
+  [GZ-SNAP-403] accept[2](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-404] accept[0](MENU): MENU 断言断了 path，但没断路由下发可达（getRouters 等价物）
+  [GZ-SNAP-404] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-405] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-501] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-502] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-502] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-503] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-503] accept[1](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-504] accept[0](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+  [GZ-SNAP-504] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SNAP-601] accept[1](DATA): DATA 断言看不出「两侧独立算、断差值为 0」的对账形态。合法形态包括：跨表 JOIN / 跨系统两个 API 对账 / 同表流水累计 vs 快照
+  [GZ-SYS-020] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SYS-020] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SYS-021] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SYS-022] accept[0](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SYS-022] accept[1](API): API 断言看不出在校验返回体内容，确认不是只断连通性
+  [GZ-SYS-023] accept[0](DDL): DDL 断言（剥注释后）没提到任何公共字段——「建了表但漏公共字段」会骗绿。本项目公共字段集: create_by, create_time, update_by, update_time, create_dept, del_flag。若本 ticket 的表/栈不适用这套字段，在 doc/lint-profile.yaml 里按 system 配置该系统的 public_fields
+  [GZ-SYS-023] accept[1](DATA): DATA 断言看不出「两侧独立算、断差值为 0」的对账形态。合法形态包括：跨表 JOIN / 跨系统两个 API 对账 / 同表流水累计 vs 快照
+  [GZ-SYS-023] accept[2](STATE): STATE 断言看不出「非法转移被拒」用例——只断终态存在的话，状态机允许了不该允许的跳转照样绿
+
+✅ 无结构性错误（上面是断言强度提示，不阻塞）。
+   ⚠️ C5 是**启发式提示不是保证**：静态分析拦不住所有弱断言（`run: bash x.sh` 就看不见）。真正的强度检验是变异测试——
+   蓝图冻结后抽 20% accept，往被测对象注入已知类事故，看断言是否仍绿。
+   别忘了还要跑 coverage_lint 查需求漏拆。

@@ -1,0 +1,29 @@
+{
+  "RuoYi-Vue-Plus": {
+    "branch": "feat/jp-snap",
+    "head": "0b57012c1ee846d9d4b28393a601e42e0e3a94a9",
+    "status": [
+      "?? ruoyi-admin/logs/sys-error.2026-10-01.log180801896327291.tmp"
+    ]
+  },
+  "plus-ui": {
+    "branch": "feat/jp-snap",
+    "head": "723e421366838db1d34ad2ed6fb6e5bf4ffedea2",
+    "status": []
+  },
+  "miniapp-jp": {
+    "branch": "feat/jp-snap",
+    "head": "b71415c7f1219be2784fea1a5321aebce0eda1d1",
+    "status": []
+  },
+  "mercari-gateway": {
+    "branch": "feat/jp-snap",
+    "head": "ec0ca2762b13d2783a4122da99e1a5395c39e35e",
+    "status": []
+  },
+  "miniapp": {
+    "branch": "staging",
+    "head": "898ff437054bef97a6fc2168f7f482eaec13c7b3",
+    "status": []
+  }
+}

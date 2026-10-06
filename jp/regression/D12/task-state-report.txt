@@ -1,0 +1,19 @@
+任务档进度：ticket 47/51 完成
+
+任务      状态            ticket 进度     QA 轮次
+D0      ✅qa_passed    3/3           3
+D1      ✅qa_passed    4/4           1
+D2      ✅qa_passed    2/2           1
+D3      ✅qa_passed    5/5           1
+D4      ✅qa_passed    4/4           1
+D5      ✅qa_passed    5/5           1
+D6      ✅qa_passed    1/1           0
+D7      ✅qa_passed    5/5           1
+D8      ✅qa_passed    2/2           0
+D9      ✅qa_passed    4/4           1
+D10     ✅qa_passed    3/3           0
+D11     ✅qa_passed    5/5           0
+D12     ✅qa_passed    4/4           0
+D13     ⬜pending      0/1           0
+D14     ⬜pending      0/2           0
+D15     ⬜pending      0/1           0

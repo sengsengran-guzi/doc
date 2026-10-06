@@ -1,0 +1,14 @@
+{
+  "own_listener_pids": {
+    "8080": "",
+    "8090": "",
+    "8700": "",
+    "8711": "",
+    "8712": ""
+  },
+  "backend_launchd_removed": true,
+  "private_backend_options_removed": true,
+  "gateway_containers": [
+    "mercari-gateway-gateway-1 Exited (0) Less than a second ago"
+  ]
+}

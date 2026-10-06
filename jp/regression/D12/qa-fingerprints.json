@@ -1,0 +1,28 @@
+{
+  "timestamp": "2026-10-06 21:03:46",
+  "mpHead": "f742beb841c07e0aa5f0d046531514710c9d280c",
+  "backendHead": "f89e64a65437482d665d961600de9e6346ef832d",
+  "source": {
+    "sha256": "79b0858597052d3a6b05d97fe1786e79f785d53c135b942f047f78d31e4263b1",
+    "files": 185
+  },
+  "developmentDist": {
+    "sha256": "7b3ad8a21e8dd0cecd495e278ee078e19af5cf44943668d32d7303df8d91cf0e",
+    "files": 242
+  },
+  "jpJar": {
+    "path": "/Users/wkui/.m2/repository/org/dromara/ruoyi-gz-jp/5.6.1/ruoyi-gz-jp-5.6.1.jar",
+    "sha256": "266f524e541db797e62fca24d04b494f4ca2fb1f1c82c677dbd9de865e3185af",
+    "mtime": 1791290974.876
+  },
+  "productionDistFingerprint": "unavailable: capture path error before development overwrite; production raw exit0 retained",
+  "classMatch": {
+    "org/dromara/gz/jp/service/internal/GzJpSnapOrderDisplayService.class": true,
+    "org/dromara/gz/jp/service/internal/GzJpSnapQuotePreviewService.class": true
+  },
+  "envAnchors": {
+    "localhost:8080": true,
+    "wxMOCKMOCKMOCKMOCK": true,
+    "mp-applet-gz-jp": true
+  }
+}

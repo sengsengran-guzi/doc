@@ -1,0 +1,28 @@
+{
+  "qa-e2e-six.log": {
+    "passedFlows": [
+      "snap-search",
+      "snap-detail",
+      "snap-checkout",
+      "home",
+      "checkout",
+      "orders"
+    ],
+    "rawCheckGroups": 76,
+    "failedFlows": []
+  },
+  "qa-e2e-search-cleanup-recheck.log": {
+    "passedFlows": [
+      "snap-search"
+    ],
+    "rawCheckGroups": 19,
+    "failedFlows": []
+  },
+  "qa-e2e-order.log": {
+    "passedFlows": [
+      "snap-order"
+    ],
+    "rawCheckGroups": 23,
+    "failedFlows": []
+  }
+}

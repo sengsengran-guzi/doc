@@ -1,0 +1,148 @@
+Compiling...
+(node:66661) Warning: Accessing non-existent property 'finally' of module exports inside circular dependency
+(Use `node --trace-warnings ...` to show where the warning was created)
+command, mode ->  build development
+UNI_PLATFORM ->  mp-weixin
+环境变量 env ->  {
+  VITE_APP_TITLE: '谷子宇宙拼团',
+  VITE_APP_PORT: '9100',
+  VITE_UNI_APPID: '__UNI__GZJP01',
+  VITE_APP_PUBLIC_BASE: '/',
+  VITE_APP_PROXY_ENABLE: 'false',
+  VITE_APP_PROXY_PREFIX: '/dev-api',
+  VITE_AUTH_MODE: 'single',
+  VITE_APP_CLIENT_ID: 'mp-applet-gz-jp',
+  VITE_APP_TENANT_ID: '1001',
+  VITE_FALLBACK_LOCALE: 'zh-Hans',
+  VITE_COPY_NATIVE_RES_ENABLE: 'false',
+  VITE_SERVER_BASEURL: 'http://localhost:8080',
+  VITE_SERVER_BASEURL_SECONDARY: 'http://localhost:8080',
+  VITE_WX_APPID: 'wxMOCKMOCKMOCKMOCK',
+  VITE_MOCK_PAY: 'true',
+  VITE_DELETE_CONSOLE: 'false',
+  VITE_SHOW_TEST_TAB: 'false',
+  VITE_CJS_IGNORE_WARNING: 'true',
+  VITE_USER_NODE_ENV: 'production',
+  VITE_ROOT_DIR: '/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp'
+}
+已忽略静态资源目录：static/app/。详见：https://uniapp.dcloud.net.cn/tutorial/platform.html#static
+​[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`​
+  [38;5;69;1muni-ku:bundle-optimizer [INFO] [optimization] 分包优化开启状态: true
+
+uni-app 有新版本发布，请执行 `npx @dcloudio/uvm@latest` 更新，更新日志详见：https://download1.dcloud.net.cn/hbuilderx/changelog/5.26.2026091802.html
+​Browserslist: browsers data (caniuse-lite) is 12 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme​
+​[unocss]​ ​failed to load icon "carbon-code"​
+​[unocss]​ ​failed to load icon "carbon-home"​
+​[unocss]​ ​failed to load icon "carbon-user"​
+​[unocss]​ ​failed to load icon "carbon-ibm-watson-language-translator"​
+​[unocss]​ ​failed to load icon "carbon-menu"​
+​[unocss]​ ​failed to load icon "carbon-pig"​
+​[unocss]​ ​failed to load icon "carbon-tree"​
+​[unocss]​ ​failed to load icon "carbon-warehouse"​
+​[unocss]​ ​failed to load icon "carbon-store"​
+DEPRECATION WARNING: Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+   ╷
+90 │ ┌   &.is-tabbar-below {
+91 │ │     padding-bottom: 20rpx;
+92 │ │   }
+   │ └─── nested rule
+93 │     background: rgba(255, 255, 255, 0.92);
+   │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ declaration
+   ╵
+    src/components/biz/BizFixedCta.vue 93:3  root stylesheet
+
+DEPRECATION WARNING: Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+    ╷
+90  │ ┌   &.is-tabbar-below {
+91  │ │     padding-bottom: 20rpx;
+92  │ │   }
+    │ └─── nested rule
+... │
+94  │     backdrop-filter: saturate(180%) blur(16px);
+    │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ declaration
+    ╵
+    src/components/biz/BizFixedCta.vue 94:3  root stylesheet
+
+DEPRECATION WARNING: Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+    ╷
+90  │ ┌   &.is-tabbar-below {
+91  │ │     padding-bottom: 20rpx;
+92  │ │   }
+    │ └─── nested rule
+... │
+95  │     border-top: var(--c-bw-3) solid var(--c-line);
+    │     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ declaration
+    ╵
+    src/components/biz/BizFixedCta.vue 95:3  root stylesheet
+
+DEPRECATION WARNING: Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+    ╷
+90  │ ┌   &.is-tabbar-below {
+91  │ │     padding-bottom: 20rpx;
+92  │ │   }
+    │ └─── nested rule
+... │
+96  │     display: flex;
+    │     ^^^^^^^^^^^^^ declaration
+    ╵
+    src/components/biz/BizFixedCta.vue 96:3  root stylesheet
+
+DEPRECATION WARNING: Sass's behavior for declarations that appear after nested
+rules will be changing to match the behavior specified by CSS in an upcoming
+version. To keep the existing behavior, move the declaration above the nested
+rule. To opt into the new behavior, wrap the declaration in `& {}`.
+
+More info: https://sass-lang.com/d/mixed-decls
+
+    ╷
+90  │ ┌   &.is-tabbar-below {
+91  │ │     padding-bottom: 20rpx;
+92  │ │   }
+    │ └─── nested rule
+... │
+97  │     align-items: center;
+    │     ^^^^^^^^^^^^^^^^^^^ declaration
+    ╵
+    src/components/biz/BizFixedCta.vue 97:3  root stylesheet
+
+WARNING: 2 repetitive deprecation warnings omitted.
+
+🚀 正在打开微信小程序开发者工具...
+⚠️ 警告: - initialize
+
+(node:66719) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `Electron --trace-deprecation ...` to show where the warning was created)
+✔ IDE server has started, listening on http://127.0.0.1:26863
+- open IDE
+
+✔ open IDE
+
+✅ 微信小程序开发者工具已打开
+DONE  Build complete.
+Run method: open Weixin Mini Program Devtools, import dist/build/mp-weixin run.

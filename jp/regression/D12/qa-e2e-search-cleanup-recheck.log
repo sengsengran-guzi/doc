@@ -1,0 +1,46 @@
+[preflight] 硬 gate 体检（无降级）
+  ✓ devtools cli: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
+  ✓ devtools 服务端口开着 (http://127.0.0.1:26863)
+  ✓ devtools 已登录
+  ✓ dist 完整: /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin/app.json
+  ✓ dist = dev profile（本地后端 + wxMOCK + jp clientid）
+  ✓ 后端可达: http://localhost:8080 (HTTP 401)
+  ✓ 后端认 clientid=mp-applet-gz-jp（openid=mock-jp-tester）
+[preflight] ✓ 通过
+
+=== flow: snap-search ===
+[run] launch automation  dist=/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin
+[run] ✓ automation launched
+[run] ✓ 小程序侧 wx.request 能打到本地后端（域名校验已放开）
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  backend replay {"code":200,"msg":"操作成功","data":{"query":"検証缶バッジ1791292296003","redirectItemId":null,"items":[{"externalId":"m99000000001","titleJa":"合成テスト 即購入OK","titleZh":"[译]合成テスト 即購入OK","priceJpy":801,"referencePriceCent":null,"thumbUrl":"http://127.0.0.1:8700/v1/img/item/detail/orig/photos/m99000000001_1.jpg","gateResult":null,"gateReason":null},{"externalId":"m5011791292296003","titleJa":"合成テスト コメント必須","titleZh":"[译]合成テスト コメント必須","priceJpy":803,"referencePriceCent":null,"thumbUrl":"http://127.0.0.1:8700/v1/img/item/detail/orig/photos/m99000000003_1.jpg","gateResult":"manual","gateReason":"comment_required:コメント必須@title"}],"hasNext":true,"stale":false}}
+  ✓真实后端回放卡片 2、价格、可空gate同源；热门词来自DB
+  ✓分页与价格高→低真实回放排序
+  ✓真实gateway失败→Redis stale结果与提示
+  ✓真实gateway零行结果→没有找到商品空态，无陈旧卡片
+  ✓真实gateway错误4119→煤炉暂时访问不了空态，输入框仍可用
+  ✓Shops拒绝、商品链接自动直跳详情
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  ✓pasted-link item full row/audit exact SHA256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; only its newly minted quote/cache keys removed
+  ✓临时词表、synthetic replay、专属Redis键已精确清理；经营配置/已有快照未修改，自造manual快照已清理
+[PASS] snap-search
+
+[run] 结束：1/1 flow 通过
+  ✓runner preflight profile full-row+audit SHA256 before=after=02d3afab81a156e893de09df0308ce0ec788671fba0845f497d4744c92aa96ce
+QA OUTER EXACT sys_config innerAlreadyExact=True d14315ea3437ce8ee847638a7f145a779b562a36a7e57f72bb64e836919cf2d1
+QA OUTER EXACT gz_jp_snap_item innerAlreadyExact=True e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+QA OUTER EXACT gz_user innerAlreadyExact=True 02d3afab81a156e893de09df0308ce0ec788671fba0845f497d4744c92aa96ce
+QA OUTER EXACT gz_user_address innerAlreadyExact=True 50f45f33e119d9e85e3246ce5ee5c628f3bb8cbc796320e4a30fd95590534ae5
+QA OUTER EXACT gz_jp_cart_item innerAlreadyExact=True e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+QA OUTER EXACT gz_jp_fx_rate innerAlreadyExact=True f377066372779344d2ec27d531b08ee55ec30a59bc5ed6ba5e6047c804c9f242
+QA OUTER EXACT gz_jp_snap_account innerAlreadyExact=True e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855

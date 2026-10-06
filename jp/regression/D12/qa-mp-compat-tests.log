@@ -1,0 +1,23 @@
+WebSocket server error:
+Error: listen EPERM: operation not permitted 0.0.0.0:24678
+    at Server.setupListenHandle [as _listen2] (node:net:1918:21)
+    at listenInCluster (node:net:1997:12)
+    at Server.listen (node:net:2102:7)
+    at Object.listen (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/vite@5.2.8_@types+node@20.19.20_less@4.5.1_sass@1.77.8_terser@5.43.1/node_modules/vite/dist/node/chunks/dep-whKeNLxG.js:61182:27)
+    at file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/vite@5.2.8_@types+node@20.19.20_less@4.5.1_sass@1.77.8_terser@5.43.1/node_modules/vite/dist/node/chunks/dep-whKeNLxG.js:65852:51
+    at Array.forEach (<anonymous>)
+    at Object.listen (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/vite@5.2.8_@types+node@20.19.20_less@4.5.1_sass@1.77.8_terser@5.43.1/node_modules/vite/dist/node/chunks/dep-whKeNLxG.js:65852:22)
+    at _createServer (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/vite@5.2.8_@types+node@20.19.20_less@4.5.1_sass@1.77.8_terser@5.43.1/node_modules/vite/dist/node/chunks/dep-whKeNLxG.js:65080:17)
+    at async createViteServer (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/vitest@2.1.9_@types+node@20.19.20_@vitest+ui@2.1.9_happy-dom@15.11.7_jsdom@16.7.0_less@4.5.1_sass@1.77.8_terser@5.43.1/node_modules/vitest/dist/chunks/cli-api.DqsSTaIi.js:9842:18)
+    at async createVitest (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/node_modules/.pnpm/vitest@2.1.9_@types+node@20.19.20_@vitest+ui@2.1.9_happy-dom@15.11.7_jsdom@16.7.0_less@4.5.1_sass@1.77.8_terser@5.43.1/node_modules/vitest/dist/chunks/cli-api.DqsSTaIi.js:11461:18)
+
+ RUN  v2.1.9 /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp
+
+ ✓ src/pages/order/detail.logic.test.ts (28 tests) 5ms
+ ✓ src/pages.routes.test.ts (3 tests) 45ms
+
+ Test Files  2 passed (2)
+      Tests  31 passed (31)
+   Start at  21:01:18
+   Duration  496ms (transform 50ms, setup 35ms, collect 34ms, tests 50ms, environment 327ms, prepare 91ms)
+

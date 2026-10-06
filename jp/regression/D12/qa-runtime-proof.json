@@ -1,0 +1,12 @@
+{
+  "pid": "56004",
+  "jvmClasspathJp": [
+    "/Users/wkui/.m2/repository/org/dromara/ruoyi-gz-jp/5.6.1/ruoyi-gz-jp-5.6.1.jar"
+  ],
+  "boot": [
+    "\u001b[0;39m - Successfully validated 191 migrations (execution time 00:00.083s)",
+    "\u001b[0;39m - Started DromaraApplication in 10.968 seconds (process running for 11.136)",
+    "(\u2665\u25e0\u203f\u25e0)\uff89\uff9e  RuoYi-Vue-Plus\u542f\u52a8\u6210\u529f   \u10da(\u00b4\u06a1`\u10da)\uff9e"
+  ],
+  "runtimeJarSHA": "266f524e541db797e62fca24d04b494f4ca2fb1f1c82c677dbd9de865e3185af"
+}

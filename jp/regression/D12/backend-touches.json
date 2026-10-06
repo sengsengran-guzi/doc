@@ -1,0 +1,26 @@
+{
+  "repo": "code/main/RuoYi-Vue-Plus",
+  "files": [
+    "ruoyi-modules/ruoyi-gz-jp/src/main/java/org/dromara/gz/jp/controller/applet/GzJpSnapOrderMpController.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/main/java/org/dromara/gz/jp/domain/vo/GzJpOrderItemVO.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/main/java/org/dromara/gz/jp/domain/vo/GzJpOrderListItemVO.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/main/java/org/dromara/gz/jp/domain/vo/GzJpSnapDetailVO.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/main/java/org/dromara/gz/jp/domain/vo/GzJpSnapQuotePreviewVO.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/main/java/org/dromara/gz/jp/domain/vo/GzJpSnapSearchVO.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/main/java/org/dromara/gz/jp/service/impl/GzJpOrderServiceImpl.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/main/java/org/dromara/gz/jp/service/internal/GzJpSnapOrderDisplayService.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/main/java/org/dromara/gz/jp/service/internal/GzJpSnapQuotePreviewService.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/main/java/org/dromara/gz/jp/service/internal/GzJpSnapReadService.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/test/java/org/dromara/gz/jp/service/GzJpPayCallbackTest.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/test/java/org/dromara/gz/jp/service/impl/GzJpMixedSourceQueryTest.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/test/java/org/dromara/gz/jp/service/impl/GzJpOrderDetailCarrierLabelTest.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/test/java/org/dromara/gz/jp/service/impl/GzJpOrderSubmitTest.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/test/java/org/dromara/gz/jp/service/internal/GzJpSnapDetailContractTest.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/test/java/org/dromara/gz/jp/service/internal/GzJpSnapOrderDisplayTest.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/test/java/org/dromara/gz/jp/service/internal/GzJpSnapOrderOwnershipTest.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/test/java/org/dromara/gz/jp/service/internal/GzJpSnapPaidTaskTest.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/test/java/org/dromara/gz/jp/service/internal/GzJpSnapQuotePreviewTest.java",
+    "ruoyi-modules/ruoyi-gz-jp/src/test/java/org/dromara/gz/jp/service/internal/GzJpSnapSearchSnapshotTest.java"
+  ],
+  "outside": []
+}

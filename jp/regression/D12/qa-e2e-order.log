@@ -1,0 +1,41 @@
+[preflight] 硬 gate 体检（无降级）
+  ✓ devtools cli: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
+  ✓ devtools 服务端口开着 (http://127.0.0.1:26863)
+  ✓ devtools 已登录
+  ✓ dist 完整: /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin/app.json
+  ✓ dist = dev profile（本地后端 + wxMOCK + jp clientid）
+  ✓ 后端可达: http://localhost:8080 (HTTP 401)
+  ✓ 后端认 clientid=mp-applet-gz-jp（openid=mock-jp-tester）
+[preflight] ✓ 通过
+
+=== flow: snap-order ===
+[run] launch automation  dist=/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin
+[run] ✓ automation launched
+[run] ✓ 小程序侧 wx.request 能打到本地后端（域名校验已放开）
+BACKEND UP (commit f89e64a65, branch task/D12)
+[0;39m - Successfully validated 191 migrations (execution time 00:00.120s)
+  ✓UI payment -> real fake engine success; order=99101000085/JPO-20261006-000173; polling elapsed=13505ms; calls=1 clicks=1; HTTP/DB/MP same state; refund none
+  ✓UI payment -> real fake engine failed:sold_out; order=99101000086/JPO-20261006-000175; polling elapsed=16933ms; calls=1 clicks=0; HTTP/DB/MP same state; refund callback SUCCESS/full amount
+  ✓list snap tags and mapped states agree with actual owned API rows
+BACKEND UP (commit f89e64a65, branch task/D12)
+[0;39m - Successfully validated 191 migrations (execution time 00:00.122s)
+  ✓exact cleanup owned image=82 object=sensenran-dev/gz/2026/10/06/362e609fd910429b9f3576f084469777.jpg; row+MinIO absent
+  ✓exact cleanup order=99101000085/JPO-20261006-000173 itemIds=99101000085 payNos=JPO-20261006-000174; tenant1001 exact IDs only
+  ✓exact cleanup owned image=84 object=sensenran-dev/gz/2026/10/06/bb55a7d266504697af1bc8d69668694d.jpg; row+MinIO absent
+  ✓exact cleanup order=99101000086/JPO-20261006-000175 itemIds=99101000086 payNos=JPO-20261006-000176; tenant1001 exact IDs only
+  ✓gz_user full-row+audit SHA256 before=after=cae6ae8914f6d4b90e6af140b5c6ccd12f5ec96608d71c0ec8055e732438712e
+  ✓gz_user_address full-row+audit SHA256 before=after=50f45f33e119d9e85e3246ce5ee5c628f3bb8cbc796320e4a30fd95590534ae5
+  ✓gz_jp_cart_item full-row+audit SHA256 before=after=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  ✓user14 original profile/address/cart bytes+audit restored; owned checkout orders=2
+  ✓cleanup: customer full audit restored; config SHA256=084e540ef7a3ada9cab786d878ea642a44a033906a8cc7a9db55c3a467f2c47d before=after; account/FX inventory exact; scheduler=false; owned fake ledger/files/replay/cache only; real Mercari requests=0
+[PASS] snap-order
+
+[run] 结束：1/1 flow 通过
+  ✓runner preflight profile full-row+audit SHA256 before=after=02d3afab81a156e893de09df0308ce0ec788671fba0845f497d4744c92aa96ce
+QA OUTER EXACT sys_config innerAlreadyExact=True d14315ea3437ce8ee847638a7f145a779b562a36a7e57f72bb64e836919cf2d1
+QA OUTER EXACT gz_jp_snap_item innerAlreadyExact=True e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+QA OUTER EXACT gz_user innerAlreadyExact=True 02d3afab81a156e893de09df0308ce0ec788671fba0845f497d4744c92aa96ce
+QA OUTER EXACT gz_user_address innerAlreadyExact=True 50f45f33e119d9e85e3246ce5ee5c628f3bb8cbc796320e4a30fd95590534ae5
+QA OUTER EXACT gz_jp_cart_item innerAlreadyExact=True e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+QA OUTER EXACT gz_jp_fx_rate innerAlreadyExact=True f377066372779344d2ec27d531b08ee55ec30a59bc5ed6ba5e6047c804c9f242
+QA OUTER EXACT gz_jp_snap_account innerAlreadyExact=True e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855

@@ -1,0 +1,23 @@
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+[@antfu/eslint-config] Detected running in editor, some rules are disabled.
+
+/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/flows/checkout-fixture-guard.mjs
+  0:0  warning  File ignored because of a matching ignore pattern. Use "--no-ignore" to disable file ignore settings or use "--no-warn-ignored" to suppress this warning
+
+/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/flows/snap-checkout.mjs
+  0:0  warning  File ignored because of a matching ignore pattern. Use "--no-ignore" to disable file ignore settings or use "--no-warn-ignored" to suppress this warning
+
+/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/flows/snap-detail.mjs
+  0:0  warning  File ignored because of a matching ignore pattern. Use "--no-ignore" to disable file ignore settings or use "--no-warn-ignored" to suppress this warning
+
+/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/flows/snap-order.mjs
+  0:0  warning  File ignored because of a matching ignore pattern. Use "--no-ignore" to disable file ignore settings or use "--no-warn-ignored" to suppress this warning
+
+/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/flows/snap-search.mjs
+  0:0  warning  File ignored because of a matching ignore pattern. Use "--no-ignore" to disable file ignore settings or use "--no-warn-ignored" to suppress this warning
+
+/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/test/e2e/run.mjs
+  0:0  warning  File ignored because of a matching ignore pattern. Use "--no-ignore" to disable file ignore settings or use "--no-warn-ignored" to suppress this warning
+
+✖ 6 problems (0 errors, 6 warnings)
+

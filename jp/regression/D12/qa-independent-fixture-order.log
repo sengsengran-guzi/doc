@@ -1,0 +1,56 @@
+QA 1 PASS independent pricing via owner API
+QA 2 PASS independent FX via real API
+QA 3 PASS real wxMOCK login
+QA 4 PASS two independent HTTP detail connections both succeed
+QA 5 PASS concurrent detail upsert has one real snapshot
+QA 6 PASS three public amounts independently recomputed
+QA 7 PASS detail public pricing privacy
+QA 8 PASS anonymous quote preview denied
+QA 9 PASS preview preserves all original public prices/quoteId/deadline
+QA 10 PASS two reads are immutable
+QA 11 PASS raw Redis quote unchanged
+QA 12 PASS preview never extends real TTL
+QA 13 PASS server refuses unchecked agreement
+QA 14 PASS two true submit connections use same-user idempotent order
+QA 15 PASS same quote concurrent submit returns one order
+QA 16 PASS one DB order line under real concurrency
+QA 17 PASS anonymous order denied
+QA 18 PASS other authenticated user cannot read order
+QA 19 PASS unpaid state remains created before actual callback
+QA 20 PASS concurrent submits produce only one payment side effect
+QA 21 PASS approved callback drives actual paid engine
+QA 22 PASS unknown task maps public purchasing; invalid trade filtered
+QA 23 PASS unknown/internal account/error/price fields withheld
+QA 24 PASS actual manual engine success without SQL final status
+  ✓exact cleanup owned image=80 object=sensenran-dev/gz/2026/10/06/d812152af72b4f54abbaa099fb3a8ae0.jpg; row+MinIO absent
+  ✓exact cleanup order=99101000083/JPO-20261006-000169 itemIds=99101000083 payNos=JPO-20261006-000170; tenant1001 exact IDs only
+  ✓gz_user full-row+audit SHA256 before=after=02d3afab81a156e893de09df0308ce0ec788671fba0845f497d4744c92aa96ce
+  ✓gz_user_address full-row+audit SHA256 before=after=50f45f33e119d9e85e3246ce5ee5c628f3bb8cbc796320e4a30fd95590534ae5
+  ✓gz_jp_cart_item full-row+audit SHA256 before=after=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  ✓user14 original profile/address/cart bytes+audit restored; owned checkout orders=1
+QA 25 PASS cleanup admin pricing API/cache invalidation
+QA 26 PASS pricing full byte/audit exact
+QA 27 PASS restored pricing config cache readback
+QA 28 PASS restored quote runtime cache readback
+QA 29 PASS owned independent snapshot removed
+INDEPENDENT CLEANUP PASS: full profile/address/cart audit, owned orders/payment/refunds/images/minio, exact pricing/cache, owned FX/replay/snapshot/cache only
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: actual arrival creates real shipping difference refund
+
+409 !== 200
+
+    at eq (file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/doc/jp/regression/D12/qa-independent.mjs:9:36)
+    at file:///Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/doc/jp/regression/D12/qa-independent.mjs:62:2
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 409,
+  expected: 200,
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.11.1

@@ -1,28 +1,57 @@
 # GZ-JP 二期代切 D8–D12 执行结果
 
-> 执行中：D0–D11 已通过 QA，D12 四张实现已完成、独立QA正在执行。最终状态以 `waves/state.json` 为准；本文在 D12 QA 通过后补齐并交付。没有派 D13。
+> 本轮结束：D0–D12 全部 qa_passed，47/51 ticket 完成。D13–D15 共四张保持 pending，未派 D13。只做本地 feat/jp-snap 合流，没有 push 或合 staging。
 
-## 进度与 QA
+## 1. task_state report 进度
+
+命令：`python3.11 ~/claude-config/skills/zhixing/scripts/task_state.py --state doc/jp/waves/state.json report`。
+完整原始输出：[task-state-report.txt](regression/D12/task-state-report.txt)。
+
+```text
+任务档进度：ticket 47/51 完成
+
+任务      状态            ticket 进度     QA 轮次
+D0      ✅qa_passed    3/3           3
+D1      ✅qa_passed    4/4           1
+D2      ✅qa_passed    2/2           1
+D3      ✅qa_passed    5/5           1
+D4      ✅qa_passed    4/4           1
+D5      ✅qa_passed    5/5           1
+D6      ✅qa_passed    1/1           0
+D7      ✅qa_passed    5/5           1
+D8      ✅qa_passed    2/2           0
+D9      ✅qa_passed    4/4           1
+D10     ✅qa_passed    3/3           0
+D11     ✅qa_passed    5/5           0
+D12     ✅qa_passed    4/4           0
+D13     ⬜pending      0/1           0
+D14     ⬜pending      0/2           0
+D15     ⬜pending      0/1           0
+```
+
+## 2. 每阶段 QA
 
 | 阶段 | 结论 | 报告 |
 |---|---|---|
-| D7 | r1 FAIL，返工后 r2 PASS | `qa/D7-r1.md`、`qa/D7-rework-r1.md`、`qa/D7-r2.md` |
-| D8 | r1 PASS | `qa/D8-r1.md` |
-| D9 | r1 FAIL（测试夹具），r2 PASS | `qa/D9-r1.md`、`qa/D9-r2.md` |
-| D10 | r1 PASS | `qa/D10-r1.md` |
-| D11 | r1 PASS | `qa/D11-r1.md` |
-| D12 | 4/4实现完成，独立QA执行中 | 待补 |
+| D7 | r1 FAIL，返工后 r2 PASS | [qa/D7-r1.md](qa/D7-r1.md)、[qa/D7-rework-r1.md](qa/D7-rework-r1.md)、[qa/D7-r2.md](qa/D7-r2.md) |
+| D8 | r1 PASS | [qa/D8-r1.md](qa/D8-r1.md) |
+| D9 | r1 FAIL（测试夹具），r2 PASS | [qa/D9-r1.md](qa/D9-r1.md)、[qa/D9-r2.md](qa/D9-r2.md) |
+| D10 | r1 PASS | [qa/D10-r1.md](qa/D10-r1.md) |
+| D11 | r1 PASS | [qa/D11-r1.md](qa/D11-r1.md) |
+| D12 | r1 PASS | [qa/D12-r1.md](qa/D12-r1.md) |
 
 D10 独立 QA 实跑 101 条单测、62 次真 HTTP/DB 断言；差价 83 分加剩余退款 917 分等于 1000 分，独立连接到仓/取消竞争只产生一笔退款。各阶段原始证据在 `regression/D<N>/` 与相应 ticket 的 `evidence/`、`raw/`。
 
-## Tier 2 人验
+D12 独立QA：后端22+小程序97=119条单测，26+8=34项独立HTTP/DB断言，7个真实模拟器flow全部通过。并发详情只建1快照、同报价两连接提交只建1单/1支付；6370分报价与真实264分已退运费差价对账。最终默认双场景success13.505秒、failed16.933秒，fake分别calls1/clicks1与calls1/clicks0；原始输出已持久。
 
-- GZ-SNAP-501：煤炉搜索页首版视觉、三格 tabbar 及图标。
-- GZ-SNAP-502：详情页首版视觉、价格说明和准入提示。
+## 3. Tier 2 人验
+
+- GZ-SNAP-501：煤炉搜索页首版视觉、三格 tabbar 及图标。[结果截图](tickets/GZ-SNAP-501/raw/snap-search-results.png)、[不可用态](tickets/GZ-SNAP-501/raw/snap-search-down.png)。
+- GZ-SNAP-502：详情页首版视觉、价格说明和准入提示。[详情截图](tickets/GZ-SNAP-502/raw/snap-detail-auto.png)、[到付价格说明](tickets/GZ-SNAP-502/raw/snap-detail-manual-price.png)。
 - GZ-SNAP-503：真机微信原生支付，随后续 D15 演练；本轮仅 mock 支付。
 - 协议代切条款待甲方过目。D13 所需东京服务器、ISP 代理、真实采购账号未到位；本轮不派 D13，也不声称已上线。
 
-## 冲突、回流与装置问题
+## 4. 全程冲突、回流与阻塞处理
 
 1. **D7 业务入口冲突已按 Kevin 方案 A 解决**：snap 与 batch 按来源判定入口，batch 保持一期语义。改 FLOW:F-JP-09.step1、102 ticket 与阶段计划；authority impact 为 102/204/307。102 已返工，后续实现沿用新口径。支付回调/超时的 RR 快照读，以及退款受理失败/回调从表盲写竞态已修。
 2. **D8 样本要求与真实请求预算冲突**：原完整多类别录制超出一次性 15 次预算，按最新自主调整授权改为少量真实 JSON 加明确标记的合成夹具。202 实际仅发送 2 次真实请求（搜索、详情）；其后 QA、返工、E2E 全部零真实煤炉请求。真实 HTML、简介、图片、短链适配没有得到真实平台验证。回流 FLOW:F-JP-12/202/阶段计划，影响 001/201/202/203/204/301/303/304/305/307；201 既有实现不受影响。
@@ -37,10 +66,24 @@ D10 独立 QA 实跑 101 条单测、62 次真 HTTP/DB 断言；差价 83 分加
 
 9. **D12 订单状态公共投影**：UI:mp.order_detail.snap补六个展示态、交易白名单及仅成功shipping_diff累计；退款待受理/失败时显示处理中，不提前声称已退款。impact仅504，本次落实，无历史任务失效。测试启用采购调度前确认无其它采购任务/账号，并延后其它调度，避免旁路BOC/旧单处理。
 
-## 仍需保留的边界
+10. **D12独立QA装置补齐**：自动审批拒绝外层只对比未恢复的六flow包装命令，尚未执行；补finally按PK/tenant恢复完整baseline后获准。搜索粘贴链接现在触发完整详情，新增未锁快照漏清，测试资产e1bee8f补全行恢复/本轮新增quote与cache清理并单跑通过，七表前后完全相同。独立probe跳过卖家发货被正确409，补合法发货API后34项重验通过。504初次success raw未持久，报告如实标注；最终独立QA默认两场景均保留原始输出。生产构建成功，但production dist SHA捕获遇cwd错误后被dev覆盖；不为元数据重构建，实际被测dev指纹完整，细节见QA报告。没有剩余环境阻塞或待执行审批。
+
+## 验证边界与收尾
 
 - 不 push、不合 staging；主 `code/main/miniapp` 全目录只读。
 - 当前经营pricing三个参数仍NULL；测试只临时填值并精确恢复，不代甲方定价，未配置时购买报价不可用。
 - 真实煤炉点击及购买记录延迟、真钱支付/部分退款、真实 Tokyo 午夜与长期调度不是本轮替身验证的覆盖范围。
 - D7 留档：orders flow 曾首跳装置抖动，复现需排查；后台退款重试回调抢先时的展示误报仍需在相关改动中核对；主 miniapp 真支付 E2E 缺口不在本轮只读范围内补做。
-- 最终停止自己的 8080 launchd、gateway replay/fake 容器及 8090 服务，保留原有基础设施和用户开发者工具；D12 完成时补实际清理结果及各仓 SHA。
+- 已移除自己的8080 launchd、停止gateway replay/fake容器，8080/8090/8700/8711/8712均无listener；私有backend-options.json已删，基础设施和用户开发者工具保留。见[实际运行清理](regression/D12/final-runtime-cleanup.json)。
+- 测试配置字节/audit、用户资料/地址/购物车完整恢复，自造订单/支付/退款/账号/FX/快照/回放/图片及MinIO对象精确清理；七表baseline一致，见QA原始证据。
+- 合流后tree与被验task/D12完全相同。后端20、MP32文件touches均闭合。
+
+| 仓 | 最终分支 | HEAD | 工作区 |
+|---|---|---|---|
+| RuoYi-Vue-Plus | feat/jp-snap | `0b57012c1` | 原有sys-error日志tmp保留，非本轮改动 |
+| plus-ui | feat/jp-snap | `723e42136` | 干净 |
+| miniapp-jp | feat/jp-snap | `b71415c7f` | 干净 |
+| mercari-gateway | feat/jp-snap | `ec0ca2762` | 干净 |
+| miniapp | staging | `898ff4370` | 干净 |
+
+所有完整SHA及工作区证据见[final-code-repositories.json](regression/D12/final-code-repositories.json)。主miniapp仍为原staging@898ff43，全目录只读。
