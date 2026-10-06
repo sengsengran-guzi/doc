@@ -79,3 +79,7 @@
 
 ## 2026-10-06 — D12验证范围与只读红线收敛
 - D12 QA旧行仍写一期all及两小程序串行，与最新减少无关重复测试、主miniapp只读冲突。改为四个代切flow及直接影响home/checkout/orders，同源码已绿证据可复用；仅miniapp-jp串行运行。关键订单金额/权限/协议/倒计时/状态与独立QA门仍保留；不降低产品判据。纯执行范围调整，未改authority锚，无ticket需失效。
+
+## 2026-10-06 — 503确认页读取原报价的只读契约
+- 补认证GET /app/gz/jp/snap/order/quote/{quoteId}，显式公共VO仅商品和原报价三行金额/quoteId/expiresAt；不刷新详情/报价/TTL，不下发内部汇率与加价。同步FLOW:F-JP-06.step2、UI:mp.order_confirm.snap，落实原倒计时和金额语义，不改变经营口径。
+- authority_lint impact反查304/503：304提交/锁价/复查行为无变化、accept仍适用，不重做；503为当前产出方，真接口相同quoteId/期限连续读及模拟器到期/支付验收落实，D12独立QA核对。

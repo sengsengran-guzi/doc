@@ -278,7 +278,7 @@ records:
       - id: FLOW:F-JP-06.step2
         actor: 客人(mp)
         action: 详情页点「立即购买」→ 下单确认页选地址、勾选「已知悉抢到后不可取消」→ 提交
-        produces: 未勾选不可提交（REQ-SNAP-037）；报价剩余时间在确认页可见，过期提示重新报价
+        produces: 未勾选不可提交（REQ-SNAP-037）；报价剩余时间在确认页可见，过期提示重新报价。确认页通过认证只读GET /app/gz/jp/snap/order/quote/{quoteId}读取原报价的商品与公开三行金额、原quoteId/expiresAt，不重新报价、不延长TTL、不调用外部详情；内部汇率与加价不进入响应
       - id: FLOW:F-JP-06.step3
         actor: ruoyi
         action: 提交订单 —— 报价校验 + 商品锁 + 建单（同一事务）

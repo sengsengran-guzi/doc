@@ -266,6 +266,7 @@ records:
     body: |
       复用 UI:mp.order_confirm，snap 模式差异：只有一件商品；显示报价剩余有效时间（过期则按钮变「重新报价」）；
       金额区展开报价构成；提交按钮上方一个勾选「已知悉：抢到后不可取消；没抢到全额原路退款」，未勾不可提交（REQ-SNAP-037）。
+      确认页认证后只读原quoteId的公开报价投影（GET /app/gz/jp/snap/order/quote/{quoteId}）：商品、三行金额、原expiresAt；不刷新报价/TTL，不显示内部汇率或加价。
     related_reqs: [REQ-SNAP-021, REQ-SNAP-036, REQ-SNAP-037]
 
   - id: UI:mp.order_detail.snap
