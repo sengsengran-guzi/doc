@@ -1,0 +1,4 @@
+GzJpSnapOrderDisplayTest tests=3 failures=0 errors=0
+GzJpSnapOrderOwnershipTest tests=1 failures=0 errors=0
+GzJpMixedSourceQueryTest tests=5 failures=0 errors=0
+GzJpOrderDetailCarrierLabelTest tests=6 failures=0 errors=0

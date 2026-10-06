@@ -1,0 +1,28 @@
+[preflight] 硬 gate 体检（无降级）
+  ✓ devtools cli: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
+  ✓ devtools 服务端口开着 (http://127.0.0.1:26863)
+  ✓ devtools 已登录
+  ✓ dist 完整: /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin/app.json
+  ✓ dist = dev profile（本地后端 + wxMOCK + jp clientid）
+  ✓ 后端可达: http://localhost:8080 (HTTP 401)
+  ✓ 后端认 clientid=mp-applet-gz-jp（openid=mock-jp-tester）
+[preflight] ✓ 通过
+
+=== flow: orders ===
+[run] launch automation  dist=/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin
+[run] ✓ automation launched
+[run] ✓ 小程序侧 wx.request 能打到本地后端（域名校验已放开）
+  ⚠ 最近 12 张单里没有一张有已发货行 —— 运单号/承运商断言这轮会空转（见下方提示）
+  ✓ 订单列表卡片来自后端真数据：订单号 JPO-20261005-000073, 订单号 JPO-20261005-000071, 订单号 JPO-20261005-000069
+  ✓ 状态 tab 齐：全部 / 待支付 / 进行中 / 已完成
+  ✓ 两跳可达订单详情（订单 JPO-20261005-000073）
+  ⚠ 本轮挑中的订单没有任何已发货行 → 运单号去重与承运商名断言【未触发】（不是通过）。造一笔已发货的单再跑才能覆盖这段。
+  ✓ 分组结构正确：1 组 —— 购买失败 1款
+  ✓ ★ 购买失败组排最后
+  ✓ ★ 退款文案正确：已退款 ¥80
+  ✓ ★ 全页无「包裹」字样
+  ✓ orders flow 全部断言通过
+[PASS] orders
+
+[run] 结束：1/1 flow 通过
+  ✓runner preflight profile full-row+audit SHA256 before=after=02d3afab81a156e893de09df0308ce0ec788671fba0845f497d4744c92aa96ce

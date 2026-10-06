@@ -1,0 +1,38 @@
+[preflight] 硬 gate 体检（无降级）
+  ✓ devtools cli: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
+  ✓ devtools 服务端口开着 (http://127.0.0.1:26863)
+  ✓ devtools 已登录
+  ✓ dist 完整: /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin/app.json
+  ✓ dist = dev profile（本地后端 + wxMOCK + jp clientid）
+  ✓ 后端可达: http://localhost:8080 (HTTP 401)
+  ✓ 后端认 clientid=mp-applet-gz-jp（openid=mock-jp-tester）
+[preflight] ✓ 通过
+
+=== flow: snap-order ===
+[run] launch automation  dist=/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin
+[run] ✓ automation launched
+[run] ✓ 小程序侧 wx.request 能打到本地后端（域名校验已放开）
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by lombok.permit.Permit
+WARNING: Please consider reporting this to the maintainers of class lombok.permit.Permit
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+BACKEND UP (commit f74e8a4cf+DIRTY-WORKTREE, branch task/D12)
+[0;39m - Successfully validated 191 migrations (execution time 00:00.096s)
+  ✓UI payment -> real fake engine failed:sold_out; order=99101000080/JPO-20261006-000163; polling elapsed=19801ms; calls=1 clicks=0; HTTP/DB/MP same state; refund callback SUCCESS/full amount
+  ✓list snap tags and mapped states agree with actual owned API rows
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by lombok.permit.Permit
+WARNING: Please consider reporting this to the maintainers of class lombok.permit.Permit
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+BACKEND UP (commit f74e8a4cf+DIRTY-WORKTREE, branch task/D12)
+[0;39m - Successfully validated 191 migrations (execution time 00:00.083s)
+  ✓exact cleanup owned image=77 object=sensenran-dev/gz/2026/10/06/4b08b9ba04a24256b9cfc9ba940a9a6d.jpg; row+MinIO absent
+  ✓exact cleanup order=99101000080/JPO-20261006-000163 itemIds=99101000080 payNos=JPO-20261006-000164; tenant1001 exact IDs only
+  ✓gz_user full-row+audit SHA256 before=after=02d3afab81a156e893de09df0308ce0ec788671fba0845f497d4744c92aa96ce
+  ✓gz_user_address full-row+audit SHA256 before=after=50f45f33e119d9e85e3246ce5ee5c628f3bb8cbc796320e4a30fd95590534ae5
+  ✓gz_jp_cart_item full-row+audit SHA256 before=after=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  ✓user14 original profile/address/cart bytes+audit restored; owned checkout orders=1
+  ✓cleanup: customer full audit restored; config SHA256=084e540ef7a3ada9cab786d878ea642a44a033906a8cc7a9db55c3a467f2c47d before=after; account/FX inventory exact; scheduler=false; owned fake ledger/files/replay/cache only; real Mercari requests=0
+[PASS] snap-order
+
+[run] 结束：1/1 flow 通过
