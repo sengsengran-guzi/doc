@@ -1,0 +1,761 @@
+Picked up JAVA_TOOL_OPTIONS: -javaagent:/Users/wkui/.m2/repository/org/mockito/mockito-core/5.17.0/mockito-core-5.17.0.jar
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] RuoYi-Vue-Plus                                                     [pom]
+[INFO] ruoyi-common                                                       [pom]
+[INFO] ruoyi-common-core                                                  [jar]
+[INFO] ruoyi-common-doc                                                   [jar]
+[INFO] ruoyi-common-json                                                  [jar]
+[INFO] ruoyi-common-redis                                                 [jar]
+[INFO] ruoyi-common-ratelimiter                                           [jar]
+[INFO] ruoyi-common-satoken                                               [jar]
+[INFO] ruoyi-common-mybatis                                               [jar]
+[INFO] ruoyi-common-translation                                           [jar]
+[INFO] ruoyi-common-oss                                                   [jar]
+[INFO] ruoyi-common-log                                                   [jar]
+[INFO] ruoyi-common-excel                                                 [jar]
+[INFO] ruoyi-common-tenant                                                [jar]
+[INFO] ruoyi-common-security                                              [jar]
+[INFO] ruoyi-common-web                                                   [jar]
+[INFO] ruoyi-common-idempotent                                            [jar]
+[INFO] ruoyi-common-sensitive                                             [jar]
+[INFO] ruoyi-common-encrypt                                               [jar]
+[INFO] ruoyi-modules                                                      [pom]
+[INFO] ruoyi-common-job                                                   [jar]
+[INFO] ruoyi-gz-common                                                    [jar]
+[INFO] ruoyi-gz-user                                                      [jar]
+[INFO] ruoyi-gz-jp                                                        [jar]
+[INFO] 
+[INFO] ---------------------< org.dromara:ruoyi-vue-plus >---------------------
+[INFO] Building RuoYi-Vue-Plus 5.6.1                                     [1/24]
+[INFO]   from pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-vue-plus ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-vue-plus:pom:5.6.1...
+[INFO] 
+[INFO] ----------------------< org.dromara:ruoyi-common >----------------------
+[INFO] Building ruoyi-common 5.6.1                                       [2/24]
+[INFO]   from ruoyi-common/pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common:pom:5.6.1...
+[INFO] 
+[INFO] -------------------< org.dromara:ruoyi-common-core >--------------------
+[INFO] Building ruoyi-common-core 5.6.1                                  [3/24]
+[INFO]   from ruoyi-common/ruoyi-common-core/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-core ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-core ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-core:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-core ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-core ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-core/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-core ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-core ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --------------------< org.dromara:ruoyi-common-doc >--------------------
+[INFO] Building ruoyi-common-doc 5.6.1                                   [4/24]
+[INFO]   from ruoyi-common/ruoyi-common-doc/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-doc ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-doc ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-doc:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-doc ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-doc ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-doc/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-doc ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-doc ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] -------------------< org.dromara:ruoyi-common-json >--------------------
+[INFO] Building ruoyi-common-json 5.6.1                                  [5/24]
+[INFO]   from ruoyi-common/ruoyi-common-json/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-json ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-json ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-json:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-json ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-json ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-json/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-json ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-json ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] -------------------< org.dromara:ruoyi-common-redis >-------------------
+[INFO] Building ruoyi-common-redis 5.6.1                                 [6/24]
+[INFO]   from ruoyi-common/ruoyi-common-redis/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-redis ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-redis ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-redis:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-redis ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-redis ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-redis/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-redis ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-redis ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] ----------------< org.dromara:ruoyi-common-ratelimiter >----------------
+[INFO] Building ruoyi-common-ratelimiter 5.6.1                           [7/24]
+[INFO]   from ruoyi-common/ruoyi-common-ratelimiter/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-ratelimiter ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-ratelimiter ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-ratelimiter:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-ratelimiter ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-ratelimiter ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-ratelimiter/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-ratelimiter ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-ratelimiter ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] ------------------< org.dromara:ruoyi-common-satoken >------------------
+[INFO] Building ruoyi-common-satoken 5.6.1                               [8/24]
+[INFO]   from ruoyi-common/ruoyi-common-satoken/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-satoken ---
+[INFO] Copying 2 resources from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-satoken ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-satoken:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-satoken ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-satoken ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-satoken/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-satoken ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-satoken ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] ------------------< org.dromara:ruoyi-common-mybatis >------------------
+[INFO] Building ruoyi-common-mybatis 5.6.1                               [9/24]
+[INFO]   from ruoyi-common/ruoyi-common-mybatis/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-mybatis ---
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-mybatis ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-mybatis:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-mybatis ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-mybatis ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-mybatis/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-mybatis ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-mybatis ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] ----------------< org.dromara:ruoyi-common-translation >----------------
+[INFO] Building ruoyi-common-translation 5.6.1                          [10/24]
+[INFO]   from ruoyi-common/ruoyi-common-translation/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-translation ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-translation ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-translation:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-translation ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-translation ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-translation/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-translation ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-translation ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --------------------< org.dromara:ruoyi-common-oss >--------------------
+[INFO] Building ruoyi-common-oss 5.6.1                                  [11/24]
+[INFO]   from ruoyi-common/ruoyi-common-oss/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-oss ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-oss/src/main/resources
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-oss/src/main/resources
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-oss ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-oss:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-oss ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-oss ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-oss/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-oss ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-oss ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --------------------< org.dromara:ruoyi-common-log >--------------------
+[INFO] Building ruoyi-common-log 5.6.1                                  [12/24]
+[INFO]   from ruoyi-common/ruoyi-common-log/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-log ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-log ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-log:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-log ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-log ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-log/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-log ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-log ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] -------------------< org.dromara:ruoyi-common-excel >-------------------
+[INFO] Building ruoyi-common-excel 5.6.1                                [13/24]
+[INFO]   from ruoyi-common/ruoyi-common-excel/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-excel ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-excel/src/main/resources
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-excel/src/main/resources
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-excel ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-excel:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-excel ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-excel ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-excel/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-excel ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-excel ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] ------------------< org.dromara:ruoyi-common-tenant >-------------------
+[INFO] Building ruoyi-common-tenant 5.6.1                               [14/24]
+[INFO]   from ruoyi-common/ruoyi-common-tenant/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-tenant ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-tenant ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-tenant:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-tenant ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-tenant ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-tenant/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-tenant ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-tenant ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] -----------------< org.dromara:ruoyi-common-security >------------------
+[INFO] Building ruoyi-common-security 5.6.1                             [15/24]
+[INFO]   from ruoyi-common/ruoyi-common-security/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-security ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-security ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-security:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-security ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-security ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-security/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-security ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-security ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --------------------< org.dromara:ruoyi-common-web >--------------------
+[INFO] Building ruoyi-common-web 5.6.1                                  [16/24]
+[INFO]   from ruoyi-common/ruoyi-common-web/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-web ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-web ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-web:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-web ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-web ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-web/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-web ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-web ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] ----------------< org.dromara:ruoyi-common-idempotent >-----------------
+[INFO] Building ruoyi-common-idempotent 5.6.1                           [17/24]
+[INFO]   from ruoyi-common/ruoyi-common-idempotent/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-idempotent ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-idempotent ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-idempotent:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-idempotent ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-idempotent ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-idempotent/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-idempotent ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-idempotent ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] -----------------< org.dromara:ruoyi-common-sensitive >-----------------
+[INFO] Building ruoyi-common-sensitive 5.6.1                            [18/24]
+[INFO]   from ruoyi-common/ruoyi-common-sensitive/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-sensitive ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-sensitive/src/main/resources
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-sensitive/src/main/resources
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-sensitive ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-sensitive:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-sensitive ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-sensitive ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-sensitive/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-sensitive ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-sensitive ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] ------------------< org.dromara:ruoyi-common-encrypt >------------------
+[INFO] Building ruoyi-common-encrypt 5.6.1                              [19/24]
+[INFO]   from ruoyi-common/ruoyi-common-encrypt/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-encrypt ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-encrypt ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-encrypt:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-encrypt ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-encrypt ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-encrypt/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-encrypt ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-encrypt ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] ---------------------< org.dromara:ruoyi-modules >----------------------
+[INFO] Building ruoyi-modules 5.6.1                                     [20/24]
+[INFO]   from ruoyi-modules/pom.xml
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-modules ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-modules:pom:5.6.1...
+[INFO] 
+[INFO] --------------------< org.dromara:ruoyi-common-job >--------------------
+[INFO] Building ruoyi-common-job 5.6.1                                  [21/24]
+[INFO]   from ruoyi-common/ruoyi-common-job/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-common-job ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-common-job ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-common-job:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-common-job ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-common-job ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-common/ruoyi-common-job/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-common-job ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-common-job ---
+[INFO] No tests to run.
+[INFO] 
+[INFO] --------------------< org.dromara:ruoyi-gz-common >---------------------
+[INFO] Building ruoyi-gz-common 5.6.1                                   [22/24]
+[INFO]   from ruoyi-modules/ruoyi-gz-common/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-gz-common ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-gz-common ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-gz-common:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-gz-common ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-gz-common ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-common/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-gz-common ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-gz-common ---
+[INFO] 
+[INFO] ---------------------< org.dromara:ruoyi-gz-user >----------------------
+[INFO] Building ruoyi-gz-user 5.6.1                                     [23/24]
+[INFO]   from ruoyi-modules/ruoyi-gz-user/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-gz-user ---
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] Copying 0 resource from src/main/resources to target/classes
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-gz-user ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-gz-user:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-gz-user ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-gz-user ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-user/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-gz-user ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-gz-user ---
+[INFO] 
+[INFO] ----------------------< org.dromara:ruoyi-gz-jp >-----------------------
+[INFO] Building ruoyi-gz-jp 5.6.1                                       [24/24]
+[INFO]   from ruoyi-modules/ruoyi-gz-jp/pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ ruoyi-gz-jp ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-jp/src/main/resources
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-jp/src/main/resources
+[INFO] 
+[INFO] --- flatten:1.3.0:flatten (flatten) @ ruoyi-gz-jp ---
+[INFO] Generating flattened POM of project org.dromara:ruoyi-gz-jp:jar:5.6.1...
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ ruoyi-gz-jp ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ ruoyi-gz-jp ---
+[INFO] skip non existing resourceDirectory /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-jp/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.0:testCompile (default-testCompile) @ ruoyi-gz-jp ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.3:test (default-test) @ ruoyi-gz-jp ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+Picked up JAVA_TOOL_OPTIONS: -javaagent:/Users/wkui/.m2/repository/org/mockito/mockito-core/5.17.0/mockito-core-5.17.0.jar
+[INFO] Running org.dromara.gz.jp.service.impl.GzJpOrderSubmitTest
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+12:22:12.686 [main] WARN org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] 前端金额与后端重算不一致 userId=2001 前端=1 后端=58000
+[AC2] 前端假价 1 分被拒，后端算出的正确金额=58000 分，未建任何支付单
+12:22:12.728 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000001 orderId=9001 userId=2001 款数=2 件数=2 amount=19600 outTradeNo=JPO-20260807-000002
+12:22:12.734 [main] WARN org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] order_no 撞 UNIQUE 重试 1/5：JPO-20260807-000001
+12:22:12.735 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000009 orderId=9002 userId=2001 款数=1 件数=1 amount=12800 outTradeNo=JPO-20260807-000002
+[撞号自愈] 首次撞 uk_order_no → reconcile → 第二个号成功：JPO-20260807-000009
+12:22:12.741 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000001 orderId=9001 userId=2001 款数=2 件数=3 amount=18800 outTradeNo=JPO-20260807-000002
+[AC3] 一单含两场：[8月上旬快闪场, 9月新番场]，合计=18800 分
+12:22:12.773 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000001 orderId=9001 userId=2001 款数=1 件数=3 amount=38400 outTradeNo=JPO-20260807-000002
+12:22:12.782 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000001 orderId=9001 userId=2001 款数=2 件数=2 amount=19600 outTradeNo=JPO-20260807-000002
+12:22:12.789 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000001 orderId=9001 userId=2001 款数=2 件数=2 amount=19600 outTradeNo=JPO-20260807-000002
+[@Version] 订单 1 次 insert / 行 2 次 insert / updateById 0 次
+12:22:12.801 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000001 orderId=9001 userId=2001 款数=1 件数=1 amount=12800 outTradeNo=JPO-20260807-000002
+12:22:12.804 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000001 orderId=9001 userId=2001 款数=1 件数=1 amount=12800 outTradeNo=JPO-20260807-000002
+12:22:12.808 [main] WARN org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] 重复提交拦截 userId=2001 读到 2 行、实删 1 行（并发下单 / 另一端刚删了车）
+[防重复提交] 读 2 行 / 实删 1 行 → 4107，且未建支付单
+12:22:12.811 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000001 orderId=9001 userId=2001 款数=2 件数=5 amount=58000 outTradeNo=JPO-20260807-000002
+[AC2] 后端重算金额=58000 分；Σ行金额=58000（无运费差额）
+12:22:12.817 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000001 orderId=9001 userId=2001 款数=1 件数=3 amount=38400 outTradeNo=JPO-20260807-000002
+[快照] {"productId":"1","productNo":"JPP-20260807-000001","name":"柯南 吧唧 A赏","mainImageId":"8888","priceCent":12800,"deliveryDateText":"8月下旬","noticeText":"★ 日本直邮，介意瑕疵慎拍","eventId":"100","eventNo":"EVT-2026-100","eventName":"8月上旬快闪场"}
+12:22:12.821 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] submit ok orderNo=JPO-20260807-000001 orderId=9001 userId=2001 款数=1 件数=2 amount=10000 outTradeNo=JPO-20260807-000002
+[无运费] 7 个类字段全扫，无 freight / shipping / postage
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.893 s -- in org.dromara.gz.jp.service.impl.GzJpOrderSubmitTest
+[INFO] Running org.dromara.gz.jp.service.GzJpPayCallbackTest
+12:22:12.963 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+12:22:12.963 [main] INFO org.dromara.gz.common.pay.service.spi.PayCallbackDispatcher -- [gz-pay] 支付回调 SPI 路由表就绪，已注册 1 个 handler：[jp]
+12:22:13.082 [main] WARN org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] onPaid business_order_no 为空 out_trade_no=JPO-20260807-000099 跳过
+12:22:13.085 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+12:22:13.085 [main] INFO org.dromara.gz.common.pay.service.spi.PayCallbackDispatcher -- [gz-pay] 支付回调 SPI 路由表就绪，已注册 1 个 handler：[jp]
+12:22:13.090 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] onPaid ok orderNo=JPO-20260807-000021 orderId=8000 → paid payTxnId=9999 激活商品行=1 行
+12:22:13.092 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+12:22:13.092 [main] INFO org.dromara.gz.common.pay.service.spi.PayCallbackDispatcher -- [gz-pay] 支付回调 SPI 路由表就绪，已注册 1 个 handler：[jp]
+12:22:13.131 [main] INFO org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay-mock] createJsapiOrder out_trade_no=JPO-20261006-000001 amount=58000 appid=wxMOCK time_expire=2026-10-06T12:27:13+08:00 → prepay_id=mock_prepay_JPO-20261006-000001
+12:22:13.131 [main] INFO org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay-mock] buildPayParams prepay_id=mock_prepay_JPO-20261006-000001 appid=wxMOCK
+12:22:13.132 [main] INFO org.dromara.gz.common.pay.service.impl.GzPayTransactionServiceImpl -- [gz-pay] 建单成功 business_type=jp out_trade_no=JPO-20261006-000001 business_order_no=JPO-20260807-000001 amount=58000 appid=wxMOCK prepay_id=mock_prepay_JPO-20261006-000001
+[AC3] 建单 out_trade_no=JPO-20261006-000001 business_type=jp 订单初态=created
+12:22:13.137 [main] INFO org.dromara.gz.common.pay.service.spi.PayCallbackDispatcher -- [gz-pay] SPI 分发支付回调 business_type=jp → JpPayCallbackHandler out_trade_no=JPO-20261006-000001 business_order_no=JPO-20260807-000001
+12:22:13.137 [main] INFO org.dromara.gz.jp.service.callback.JpPayCallbackHandler -- [gz-jp] 拼团支付回调命中 out_trade_no=JPO-20261006-000001 business_order_no=JPO-20260807-000001 transaction_id=mock_wx_txn_JPO-20261006-000001 amount=58000
+12:22:13.137 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] onPaid ok orderNo=JPO-20260807-000001 orderId=8000 → paid payTxnId=7000 激活商品行=3 行
+12:22:13.138 [main] INFO org.dromara.gz.common.pay.service.impl.GzPayTransactionServiceImpl -- [gz-pay] 补单成功 out_trade_no=JPO-20261006-000001 business_type=jp → paid transaction_id=mock_wx_txn_JPO-20261006-000001
+[AC3] 回调后 订单=paid pay_transaction_id=7000 商品行=[purchasing, purchasing, purchasing]
+12:22:13.139 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+12:22:13.139 [main] INFO org.dromara.gz.common.pay.service.spi.PayCallbackDispatcher -- [gz-pay] 支付回调 SPI 路由表就绪，已注册 1 个 handler：[jp]
+12:22:13.141 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+12:22:13.142 [main] INFO org.dromara.gz.common.pay.service.spi.PayCallbackDispatcher -- [gz-pay] 支付回调 SPI 路由表就绪，已注册 1 个 handler：[jp]
+12:22:13.143 [main] INFO org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay-mock] createJsapiOrder out_trade_no=JPO-20261006-000001 amount=12800 appid=wxMOCK time_expire=2026-10-06T12:27:13+08:00 → prepay_id=mock_prepay_JPO-20261006-000001
+12:22:13.143 [main] INFO org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay-mock] buildPayParams prepay_id=mock_prepay_JPO-20261006-000001 appid=wxMOCK
+12:22:13.143 [main] INFO org.dromara.gz.common.pay.service.impl.GzPayTransactionServiceImpl -- [gz-pay] 建单成功 business_type=jp out_trade_no=JPO-20261006-000001 business_order_no=JPO-20260807-000011 amount=12800 appid=wxMOCK prepay_id=mock_prepay_JPO-20261006-000001
+12:22:13.143 [main] INFO org.dromara.gz.common.pay.service.spi.PayCallbackDispatcher -- [gz-pay] SPI 分发支付回调 business_type=jp → JpPayCallbackHandler out_trade_no=JPO-20261006-000001 business_order_no=JPO-20260807-000011
+12:22:13.143 [main] INFO org.dromara.gz.jp.service.callback.JpPayCallbackHandler -- [gz-jp] 拼团支付回调命中 out_trade_no=JPO-20261006-000001 business_order_no=JPO-20260807-000011 transaction_id=mock_wx_txn_JPO-20261006-000001 amount=12800
+12:22:13.143 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] onPaid ok orderNo=JPO-20260807-000011 orderId=8000 → paid payTxnId=7000 激活商品行=2 行
+12:22:13.143 [main] INFO org.dromara.gz.common.pay.service.impl.GzPayTransactionServiceImpl -- [gz-pay] 补单成功 out_trade_no=JPO-20261006-000001 business_type=jp → paid transaction_id=mock_wx_txn_JPO-20261006-000001
+12:22:13.144 [main] INFO org.dromara.gz.common.pay.service.impl.GzPayTransactionServiceImpl -- [gz-pay] 重复回调（已 paid）out_trade_no=JPO-20261006-000001
+[幂等] 两次回调后 订单 version=1 行 version=[1, 1] callback_logs=4
+12:22:13.145 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+12:22:13.145 [main] INFO org.dromara.gz.common.pay.service.spi.PayCallbackDispatcher -- [gz-pay] 支付回调 SPI 路由表就绪，已注册 1 个 handler：[jp]
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.317 s -- in org.dromara.gz.jp.service.GzJpPayCallbackTest
+[INFO] Running org.dromara.gz.jp.service.internal.GzJpSnapPaidTaskTest
+12:22:13.186 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] onPaid ok orderNo=JPO-test orderId=1 → paid payTxnId=9 激活商品行=0 行
+12:22:13.186 [main] INFO org.dromara.gz.jp.service.impl.GzJpOrderServiceImpl -- [gz-jp-order] onPaid 幂等跳过（非 created）orderNo=JPO-test status=null
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.048 s -- in org.dromara.gz.jp.service.internal.GzJpSnapPaidTaskTest
+[INFO] Running org.dromara.gz.jp.service.internal.GzJpSnapQuoteTest
+12:22:13.235 [main] WARN org.dromara.gz.jp.service.internal.GzJpSnapQuoteService -- Invalid snap pricing configuration
+com.fasterxml.jackson.core.JsonParseException: Unexpected character ('b' (code 98)): was expecting double-quote to start field name
+ at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+	at com.fasterxml.jackson.core.JsonParser._constructReadException(JsonParser.java:2675)
+	at com.fasterxml.jackson.core.base.ParserMinimalBase._reportUnexpectedChar(ParserMinimalBase.java:743)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser._handleOddName(ReaderBasedJsonParser.java:1909)
+	at com.fasterxml.jackson.core.json.ReaderBasedJsonParser.nextFieldName(ReaderBasedJsonParser.java:939)
+	at com.fasterxml.jackson.databind.deser.std.BaseNodeDeserializer._deserializeContainerNoRecursion(JsonNodeDeserializer.java:535)
+	at com.fasterxml.jackson.databind.deser.std.JsonNodeDeserializer.deserialize(JsonNodeDeserializer.java:99)
+	at com.fasterxml.jackson.databind.deser.std.JsonNodeDeserializer.deserialize(JsonNodeDeserializer.java:24)
+	at com.fasterxml.jackson.databind.deser.DefaultDeserializationContext.readRootValue(DefaultDeserializationContext.java:342)
+	at com.fasterxml.jackson.databind.ObjectMapper._readTreeAndClose(ObjectMapper.java:5094)
+	at com.fasterxml.jackson.databind.ObjectMapper.readTree(ObjectMapper.java:3349)
+	at org.dromara.gz.jp.service.internal.GzJpSnapQuoteService.pricing(GzJpSnapQuoteService.java:32)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:53)
+	at org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3128)
+	at org.dromara.gz.jp.service.internal.GzJpSnapQuoteTest.malformedAndNegativeRejected(GzJpSnapQuoteTest.java:30)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:775)
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:479)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:161)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:152)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:91)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:112)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:94)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:93)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:87)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:216)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:212)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:137)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:69)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:156)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1604)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:160)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:146)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:144)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:143)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:100)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:201)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:170)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:94)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:59)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:142)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:58)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:103)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:85)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$1(InterceptingLauncher.java:39)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:38)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:47)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:56)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:194)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:150)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:124)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+12:22:13.257 [main] ERROR org.dromara.gz.jp.service.internal.GzJpSnapQuoteService -- [jp-snap] FX missing or older than six hours; refusing quote
+12:22:13.257 [main] ERROR org.dromara.gz.jp.service.internal.GzJpSnapQuoteService -- [jp-snap] FX missing or older than six hours; refusing quote
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.057 s -- in org.dromara.gz.jp.service.internal.GzJpSnapQuoteTest
+[INFO] Running org.dromara.gz.jp.service.internal.GzJpSnapGateTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in org.dromara.gz.jp.service.internal.GzJpSnapGateTest
+[INFO] Running org.dromara.gz.jp.service.internal.GzJpSnapSubmitTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.126 s -- in org.dromara.gz.jp.service.internal.GzJpSnapSubmitTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 66, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for RuoYi-Vue-Plus 5.6.1:
+[INFO] 
+[INFO] RuoYi-Vue-Plus ..................................... SUCCESS [  0.257 s]
+[INFO] ruoyi-common ....................................... SUCCESS [  0.022 s]
+[INFO] ruoyi-common-core .................................. SUCCESS [  0.325 s]
+[INFO] ruoyi-common-doc ................................... SUCCESS [  0.098 s]
+[INFO] ruoyi-common-json .................................. SUCCESS [  0.049 s]
+[INFO] ruoyi-common-redis ................................. SUCCESS [  0.119 s]
+[INFO] ruoyi-common-ratelimiter ........................... SUCCESS [  0.040 s]
+[INFO] ruoyi-common-satoken ............................... SUCCESS [  0.052 s]
+[INFO] ruoyi-common-mybatis ............................... SUCCESS [  0.106 s]
+[INFO] ruoyi-common-translation ........................... SUCCESS [  0.039 s]
+[INFO] ruoyi-common-oss ................................... SUCCESS [  0.076 s]
+[INFO] ruoyi-common-log ................................... SUCCESS [  0.040 s]
+[INFO] ruoyi-common-excel ................................. SUCCESS [  0.065 s]
+[INFO] ruoyi-common-tenant ................................ SUCCESS [  0.043 s]
+[INFO] ruoyi-common-security .............................. SUCCESS [  0.038 s]
+[INFO] ruoyi-common-web ................................... SUCCESS [  0.073 s]
+[INFO] ruoyi-common-idempotent ............................ SUCCESS [  0.036 s]
+[INFO] ruoyi-common-sensitive ............................. SUCCESS [  0.028 s]
+[INFO] ruoyi-common-encrypt ............................... SUCCESS [  0.041 s]
+[INFO] ruoyi-modules ...................................... SUCCESS [  0.035 s]
+[INFO] ruoyi-common-job ................................... SUCCESS [  0.094 s]
+[INFO] ruoyi-gz-common .................................... SUCCESS [  0.167 s]
+[INFO] ruoyi-gz-user ...................................... SUCCESS [  0.116 s]
+[INFO] ruoyi-gz-jp ........................................ SUCCESS [  2.224 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  4.411 s
+[INFO] Finished at: 2026-10-06T12:22:13+08:00
+[INFO] ------------------------------------------------------------------------

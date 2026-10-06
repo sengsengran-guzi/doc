@@ -1,0 +1,7 @@
+{
+  "phase": "D9",
+  "backend_files": 65,
+  "outside_ticket_touches": [],
+  "gateway_fixture_files": 20,
+  "gateway_fixture_adjustment": "root-authorized offline fixture additions; see change-log 2026-10-06"
+}

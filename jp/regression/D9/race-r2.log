@@ -1,0 +1,11 @@
+FX	0
+ADDR	0
+ORDER	0
+
+fresh: installed JP jar and JVM postdate production-path commit; test-only HEAD may differ; local replay only
+race: requests=10 successful=10 distinctOrderNo=1 DBactiveRows=1 prepayTransactions=1
+payment/owner-resubmit race: both returned permitted business states, no lock inversion/500
+paid: callbacks=2 taskCount=1 mode=manual status=manual_pending (original auto disabled)
+mp order read: server-only FX/markup absent; title/snapshot read succeeds
+restored: exact config rows/cache fields, FX/address/orders/tasks and snap item; real Mercari calls=0
+
