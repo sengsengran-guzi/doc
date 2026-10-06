@@ -8,6 +8,8 @@ depends_on: [GZ-SNAP-304]
 touches:
   - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-jp/**
   - doc/jp/_accept/**
+  - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-common/src/main/java/org/dromara/gz/common/enums/GzFileUsageType.java
+  - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-common/src/main/java/org/dromara/gz/common/service/impl/GzFileServiceImpl.java
 blueprint_refs:
   - FLOW:F-JP-07.step1
   - FLOW:F-JP-07.step2

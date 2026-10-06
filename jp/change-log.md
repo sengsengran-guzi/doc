@@ -58,3 +58,6 @@
 ## 2026-10-06 — D9验收装置调整
 - 宿主审批出现多次超时（未执行，不是安全拒绝或产品FAIL）；用直接工具命令继续。race反stale确认生产9f6aec33a，首次快照因MySQL IN字面量collation混合失败，尚未创建数据，现明确二进制UTF8排序规则。test-only提交不重启后端，反stale核生产路径提交+源码/jar/JVM时间。
 - 独立QA发现302 Filter测试宽泛config stub污染303 gate配置，产品fail-closed正常；375621d34仅将fixture限定filter key。按最新授权只复跑该失败类和一轮真实10并发/付款竞争，复用已绿证据，不机械三轮/变异。
+
+## 2026-10-06 — 305证据上传接线
+- 现有公共上传只接受图片且缺snap_evidence usage，无法持久化权威已要求的文本/HTML/JSON证据。305范围补gz-common的GzFileUsageType及GzFileServiceImpl两文件，限定该usage的后缀/MIME白名单，文档对象按application/octet-stream供下载，既有admin图片上传限制维持并验证。只补实现与touches，无新增依赖或业务蓝图变化。
