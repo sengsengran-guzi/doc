@@ -1,0 +1,30 @@
+PASS signed health 200 fake
+PASS health accounts/session shape
+PASS health no credentials
+PASS wrong auth 401 body
+PASS expired auth 401 body
+PASS missing auth 401 body
+PASS unsigned outside image 403
+PASS unsigned image bytes/cache
+PASS search nonempty sale only
+PASS search retains Shops for downstream filtering
+PASS m99000000001 details/shipping
+PASS m99000000002 details/shipping
+PASS seller intro present
+PASS synthetic recorded resolve
+PASS outside resolve 403
+PASS missing item 404 deleted
+PASS empty search deterministic
+PASS concurrency round 1 safe results
+PASS round 1 repeat identical first result
+PASS round 1 one persistent click
+PASS concurrency round 2 safe results
+PASS round 2 repeat identical first result
+PASS round 2 one persistent click
+PASS concurrency round 3 safe results
+PASS round 3 repeat identical first result
+PASS round 3 one persistent click
+PASS actual burst 429
+PASS actual bucket cooldown recovers
+HTTP status burst {200: 10, 429: 30}
+COUNTS local HTTP checks 28

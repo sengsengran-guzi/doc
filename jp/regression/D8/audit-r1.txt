@@ -1,0 +1,13 @@
+anonymous item API failed; switching to rendered page
+anonymous item API failed; switching to rendered page
+PASS live one run request count matches transport entries <=5
+PASS live only anonymous search and detail transport
+PASS real JSON subset sale and shipping/category
+PASS 11 HTML samples explicitly synthetic
+PASS real source count exactly two
+PASS all provenance references exist
+PASS first API error falls back to browser
+PASS second error opens circuit
+PASS cooldown skips recovered API until elapsed
+PASS real monotonic cooldown recovery
+COUNTS independent offline checks 10

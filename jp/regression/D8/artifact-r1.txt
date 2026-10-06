@@ -1,0 +1,11 @@
+PASS runtime fake/replay all source/fixtures identical: 83
+source fingerprint {"app/main.py": "4772b3fa9535955bcda18c63670f6874fa3129ca3304921290464d1adf27f6e0", "app/store.py": "06bb1fcdef4a75913372b72fa5fcabdb71719c565282744fbf9907126cd46d8b", "app/read_sources/live.py": "59f18060793fd1ef7be9f63339ce609d759a3a9884fd9082bafcf9761d0c5ecf"}
+PASS running image equals current built image sha256:8b150b8a50fa1d7036b9b4aa90bd34e9e22d1518ae01597269f0e05da3ebf33c
+container e3dee8dc7062e4afa7c91309df584179c551f9f8174f06fbd683151a572aa23a started 2026-10-06T01:17:23.302230471Z
+PASS independent SQLite connection data and exact cleanup
+{"ledger": [["QA-D8-r1-1", 1, 1], ["QA-D8-r1-2", 1, 1], ["QA-D8-r1-3", 1, 1]], "idempotency_states": [["QA-D8-r1-1", "done"], ["QA-D8-r1-2", "done"], ["QA-D8-r1-3", "done"]], "facts": [["QA-D8-r1-1", 1], ["QA-D8-r1-2", 1], ["QA-D8-r1-3", 1]]}
+cleanup 3 precise QA order numbers, 9 rows; remaining 0
+
+PASS runtime startup/auth/purchase logs have no configured secret or credential headers
+PASS image has no baked secret env or .env file
+COUNTS artifact/persistence checks 7

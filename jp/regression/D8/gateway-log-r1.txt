@@ -1,0 +1,93 @@
+mercari-gateway-gateway-1  | INFO:     Started server process [1]
+mercari-gateway-gateway-1  | INFO:     Waiting for application startup.
+mercari-gateway-gateway-1  | 2026-10-06 01:17:23,714 INFO gateway gateway 0.1.0 up driver=fake read_source=replay accounts=2
+mercari-gateway-gateway-1  | INFO:     Application startup complete.
+mercari-gateway-gateway-1  | INFO:     Uvicorn running on http://0.0.0.0:8700 (Press CTRL+C to quit)
+mercari-gateway-gateway-1  | INFO:     127.0.0.1:56874 - "GET /v1/search?q=%E7%BC%B6%E3%83%90%E3%83%83%E3%82%B8 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     127.0.0.1:56882 - "GET /v1/items/m99000000002 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     127.0.0.1:56884 - "GET /v1/sellers/99000004 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     127.0.0.1:56900 - "GET /v1/resolve?url=https%3A%2F%2Fmerc.li%2Fsynthetic202 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     127.0.0.1:56904 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51546 - "GET /v1/health HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | 2026-10-06 01:22:07,365 WARNING gateway.auth auth rejected: GET /v1/health reason=signature mismatch
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51558 - "GET /v1/health HTTP/1.1" 401 Unauthorized
+mercari-gateway-gateway-1  | 2026-10-06 01:22:07,372 WARNING gateway.auth auth rejected: GET /v1/health reason=timestamp outside allowed clock skew
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51566 - "GET /v1/health HTTP/1.1" 401 Unauthorized
+mercari-gateway-gateway-1  | 2026-10-06 01:22:07,378 WARNING gateway.auth auth rejected: GET /v1/health reason=missing X-GW-Ts / X-GW-Sign
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51570 - "GET /v1/health HTTP/1.1" 401 Unauthorized
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51578 - "GET /v1/img/https%3A//evil.test/a.png HTTP/1.1" 403 Forbidden
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51586 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51590 - "GET /v1/search?q=%E7%BC%B6%E3%83%90%E3%83%83%E3%82%B8 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51604 - "GET /v1/items/m99000000001 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51610 - "GET /v1/items/m99000000002 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51614 - "GET /v1/sellers/99000004 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51616 - "GET /v1/resolve?url=https%3A%2F%2Fmerc.li%2FSYNTHETIC01 HTTP/1.1" 404 Not Found
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51622 - "GET /v1/resolve?url=https%3A%2F%2Fmerc.li%2Fsynthetic202 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51638 - "GET /v1/resolve?url=https%3A%2F%2Fevil.test%2Fx HTTP/1.1" 403 Forbidden
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51650 - "GET /v1/items/m99999999999 HTTP/1.1" 404 Not Found
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51654 - "GET /v1/search?q=QA_UNRECORDED_EMPTY HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,631 INFO gateway.fake fake click order_no=QA-D8-r1-1 outcome=success clicks=1
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,633 INFO gateway.purchase purchase order_no=QA-D8-r1-1 external_id=mQAD8r11 account=acc01 result=success reason=None risk=False
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,633 INFO gateway.purchase idempotent hit order_no=QA-D8-r1-1 result=success
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51662 - "POST /v1/purchases HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51670 - "POST /v1/purchases HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,642 INFO gateway.purchase idempotent hit order_no=QA-D8-r1-1 result=success
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51680 - "POST /v1/purchases HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51696 - "GET /v1/_fake/ledger?order_no=QA-D8-r1-1 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,666 WARNING gateway.purchase order_no=QA-D8-r1-2 already in progress (or interrupted) → unknown
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,669 INFO gateway.fake fake click order_no=QA-D8-r1-2 outcome=success clicks=1
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,671 INFO gateway.purchase purchase order_no=QA-D8-r1-2 external_id=mQAD8r12 account=acc01 result=success reason=None risk=False
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51706 - "POST /v1/purchases HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51708 - "POST /v1/purchases HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,678 INFO gateway.purchase idempotent hit order_no=QA-D8-r1-2 result=success
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51716 - "POST /v1/purchases HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51730 - "GET /v1/_fake/ledger?order_no=QA-D8-r1-2 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,697 INFO gateway.fake fake click order_no=QA-D8-r1-3 outcome=success clicks=1
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,699 INFO gateway.purchase purchase order_no=QA-D8-r1-3 external_id=mQAD8r13 account=acc01 result=success reason=None risk=False
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,699 INFO gateway.purchase idempotent hit order_no=QA-D8-r1-3 result=success
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51756 - "POST /v1/purchases HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51742 - "POST /v1/purchases HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | 2026-10-06 01:22:08,705 INFO gateway.purchase idempotent hit order_no=QA-D8-r1-3 result=success
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51758 - "POST /v1/purchases HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51768 - "GET /v1/_fake/ledger?order_no=QA-D8-r1-3 HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:51772 - "GET /v1/img/item/synthetic.png HTTP/1.1" 429 Too Many Requests
+mercari-gateway-gateway-1  | INFO:     172.23.0.1:32982 - "GET /v1/img/item/synthetic.png HTTP/1.1" 200 OK

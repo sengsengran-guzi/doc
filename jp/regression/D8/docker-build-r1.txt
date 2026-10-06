@@ -1,0 +1,47 @@
+#1 [gateway internal] load .dockerignore
+#1 transferring context: 170B done
+#1 DONE 0.0s
+
+#2 [gateway internal] load build definition from Dockerfile
+#2 transferring dockerfile: 2.00kB done
+#2 DONE 0.0s
+
+#3 [gateway internal] load metadata for mcr.microsoft.com/playwright/python:v1.63.0-noble
+#3 DONE 2.4s
+
+#4 [gateway gateway 1/9] FROM mcr.microsoft.com/playwright/python:v1.63.0-noble@sha256:72bd171a9ffc2b4b59532aaa6210e21014d07093120dc25528870c0b840da1f0
+#4 DONE 0.0s
+
+#5 [gateway internal] load build context
+#5 transferring context: 4.96kB 0.0s done
+#5 DONE 0.0s
+
+#6 [gateway gateway 5/9] COPY app ./app
+#6 CACHED
+
+#7 [gateway gateway 2/9] WORKDIR /app
+#7 CACHED
+
+#8 [gateway gateway 3/9] COPY requirements.txt ./
+#8 CACHED
+
+#9 [gateway gateway 6/9] COPY docker ./docker
+#9 CACHED
+
+#10 [gateway gateway 8/9] COPY fixtures ./fixtures
+#10 CACHED
+
+#11 [gateway gateway 4/9] RUN python3 -m pip install -r requirements.txt     && python3 -c "import fastapi, uvicorn, httpx, mercapi, playwright"
+#11 CACHED
+
+#12 [gateway gateway 7/9] COPY scripts ./scripts
+#12 CACHED
+
+#13 [gateway gateway 9/9] RUN chmod +x docker/*.sh     && mkdir -p /data/profiles     && chown -R pwuser:pwuser /data
+#13 CACHED
+
+#14 [gateway] exporting to image
+#14 exporting layers done
+#14 writing image sha256:8b150b8a50fa1d7036b9b4aa90bd34e9e22d1518ae01597269f0e05da3ebf33c done
+#14 naming to docker.io/library/mercari-gateway:local done
+#14 DONE 0.0s
