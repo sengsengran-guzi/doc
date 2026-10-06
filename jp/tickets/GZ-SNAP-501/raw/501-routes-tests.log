@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp
+
+ ✓ src/pages.routes.test.ts (3 tests) 47ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  17:19:05
+   Duration  495ms (transform 31ms, setup 15ms, collect 8ms, tests 47ms, environment 139ms, prepare 42ms)
+

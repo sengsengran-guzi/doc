@@ -1,0 +1,31 @@
+[preflight] 硬 gate 体检（无降级）
+  ✓ devtools cli: /Applications/wechatwebdevtools.app/Contents/MacOS/cli
+  ✓ devtools 服务端口开着 (http://127.0.0.1:26863)
+  ✓ devtools 已登录
+  ✓ dist 完整: /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin/app.json
+  ✓ dist = dev profile（本地后端 + wxMOCK + jp clientid）
+  ✓ 后端可达: http://localhost:8080 (HTTP 401)
+  ✓ 后端认 clientid=mp-applet-gz-jp（openid=mock-jp-tester）
+[preflight] ✓ 通过
+
+=== flow: snap-search ===
+[run] launch automation  dist=/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp/dist/build/mp-weixin
+[run] ✓ automation launched
+[run] ✓ 小程序侧 wx.request 能打到本地后端（域名校验已放开）
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  backend replay {"code":200,"msg":"操作成功","data":{"query":"検証缶バッジ1791278328229","redirectItemId":null,"items":[{"externalId":"m99000000001","titleJa":"合成テスト 即購入OK","titleZh":"[译]合成テスト 即購入OK","priceJpy":801,"referencePriceCent":null,"thumbUrl":"http://127.0.0.1:8700/v1/img/item/detail/orig/photos/m99000000001_1.jpg","gateResult":null,"gateReason":null},{"externalId":"m5011791278328229","titleJa":"合成テスト コメント必須","titleZh":"[译]合成テスト コメント必須","priceJpy":803,"referencePriceCent":null,"thumbUrl":"http://127.0.0.1:8700/v1/img/item/detail/orig/photos/m99000000003_1.jpg","gateResult":"manual","gateReason":"comment_required:コメント必須@title"}],"hasNext":true,"stale":false}}
+  ✓真实后端回放卡片 2、价格、可空gate同源；热门词来自DB
+  ✓分页与价格高→低真实回放排序
+  ✓真实gateway失败→Redis stale结果与提示
+  ✓真实gateway错误4119→煤炉暂时访问不了空态，输入框仍可用
+  ✓Shops拒绝、商品链接自动直跳详情
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql: [Warning] Using a password on the command line interface can be insecure.
+  ✓临时词表、synthetic replay、专属Redis键已精确清理；经营配置/已有快照未修改，自造manual快照已清理
+[PASS] snap-search
+
+[run] 结束：1/1 flow 通过

@@ -1,0 +1,38 @@
+{
+  "src/pages/snap/index.vue": {
+    "sha256": "52104dd968cbcf564982265112ab31728a785c692cfbdf0d9c362171d5f7ecd1",
+    "mtime": 1791277870.6984303
+  },
+  "src/pages/snap/index.logic.ts": {
+    "sha256": "27902aa2307d10e51969fb3a8fbb3431bf8fddde40e97a130a41c8797b87cc16",
+    "mtime": 1791277870.6407418
+  },
+  "src/components/biz/BizSnapCard.vue": {
+    "sha256": "2f152ee69a96012010ce300b937fe83457526ae682469bbf0d278b93ed9db4c3",
+    "mtime": 1791278122.4664044
+  },
+  "src/static/tabbar/mercari.png": {
+    "sha256": "d513340b11a47f40838a1a8822c8571f4707f3a8cb6373edd9a2082e37e74bc8",
+    "mtime": 1791278214.8998399
+  },
+  "src/static/tabbar/mercariHL.png": {
+    "sha256": "6df4e96f2b58cba8e432541d8b69fdfe41a0430a8f4f9cd49e7f31296252b452",
+    "mtime": 1791278214.9367583
+  },
+  "dist/build/mp-weixin/pages/snap/index.js": {
+    "sha256": "c8e970a68a41e3fc5dc589792dd626b467ccaafcc16039a845ee66fb4fec3916",
+    "mtime": 1791278221.4642348
+  },
+  "dist/build/mp-weixin/components/biz/BizSnapCard.js": {
+    "sha256": "5563c37a622878fb6fcff6645f80521dcbde84e3cbc06ab2de2c1cd9358a32a6",
+    "mtime": 1791278221.4645596
+  },
+  "dist/build/mp-weixin/static/tabbar/mercari.png": {
+    "sha256": "d513340b11a47f40838a1a8822c8571f4707f3a8cb6373edd9a2082e37e74bc8",
+    "mtime": 1791278221.4760711
+  },
+  "dist/build/mp-weixin/static/tabbar/mercariHL.png": {
+    "sha256": "6df4e96f2b58cba8e432541d8b69fdfe41a0430a8f4f9cd49e7f31296252b452",
+    "mtime": 1791278221.476498
+  }
+}

@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/miniapp-jp
+
+ ✓ src/pages/snap/index.logic.test.ts (5 tests) 2ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  17:18:09
+   Duration  399ms (transform 30ms, setup 14ms, collect 6ms, tests 2ms, environment 142ms, prepare 54ms)
+
