@@ -1,0 +1,7 @@
+{
+  "phase": "D10",
+  "backend_files": 31,
+  "outside_ticket_touches": [],
+  "other_code_repos_unchanged": true,
+  "scope_reconciliation": "305 declared its directly affected common upload test (3 existing-class cases); see change-log"
+}

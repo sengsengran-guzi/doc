@@ -1,0 +1,8 @@
+{
+  "jvm_pid": "2136",
+  "jvm_self_reported_jp_classpath": "/Users/wkui/.m2/repository/org/dromara/ruoyi-gz-jp/5.6.1/ruoyi-gz-jp-5.6.1.jar",
+  "loaded_jar_sha256": "ffc6a47f0010d74f2e180178295f2ad74919ce10bb0aa4db8199f4f4e57b4cdf",
+  "source_commit": "366dad57b742cc912227709edb19ce9d3303159e",
+  "source_older_than_loaded_jar": true,
+  "flyway_self_report": "\u001b[0;39m - Successfully validated 187 migrations (execution time 00:00.102s)"
+}
