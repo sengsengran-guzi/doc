@@ -1,0 +1,4 @@
+artifact sha256=2f2ca9f183d1ad44c95522eb481f9a0bff8a5b81c1c89db7ddf18db49ae69efc
+manual list: paid-time order, locked price, estimate and original URL present
+HTTP success/reject/terminal guard + diff callback replay + failed remainder 913 + concurrent [200,409]; DB budget violations=0; live Mercari=0
+exact fixture rows restored; no shared pricing/FX/account changes

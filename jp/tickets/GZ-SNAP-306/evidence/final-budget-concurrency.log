@@ -1,0 +1,3 @@
+artifact sha256=29baeb9f4c14ba4f4e5a315ce1c634ad22059203f554e65124f54b632ab05b36
+budget current-read probe: failed remainder 913 + concurrent [200,409]; DB budget violations=0; live Mercari=0
+exact fixture rows restored; no shared pricing/FX/account changes
