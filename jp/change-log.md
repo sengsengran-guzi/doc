@@ -87,3 +87,6 @@
 ## 2026-10-06 — 504订单公共状态投影
 - UI:mp.order_detail.snap补mp列表/详情snap行公共字段契约：snapStatus六个展示态、交易态白名单、仅refunded shipping_diff求和；batch为null，原purchase_status、内部参数、账号/last_error不下发。未退款时不声称已退款，仍结合既有refundStatus显示处理中。纯既定状态展示契约，无金额或经营语义变更。
 - authority_lint impact仅504（当前产出方）；其单测/真实fake引擎与D12独立QA落实，无历史ticket失效。
+
+## 2026-10-06 — 504未付款/已取消展示守卫
+- 采购任务付款后才创建，缺任务时不能把created/cancelled单显示成抢购中。UI:mp.order_detail.snap追认资金态优先：未付款/已取消沿用已有文案且不采购轮询；只补展示与定向逻辑断言，不改后台任务/金额。impact仍仅当前504；已绿真实付款路径复用，D12最终构建与QA以修正后的源码为准。
