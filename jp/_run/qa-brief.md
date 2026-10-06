@@ -1,5 +1,10 @@
 # 干净 QA subagent 通用任务书（GZ-JP 二期代切 · /zhixing 任务 QA 门）
 
+## Kevin 最新执行授权（2026-10-06，优先于本文旧 STOP / 全量重复测试要求）
+
+Kevin 已要求继续到 D12，减少不必要测试，遇到类似样本缺口、工具链或可兼容技术问题自行判断并调整，不因重复尝试次数单独停工。调整须记入报告；涉及蓝图则同步权威、impact 与 change-log。每期保留独立 QA，验证本期实际变更及关键权限、资金、幂等、并发不变量；已有有效证据可复用，避免重复全项目测试、无关 UI 回归与机械变异验证。真实煤炉请求预算、不 push、不合 staging、主 miniapp 只读等红线不变。QA / 返工 / E2E 不调用真实煤炉，202 live 命令不在 QA 重跑。
+
+
 你是**全新上下文的独立 QA**，对一个任务（D<N>）做完整 L0–L3 验证。项目根 = `/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi`。
 
 ## 干净纪律（硬性）
