@@ -41,6 +41,7 @@ Kevin 已要求继续到 D12，减少不必要测试，遇到类似样本缺口�
 - **绝不打真煤炉**（唯一例外是 GZ-SNAP-202 ticket 里写明的 live 测试 ≤5 次 / 回放录制一次性 ≤15 次，且只有那张 ticket 可以）。不写任何循环或批量外部请求。
 - 不跑 migration 之外的 destructive SQL（DROP / TRUNCATE / 大量 DELETE）。清自己造的测试数据用精确 WHERE 的硬删。
 - 不动 `code/main/miniapp/`（现有小程序，本轮只读）。
+- E2E仅需mock微信登录token时不传nickName/avatar等资料；固定mock openid会复用既有用户，资料会被upsert覆盖。需要改资料的测试先快照再精确恢复。
 
 ## git
 - 代码仓（`code/main/RuoYi-Vue-Plus` / `code/main/plus-ui` / `code/main/miniapp-jp` / `code/main/mercari-gateway`）都在 `task/D<N>` 分支上（主线程已建好；你先 `git -C <仓> branch --show-current` 确认）。在该分支上 commit 你的改动，消息形如 `feat(jp-snap): GZ-XXX-NNN <一句话>`，末尾加一行
