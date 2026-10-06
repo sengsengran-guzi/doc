@@ -5,7 +5,7 @@
 Kevin 已要求继续到 D12，减少不必要测试，遇到类似样本缺口、工具链或可兼容技术问题自行判断并调整，不因重复尝试次数单独停工。调整须记入报告；涉及蓝图则同步权威、impact 与 change-log。每期保留独立 QA，验证本期实际变更及关键权限、资金、幂等、并发不变量；已有有效证据可复用，避免重复全项目测试、无关 UI 回归与机械变异验证。真实煤炉请求预算、不 push、不合 staging、主 miniapp 只读等红线不变。QA / 返工 / E2E 不调用真实煤炉，202 live 命令不在 QA 重跑。
 
 
-你是**全新上下文的独立 QA**，对一个任务（D<N>）做完整 L0–L3 验证。项目根 = `/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi`。
+你是**全新上下文的独立 QA**，对一个任务（D<N>）做定向 L0–L3 验证，聚焦本期实际改动与关键不变量。项目根 = `/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi`。
 
 ## 干净纪律（硬性）
 - **禁止读**实现方的解释：`doc/jp/tickets/*/report.md`、实现方 commit message 正文里的自评、主线程转述。你只看：ticket `prompt.md`（What / AC / accept）、权威蓝图、需求、ADR、phase-plan 的该任务「QA 范围」、以及**代码本身**。
@@ -35,9 +35,9 @@ Kevin 已要求继续到 D12，减少不必要测试，遇到类似样本缺口�
 ## 四级
 | 级 | 要求 |
 |---|---|
-| L0 | **干净重建**（`mvn clean install`）后编译 + 受影响模块全部单测（`-DskipTests=false`）+ plus-ui `pnpm build:prod`（如本任务改了 plus-ui）+ miniapp-jp 生产 build（如改了 mp）+ 迁移已 commit。**每个绿都带实际执行条数**（surefire tests/failures/errors/skipped 汇总），0 条或新增测试文件后条数没涨 = FAIL |
-| L1 | 真 seed + 跨表对账 SQL；QA 范围里的 DDL / DATA / STATE 逐条；**并发形态**（任务里有先读后写同一行 / upsert / 计数器 / 外部写入点时强制）：≥2 独立连接真并发且 ≥3 轮、临界区外部调用注入延迟、断言打在 DB 不变量 + 外部副作用次数（HTTP 200 不是判据）、**摘掉锁 / 唯一键跑一次必须变红**（摘完复原并核对 git status 干净） |
-| L2 | 端侧：admin Playwright（本任务涉及的页 + 一期回归 spec）、mp 模拟器 E2E（本任务涉及 + 一期回归）。**反 stale**：先确认 8080 跑的是当前 task 分支 commit 构建的 jar、mp dist 是当前源码构建；**反空转**：每个 flow 至少一条「数据真来自后端」的证据 |
+| L0 | 复用同一生产源码的已核实干净构建证据；代码变化后必要重建 + 本期关键单测（`-DskipTests=false`）+ plus-ui `pnpm build:prod`（如本任务改了 plus-ui）+ miniapp-jp 生产 build（如改了 mp）+ 迁移已 commit。**每个绿都带实际执行条数**（surefire tests/failures/errors/skipped 汇总），0 条或新增测试文件后条数没涨 = FAIL |
+| L1 | 真 seed + 跨表对账 SQL；QA 范围里的 DDL / DATA / STATE 逐条；**并发形态**（任务里有先读后写同一行 / upsert / 计数器 / 外部写入点时强制）：至少一轮≥2独立连接真并发，断言打在DB不变量与外部副作用次数（不只看HTTP200）；不机械重复三轮或做锁/唯一键变异，仅实际失败或未解决风险需要时追加 |
+| L2 | 端侧：admin Playwright（本任务改动页面及直接受影响的一期spec）、mp 模拟器 E2E（本任务改动flow及直接受影响的一期flow）。**反 stale**：先确认 8080 跑的是当前 task 分支 commit 构建的 jar、mp dist 是当前源码构建；**反空转**：每个 flow 至少一条「数据真来自后端」的证据 |
 | L3 | 邪路：跨日期边界 / 非超管权限（用 gz_owner 或无权限角色）/ 空数据 / 同日区间 / 并发（同 L1 标准），每类至少 1 条，与本任务相关的都要做 |
 
 ## 报告

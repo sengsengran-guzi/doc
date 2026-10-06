@@ -50,7 +50,7 @@ Kevin 已要求继续到 D12，减少不必要测试，遇到类似样本缺口�
 
 ## 交付标准
 1. 实现 ticket 的 What，满足 AC。只改 `touches` 声明的路径；确需越界（如 i18n 词表、某个 mapper xml）就改，但在报告里**逐个列出越界文件和理由**。
-2. **从项目根逐条原样执行 front-matter 里每条 accept.run**（必要时先重启后端），全部 exit 0 才算完。不许改 accept 的 run 来迁就实现。
+2. 验证 front-matter 各条accept的实际判据；可合并同类定向用例、复用同产物已绿证据，避免重复执行。需要的真实HTTP/DB验收必须完成；普通脚本或装置问题自行修正并记raw，不能降低判据来掩盖产品失败。
 3. 报告（放最终回复末尾，「==== 报告全文 ====」之后）：改了哪些文件（按仓）、commit sha、新迁移文件名、每条 accept 的命令与 **raw output**（含 surefire 报告里的 tests/failures 数）、对下游 ticket 的提示、已知风险。
 4. 收工前确认各代码仓 `git status --porcelain` 只剩不属于你的改动（理想为空）。
 
