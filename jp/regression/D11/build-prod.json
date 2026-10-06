@@ -1,0 +1,7 @@
+{
+  "command": "pnpm build:prod",
+  "exitCode": 0,
+  "head": "997d36c5fc09bbcfe651ef730911a2a2566112f0",
+  "distIndexSha256": "7bd1fc194f83c1d839d18f63119835bfb4d20ac88caeb4dfe8085f350c9e8d4e",
+  "distIndexMtime": 1791276680.6650438
+}

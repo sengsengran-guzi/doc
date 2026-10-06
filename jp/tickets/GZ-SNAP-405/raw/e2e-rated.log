@@ -1,0 +1,14 @@
+
+Running 1 test using 1 worker
+
+(node:62327) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] e2e/gz-jp/fulfill-board-snap.spec.ts:57:1 › after rating same snap row can advance and ship using existing board operations, verified in DB
+e2e/gz-jp/fulfill-board-snap.spec.ts:57:1 › after rating same snap row can advance and ship using existing board operations, verified in DB
+fixtures: 4 API quote→submit→mock callback orders; gateway fake/replay; live Mercari=0
+
+cleanup: 4 owned orders/items/tasks/payments/refunds removed; address and FX removed; 3 config values restored byte-for-byte; no account mutations
+
+  1 passed (14.5s)

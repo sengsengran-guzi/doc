@@ -1,0 +1,58 @@
+
+Running 2 tests using 1 worker
+
+(node:60967) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/2] e2e/gz-jp/fulfill-board-snap.spec.ts:34:1 › unrated snap rows display source and reason, header select-all cannot select them
+e2e/gz-jp/fulfill-board-snap.spec.ts:34:1 › unrated snap rows display source and reason, header select-all cannot select them
+fixtures: 4 API quote→submit→mock callback orders; gateway fake/replay; live Mercari=0
+
+[2/2] e2e/gz-jp/fulfill-board-snap.spec.ts:57:1 › after rating same snap row can advance and ship using existing board operations, verified in DB
+e2e/gz-jp/fulfill-board-snap.spec.ts:57:1 › after rating same snap row can advance and ship using existing board operations, verified in DB
+cleanup: 4 owned orders/items/tasks/payments/refunds removed; address and FX removed; 3 config values restored byte-for-byte; no account mutations
+
+  1) e2e/gz-jp/fulfill-board-snap.spec.ts:57:1 › after rating same snap row can advance and ship using existing board operations, verified in DB 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('item-selection-99101000044')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for getByTestId('item-selection-99101000044')
+
+
+      71 |   await page.getByTestId('btn-search').click();
+      72 |   expect((await (await allLoaded).json()).code).toBe(200);
+    > 73 |   await expect(page.getByTestId(`item-selection-${created[0].itemId}`)).toBeVisible();
+         |                                                                         ^
+      74 |   await table.locator('thead .el-checkbox').click();
+      75 |   await expect(selection).toBeChecked();
+      76 |   for (const blocked of [created[0], created[1], created[3]]) {
+        at /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/fulfill-board-snap.spec.ts:73:73
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/gz-jp-fulfill-board-snap-a-83557-d-operations-verified-in-DB/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/gz-jp-fulfill-board-snap-a-83557-d-operations-verified-in-DB/error-context.md
+
+    Error Context: test-results/gz-jp-fulfill-board-snap-a-83557-d-operations-verified-in-DB/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/gz-jp-fulfill-board-snap-a-83557-d-operations-verified-in-DB/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/gz-jp-fulfill-board-snap-a-83557-d-operations-verified-in-DB/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    e2e/gz-jp/fulfill-board-snap.spec.ts:57:1 › after rating same snap row can advance and ship using existing board operations, verified in DB 
+  1 passed (37.2s)

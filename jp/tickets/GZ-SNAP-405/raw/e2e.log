@@ -1,0 +1,131 @@
+
+Running 8 tests using 1 worker
+
+(node:57584) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/8] e2e/gz-jp/fulfill-board-snap.spec.ts:34:1 › unrated snap rows display source and reason, header select-all cannot select them
+e2e/gz-jp/fulfill-board-snap.spec.ts:34:1 › unrated snap rows display source and reason, header select-all cannot select them
+fixtures: 4 API quote→submit→mock callback orders; gateway fake/replay; live Mercari=0
+
+cleanup: 4 owned orders/items/tasks/payments/refunds removed; address and FX removed; 3 config values restored byte-for-byte; no account mutations
+
+  1) e2e/gz-jp/fulfill-board-snap.spec.ts:34:1 › unrated snap rows display source and reason, header select-all cannot select them 
+
+    TimeoutError: locator.check: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for getByTestId('item-table-14').locator('thead .el-checkbox input')
+        - locator resolved to <input type="checkbox" id="el-id-3348-94" class="el-checkbox__original"/>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+          - waiting 100ms
+        29 × waiting for element to be visible, enabled and stable
+           - element is not visible
+         - retrying click action
+           - waiting 500ms
+
+
+      43 |     await expect(page.getByRole('tooltip').filter({ hasText: '验货评价后才能推进' })).toBeVisible();
+      44 |     const all = table.locator('thead .el-checkbox input');
+    > 45 |     if (await all.isEnabled()) await all.check();
+         |                                          ^
+      46 |     await expect(page.getByTestId('btn-advance')).toBeDisabled();
+      47 |     await expect(page.getByTestId('btn-ship')).toBeDisabled();
+      48 |     await expect(selection.locator('input')).not.toBeChecked();
+        at /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/fulfill-board-snap.spec.ts:45:42
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/gz-jp-fulfill-board-snap-u-cf9ac-lect-all-cannot-select-them/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/gz-jp-fulfill-board-snap-u-cf9ac-lect-all-cannot-select-them/error-context.md
+
+    Error Context: test-results/gz-jp-fulfill-board-snap-u-cf9ac-lect-all-cannot-select-them/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/gz-jp-fulfill-board-snap-u-cf9ac-lect-all-cannot-select-them/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/gz-jp-fulfill-board-snap-u-cf9ac-lect-all-cannot-select-them/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:57975) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/8] e2e/gz-jp/fulfill-board-snap.spec.ts:55:1 › after rating same snap row can advance and ship using existing board operations, verified in DB
+e2e/gz-jp/fulfill-board-snap.spec.ts:55:1 › after rating same snap row can advance and ship using existing board operations, verified in DB
+fixtures: 4 API quote→submit→mock callback orders; gateway fake/replay; live Mercari=0
+
+cleanup: 4 owned orders/items/tasks/payments/refunds removed; address and FX removed; 3 config values restored byte-for-byte; no account mutations
+
+  2) e2e/gz-jp/fulfill-board-snap.spec.ts:55:1 › after rating same snap row can advance and ship using existing board operations, verified in DB 
+
+    TimeoutError: locator.check: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for getByTestId('item-selection-99101000034').locator('input')
+        - locator resolved to <input type="checkbox" id="el-id-1765-95" class="el-checkbox__original"/>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+          - waiting 100ms
+        29 × waiting for element to be visible, enabled and stable
+           - element is not visible
+         - retrying click action
+           - waiting 500ms
+
+
+      60 |   const selection = page.getByTestId(`item-selection-${fixture.itemId}`).locator('input');
+      61 |   await expect(selection).toBeEnabled();
+    > 62 |   await page.getByTestId('filter-order-no').fill('');
+         |                   ^
+      63 |   const allLoaded = page.waitForResponse((r) => r.url().includes('/system/gz/jp/fulfill/list') && !r.url().includes(fixture.orderNo));
+      64 |   await page.getByTestId('btn-search').click();
+      65 |   expect((await (await allLoaded).json()).code).toBe(200);
+        at /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/fulfill-board-snap.spec.ts:62:19
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/gz-jp-fulfill-board-snap-a-83557-d-operations-verified-in-DB/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/gz-jp-fulfill-board-snap-a-83557-d-operations-verified-in-DB/error-context.md
+
+    Error Context: test-results/gz-jp-fulfill-board-snap-a-83557-d-operations-verified-in-DB/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/gz-jp-fulfill-board-snap-a-83557-d-operations-verified-in-DB/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/gz-jp-fulfill-board-snap-a-83557-d-operations-verified-in-DB/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:58437) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/8] e2e/gz-jp/fulfill-board.spec.ts:99:3 › GZ-JP-108 履约看板 › ★ 按客人聚合：组头显示客人 + 款数，展开后是该客人的商品行（跨订单同组）
+[4/8] e2e/gz-jp/fulfill-board.spec.ts:118:3 › GZ-JP-108 履约看板 › ★ 终态行（已发货）不可勾选
+[5/8] e2e/gz-jp/fulfill-board.spec.ts:127:3 › GZ-JP-108 履约看板 › ★ 跨客人勾选 → 批量发货置灰并提示
+[6/8] e2e/gz-jp/fulfill-board.spec.ts:141:3 › GZ-JP-108 履约看板 › ★ 批量推进（跳过中间态：购买中 → 清关中），UI 与库双断言
+[7/8] e2e/gz-jp/fulfill-board.spec.ts:166:3 › GZ-JP-108 履约看板 › ★ 批量发货：跨订单同客人共用一个运单号，UI 与库双断言
+[8/8] e2e/gz-jp/fulfill-board.spec.ts:196:3 › GZ-JP-108 履约看板 › ★★ 批量标记购买失败必须二次确认（会触发真实退款，不可逆）
+  2 failed
+    e2e/gz-jp/fulfill-board-snap.spec.ts:34:1 › unrated snap rows display source and reason, header select-all cannot select them 
+    e2e/gz-jp/fulfill-board-snap.spec.ts:55:1 › after rating same snap row can advance and ship using existing board operations, verified in DB 
+  6 passed (1.5m)
