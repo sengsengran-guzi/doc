@@ -292,7 +292,7 @@ records:
           占用者是**本人**且订单仍 created → 不新建订单，返回原订单并重新下发支付参数（原支付单仍 pending 未过期 → 复用；已过期 → 新建一笔支付单）（REQ-SNAP-046）；
           占用者是别人，或本人订单已 paid → 拒「已被其他用户下单」/「你已购买过这件商品」（REQ-SNAP-041）
           ③ 建 gz_jp_order + 1 行 gz_jp_order_item（source=snap、product_id 空、snap_item_id 有值、qty=1、amount_cent=报价 total_cent）
-          ④ 报价整体写进 product_snapshot_json 的 snap 段 ⑤ 回写 active_order_item_id ⑥ 主图转存 gz_file_object（失败不阻断，快照留原 URL 兜底）
+          ④ 报价写进 product_snapshot_json 的 snap 段：金额和汇率保持报价锁定；准入取报价和实时复查的保守结果，任一 manual 则 manual，实时 blocked 拒单 ⑤ 回写 active_order_item_id ⑥ 主图转存 gz_file_object（失败不阻断，快照留原 URL 兜底）
       - id: FLOW:F-JP-06.step4
         actor: 客人(mp)
         action: 微信支付（复用 GZ-PAY，business_type='jp'）

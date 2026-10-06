@@ -20,6 +20,7 @@ Kevin 已要求继续到 D12，减少不必要测试，遇到类似样本缺口�
 5. L1 回归包原子：`doc/jp/verify.sh`（一期留下的反 stale 守卫 + 公共字段 + 跨表对账 + C 端契约），以及 `doc/jp/_accept/` 下已有脚本。
 
 ## 环境
+- 本机共享restart脚本已改用专用launchd任务 `dev.sensenran-guzi.jp-snap.backend` 保活，工具会话结束不会清理8080；依然只用共享脚本启动/重启。运行选项只保存在权限600的 `/tmp/sensenran-run/backend-options.json`，不打印/提交。最终由主线程 `launchctl remove` 停自己的任务并检查8080。
 - `export PATH=/opt/homebrew/bin:$PATH`。curl 打 localhost 一律 `--noproxy '*'`；Playwright / node 打 localhost 设 `NO_PROXY=localhost,127.0.0.1`。
 - MySQL `docker exec sensenran-dev-mysql mysql -uroot -proot ry-vue`；Redis `sensenran-dev-redis`（6380 / ruoyi123）。admin 账号 `gz_owner/gz_owner123!`（租户 1001）、`admin/admin123`。
 - 后端 8080 共享单例：要让它跑当前 task 分支代码，**只用**共享重启脚本（带锁、clean install、清幽灵迁移、等启动成功）：

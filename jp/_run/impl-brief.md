@@ -14,6 +14,7 @@ Kevin 已要求继续到 D12，减少不必要测试，遇到类似样本缺口�
 4. 记忆中与本 ticket 相关的坑：`~/.claude/projects/-Users-wkui-Project-profile-project-freelance-projects-sensenran-guzi/memory/MEMORY.md`（索引，按需点开）。
 
 ## 环境
+- 本机共享restart脚本已改用专用launchd任务 `dev.sensenran-guzi.jp-snap.backend` 保活，工具会话结束不会清理8080；依然只用共享脚本启动/重启。运行选项只保存在权限600的 `/tmp/sensenran-run/backend-options.json`，不打印/提交。最终由主线程 `launchctl remove` 停自己的任务并检查8080。
 - PATH 先 `export PATH=/opt/homebrew/bin:$PATH`（mvn / pnpm / python3.11 都在那）。
 - dev MySQL：`docker exec sensenran-dev-mysql mysql -uroot -proot ry-vue`（宿主 3307）；Redis：`sensenran-dev-redis`（宿主 6380，密码 ruoyi123）。
 - 本机有 http 代理：curl 打 localhost 一律 `curl --noproxy '*'`。
