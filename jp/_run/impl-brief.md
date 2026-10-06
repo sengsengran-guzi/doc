@@ -16,7 +16,7 @@ Kevin 已要求继续到 D12，减少不必要测试，遇到类似样本缺口�
 ## 环境
 - 本机共享restart脚本已改用专用launchd任务 `dev.sensenran-guzi.jp-snap.backend` 保活，工具会话结束不会清理8080；依然只用共享脚本启动/重启。运行选项只保存在权限600的 `/tmp/sensenran-run/backend-options.json`，不打印/提交。最终由主线程 `launchctl remove` 停自己的任务并检查8080。
 - `rg` 当前不可用，直接用 `grep`/`find`；Docker准确路径 `/usr/local/bin/docker`，不是 `/opt/homebrew/bin/docker`。宿主审批超时仅表示未执行，直接绝对工具命令通常更可靠；Maven默认沙箱若Mockito自附加被拒，可用已有mockito-core jar经JAVA_TOOL_OPTIONS加载agent，不引新依赖。
-- PATH 先 `export PATH=/opt/homebrew/bin:$PATH`（mvn / pnpm / python3.11 都在那）。
+- PATH 先 `export PATH=/Users/wkui/.nvm/versions/node/v24.11.1/bin:/opt/homebrew/bin:$PATH`（node24 / pnpm 来自 nvm，mvn / python3.11 来自 Homebrew）。
 - dev MySQL：`docker exec sensenran-dev-mysql mysql -uroot -proot ry-vue`（宿主 3307）；Redis：`sensenran-dev-redis`（宿主 6380，密码 ruoyi123）。
 - 本机有 http 代理：curl 打 localhost 一律 `curl --noproxy '*'`。
 - admin 测试账号 `gz_owner / gz_owner123!`（租户 1001）；`admin/admin123` 超管。
