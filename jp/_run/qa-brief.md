@@ -27,7 +27,7 @@ Kevin 已要求继续到 D12，减少不必要测试，遇到类似样本缺口�
 - 后端 8080 共享单例：要让它跑当前 task 分支代码，**只用**共享重启脚本（带锁、clean install、清幽灵迁移、等启动成功）：
   `bash /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/doc/jp/_run/restart-backend.sh`
 - plus-ui 若需起 dev server：`pnpm dev -- --port 8090`（后台起，结束时你自己关掉）。
-- mp 模拟器 E2E：`code/main/miniapp-jp/test/e2e/run.mjs`、现有小程序 `code/main/miniapp/test/e2e/run.mjs`。**两个小程序 E2E 串行跑，不并发**；每条 flow 独占全新会话（harness 默认行为，别改成长寿命会话）。devtools 起不来按 kevin-qa.md 与记忆里的 devtools 坑排查。
+- mp 模拟器 E2E只运行 `code/main/miniapp-jp/test/e2e/run.mjs`，各flow串行共享devtools。`code/main/miniapp`本轮全目录只读，不在该目录build/test或生成任何产物。每条flow按现有harness独立会话；devtools普通装置问题自行排查。
 - 外部替身白名单：煤炉读 = 回放样本、煤炉写 = fake 驱动、翻译 = mock、微信支付 = mock 通道 + simulate-callback。**这些不算 mock 自证**，但业务数据必须真 seed + 真库对账（禁自造数据自证：断言要打在实现方没写过的数据上）。
 - **绝不打真煤炉**，不写循环 / 批量外部请求。不跑 migration 之外的 destructive SQL；你造的测试数据用精确 WHERE 硬删清理。
 - 不改产品代码。你可以新增测试资产（`regression/` 下的脚本、E2E flow / spec），放在对应代码仓的 task/D<N> 分支并 commit（消息 `test(jp-snap): D<N> QA ...` + 末行 `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`），或放 `doc/jp/regression/D<N>/`（doc 仓不 commit）。
