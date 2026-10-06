@@ -1,0 +1,19 @@
+
+Running 3 tests using 1 worker
+
+(node:67689) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] e2e/gz-jp/snap-purchase.spec.ts:19:1 › manual success rejects price increase; failure has confirmation and true refund
+e2e/gz-jp/snap-purchase.spec.ts:19:1 › manual success rejects price increase; failure has confirmation and true refund
+fixtures: 4 API quote→submit→mock callback orders; gateway fake/replay; live Mercari=0
+
+[2/3] e2e/gz-jp/snap-purchase.spec.ts:45:1 › trade cancel confirmation, arrival shipping required, deadline priority, rating and return confirmation
+[3/3] e2e/gz-jp/snap-purchase.spec.ts:84:1 › automatic tasks read real queued task, no write actions; owner routers, reminder badge and denied staff
+e2e/gz-jp/snap-purchase.spec.ts:84:1 › automatic tasks read real queued task, no write actions; owner routers, reminder badge and denied staff
+owner route/read/manual/trade authorized; staff read/manual/trade=403; anonymous=401
+
+cleanup: 5 owned orders/items/tasks/payments/refunds removed; address and FX removed; 3 config values restored byte-for-byte; no account mutations
+
+  3 passed (18.9s)

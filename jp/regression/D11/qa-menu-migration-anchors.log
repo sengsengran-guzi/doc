@@ -1,0 +1,38 @@
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:6:--   14040001  gz.jp.snap.pricing  {"markupRatio":null,"fixedFeeCent":null,"estShippingCent":null,"quoteTtlSec":600}
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:9:--   14040002  gz.jp.snap.filter   {"categoryWhitelist":[],"keywordBlacklist":[]}
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:11:--   14040003  gz.jp.snap.gate     专用 / 拒代购 / 需留言 三组关键词（REQ-SNAP-022/023/048）
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:12:--   14040004  gz.jp.snap.auto     {"enabled":false,...} ★ 自动下单总开关，上线前一直关
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:13:--   14040005  gz.jp.snap.trade    {"rateDeadlineHours":24,"patrolMinutes":20}（实测有卖家要求到货 24 小时内评价）
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:18:--     ③ ★ 开工前已核对活库 config_id 14040000-14049999 为空、全部迁移 grep 无 1404000x 占用。
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:30:  (14040001, '代切-报价定价参数',
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:36:  (14040002, '代切-搜索过滤',
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:42:  (14040003, '代切-准入关键词',
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:48:  (14040004, '代切-自动下单总开关',
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610050726__GZ-SNAP-101-seed-config.sql:54:  (14040005, '代切-交易跟踪参数',
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061555__GZ-SNAP-401-purchase-menu.sql:1:-- GZ-SNAP-401: verified unused 14040 / 14050-14054 in all migrations and live DB.
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061555__GZ-SNAP-401-purchase-menu.sql:3:(14040,'代切',14000,5,'snap',NULL,1,0,'M','0','0','','shopping',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061555__GZ-SNAP-401-purchase-menu.sql:4:(14050,'代切下单',14040,1,'purchase','gz-jp/snap/purchase/index',1,0,'C','0','0','gz:jp:snap:purchase:query','shopping',103,1,NO
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061555__GZ-SNAP-401-purchase-menu.sql:5:(14051,'查询',14050,1,'','',1,0,'F','0','0','gz:jp:snap:purchase:query','#',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061555__GZ-SNAP-401-purchase-menu.sql:6:(14052,'人工填结果',14050,2,'','',1,0,'F','0','0','gz:jp:snap:purchase:manual','#',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061555__GZ-SNAP-401-purchase-menu.sql:7:(14053,'交易操作',14050,3,'','',1,0,'F','0','0','gz:jp:snap:purchase:trade','#',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061555__GZ-SNAP-401-purchase-menu.sql:8:(14054,'查看证据',14050,4,'','',1,0,'F','0','0','gz:jp:snap:purchase:evidence','#',103,1,NOW());
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061555__GZ-SNAP-401-purchase-menu.sql:10:SELECT r.role_id,m.menu_id FROM sys_role r JOIN sys_menu m ON m.menu_id IN(14040,14050,14051,14052,14053,14054)
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061613__GZ-SNAP-402-account-menu.sql:1:-- 14060-14069 verified unused in live sys_menu and all existing migration files.
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061613__GZ-SNAP-402-account-menu.sql:3:(14060,'采购账号',14040,2,'account','gz-jp/snap/account/index',1,0,'C','0','0','gz:jp:snap:account:query','user',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061613__GZ-SNAP-402-account-menu.sql:4:(14061,'查询',14060,1,'','',1,0,'F','0','0','gz:jp:snap:account:query','#',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061613__GZ-SNAP-402-account-menu.sql:5:(14062,'编辑账号',14060,2,'','',1,0,'F','0','0','gz:jp:snap:account:edit','#',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061613__GZ-SNAP-402-account-menu.sql:6:(14063,'自动下单开关',14060,3,'','',1,0,'F','0','0','gz:jp:snap:account:switch','#',103,1,NOW());
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061613__GZ-SNAP-402-account-menu.sql:8:SELECT r.role_id,m.menu_id FROM sys_role r JOIN sys_menu m ON m.menu_id BETWEEN 14060 AND 14063
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061626__GZ-SNAP-403-config-menu.sql:1:-- 14080-14089 unused in live sys_menu and all migrations. Reuse 303 query/fx permission codes.
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061626__GZ-SNAP-403-config-menu.sql:3:(14080,'代切配置',14040,3,'config','gz-jp/snap/config/index',1,0,'C','0','0','gz:jp:snap:config:query','edit',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061626__GZ-SNAP-403-config-menu.sql:4:(14081,'查询配置',14080,1,'','',1,0,'F','0','0','gz:jp:snap:config:query','#',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061626__GZ-SNAP-403-config-menu.sql:5:(14082,'编辑配置',14080,2,'','',1,0,'F','0','0','gz:jp:snap:config:edit','#',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061626__GZ-SNAP-403-config-menu.sql:6:(14083,'手动汇率',14080,3,'','',1,0,'F','0','0','gz:jp:snap:config:fx','#',103,1,NOW());
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061626__GZ-SNAP-403-config-menu.sql:8:SELECT r.role_id,m.menu_id FROM sys_role r JOIN sys_menu m ON m.menu_id BETWEEN 14080 AND 14083
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061635__GZ-SNAP-404-term-menu.sql:1:-- 14070-14079 verified unused in live sys_menu and repository migrations.
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061635__GZ-SNAP-404-term-menu.sql:3:(14070,'代切词表',14040,4,'term','gz-jp/snap/term/index',1,0,'C','0','0','gz:jp:snap:term:query','edit',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061635__GZ-SNAP-404-term-menu.sql:4:(14071,'查询词表',14070,1,'','',1,0,'F','0','0','gz:jp:snap:term:query','#',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061635__GZ-SNAP-404-term-menu.sql:5:(14072,'新增词条',14070,2,'','',1,0,'F','0','0','gz:jp:snap:term:add','#',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061635__GZ-SNAP-404-term-menu.sql:6:(14073,'编辑词条',14070,3,'','',1,0,'F','0','0','gz:jp:snap:term:edit','#',103,1,NOW()),
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061635__GZ-SNAP-404-term-menu.sql:7:(14074,'删除词条',14070,4,'','',1,0,'F','0','0','gz:jp:snap:term:remove','#',103,1,NOW());
+code/main/RuoYi-Vue-Plus/ruoyi-admin/src/main/resources/db/migration/V202610061635__GZ-SNAP-404-term-menu.sql:9:SELECT r.role_id,m.menu_id FROM sys_role r JOIN sys_menu m ON m.menu_id BETWEEN 14070 AND 14074

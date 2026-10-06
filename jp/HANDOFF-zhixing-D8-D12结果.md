@@ -1,6 +1,6 @@
 # GZ-JP 二期代切 D8–D12 执行结果
 
-> 执行中：D0–D10 已通过 QA，D11 五张实现完成、独立 QA 进行中。最终状态以 `waves/state.json` 为准；本文在 D12 QA 通过后补齐并交付。没有派 D13。
+> 执行中：D0–D11 已通过 QA，D12 的501正在实现。最终状态以 `waves/state.json` 为准；本文在 D12 QA 通过后补齐并交付。没有派 D13。
 
 ## 进度与 QA
 
@@ -10,8 +10,8 @@
 | D8 | r1 PASS | `qa/D8-r1.md` |
 | D9 | r1 FAIL（测试夹具），r2 PASS | `qa/D9-r1.md`、`qa/D9-r2.md` |
 | D10 | r1 PASS | `qa/D10-r1.md` |
-| D11 | 独立 QA 进行中 | 待补 |
-| D12 | 未开工 | 待补 |
+| D11 | r1 PASS | `qa/D11-r1.md` |
+| D12 | 501执行中 | 待补 |
 
 D10 独立 QA 实跑 101 条单测、62 次真 HTTP/DB 断言；差价 83 分加剩余退款 917 分等于 1000 分，独立连接到仓/取消竞争只产生一笔退款。各阶段原始证据在 `regression/D<N>/` 与相应 ticket 的 `evidence/`、`raw/`。
 
@@ -29,7 +29,7 @@ D10 独立 QA 实跑 101 条单测、62 次真 HTTP/DB 断言；差价 83 分加
 3. **D9 快照及准入澄清**：补主图原 URL 兜底字段；付款准入取报价与下单前新读结果的保守交集，任何 blocked 拒绝。影响 102/304；一期兼容已核对。搜索卡参考价不虚构未知运费承担，详情报价为权威。回放分类变体与 JPEG 占位图为合成数据，报告标注来源。D9 r1 的 gate 单测夹具误把过滤配置提供给所有键，产品 fail-closed 正确；修夹具后 r2 通过。
 4. **D10 相关实现缺口**：shipping_diff 独立退款分支与剩余预算守卫已实现；到仓与取消使用同一锁顺序，混拼团/未评价代切的人工推进整批拒绝。REQ-SNAP-031 note 澄清实际到付运费在到仓时录入，人工采购成功不录运费；req_refs 306/401/504 已核对，authority diff 无变化。不改变经营价格、分成或计费口径。
 5. **环境反复卡住的根因已处理**：后端用专用 launchd 保活，私有选项文件权限 600；修重启锁、相对脚本路径、异步 remove/submit 等待与 dev gateway URL 覆盖。故障代理避开 Python 反向 DNS 阻塞。审批 timeout 不算命令执行，避免重复启动。Docker 路径、Mockito 既有 javaagent、Maven 完整模块路径及中文组件关闭选择器已写现场约定。故障注入用临时 SQLite/隔离 fake 服务，已恢复共享数据及配置、停止测试代理。
-6. **D11 新发现**：401 修评价期限 NULL 排前的问题；Sidebar 角标所需精确文件已补 touches。fixture 初轮登录覆盖测试用户昵称，已由 FULL binlog 精确 before-image 恢复，只写 nickname，一行并读回；后续 fixture 不传资料。402 真栈发现 afterCommit 内 cache.evict 再延后导致不驱逐，修两处为即时 evictIfPresent；19 条定向单测及暖缓存 false→true→false 通过。两项已记知识库，不涉及蓝图业务语义变更。
+6. **D11 新发现**：401 修评价期限 NULL 排前的问题；Sidebar 角标所需精确文件已补 touches。fixture 初轮登录覆盖测试用户昵称，已由 FULL binlog 精确 before-image 恢复，只写 nickname，一行并读回；后续 fixture 不传资料。402 真栈发现 afterCommit 内 cache.evict 再延后导致不驱逐，修两处为即时 evictIfPresent；19 条定向单测及暖缓存 false→true→false 通过。两项已记知识库，不涉及蓝图业务语义变更。独立QA组合发现共享fixture数组污染，修测试资产复位/快照后六spec同worker14/14通过；五类配置由FULL binlog恢复QA开始前原值与审计、清缓存读回，并由QA独立确认。
 
 ## 仍需保留的边界
 

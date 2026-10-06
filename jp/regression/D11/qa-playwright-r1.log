@@ -1,0 +1,104 @@
+
+Running 14 tests using 1 worker
+
+(node:65668) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/14] e2e/gz-jp/fulfill-board-snap.spec.ts:34:1 › unrated snap rows display source and reason, header select-all cannot select them
+e2e/gz-jp/fulfill-board-snap.spec.ts:34:1 › unrated snap rows display source and reason, header select-all cannot select them
+fixtures: 4 API quote→submit→mock callback orders; gateway fake/replay; live Mercari=0
+
+[2/14] e2e/gz-jp/fulfill-board-snap.spec.ts:57:1 › after rating same snap row can advance and ship using existing board operations, verified in DB
+e2e/gz-jp/fulfill-board-snap.spec.ts:57:1 › after rating same snap row can advance and ship using existing board operations, verified in DB
+cleanup: 4 owned orders/items/tasks/payments/refunds removed; address and FX removed; 3 config values restored byte-for-byte; no account mutations
+
+[3/14] e2e/gz-jp/fulfill-board.spec.ts:99:3 › GZ-JP-108 履约看板 › ★ 按客人聚合：组头显示客人 + 款数，展开后是该客人的商品行（跨订单同组）
+[4/14] e2e/gz-jp/fulfill-board.spec.ts:118:3 › GZ-JP-108 履约看板 › ★ 终态行（已发货）不可勾选
+[5/14] e2e/gz-jp/fulfill-board.spec.ts:127:3 › GZ-JP-108 履约看板 › ★ 跨客人勾选 → 批量发货置灰并提示
+[6/14] e2e/gz-jp/fulfill-board.spec.ts:141:3 › GZ-JP-108 履约看板 › ★ 批量推进（跳过中间态：购买中 → 清关中），UI 与库双断言
+[7/14] e2e/gz-jp/fulfill-board.spec.ts:166:3 › GZ-JP-108 履约看板 › ★ 批量发货：跨订单同客人共用一个运单号，UI 与库双断言
+[8/14] e2e/gz-jp/fulfill-board.spec.ts:196:3 › GZ-JP-108 履约看板 › ★★ 批量标记购买失败必须二次确认（会触发真实退款，不可逆）
+e2e/gz-jp/fulfill-board.spec.ts:196:3 › GZ-JP-108 履约看板 › ★★ 批量标记购买失败必须二次确认（会触发真实退款，不可逆）
+fulfill cleanup: exact owned IDs removed; orders/items/product/event/refund readback=0
+
+[9/14] e2e/gz-jp/snap-account.spec.ts:68:1 › true menu link, account CRUD and Japan date, guarded confirmed switch and pause clearance
+e2e/gz-jp/snap-account.spec.ts:68:1 › true menu link, account CRUD and Japan date, guarded confirmed switch and pause clearance
+real owner APIs/UI: created edited enabled disabled, limits persisted, Tokyo day reset, challenge/no-account/paused/unconfirmed blocked; resume cancel+confirm; manual pause; anonymous denied
+
+402 cleanup: account states and auto config restored exactly; created account removed; main miniapp/wx-login/live Mercari=0
+
+[10/14] e2e/gz-jp/snap-config.spec.ts:68:1 › five real tabs, validations, tenant 1001 warm-cache writes, filter immediately applied and manual FX
+e2e/gz-jp/snap-config.spec.ts:68:1 › five real tabs, validations, tenant 1001 warm-cache writes, filter immediately applied and manual FX
+403 cleanup: four config bytes/audit fields restored exactly; two-level cache readback restored; own FX removed; wx-login/live Mercari=0
+
+[11/14] e2e/gz-jp/snap-purchase.spec.ts:19:1 › manual success rejects price increase; failure has confirmation and true refund
+e2e/gz-jp/snap-purchase.spec.ts:19:1 › manual success rejects price increase; failure has confirmation and true refund
+fixtures: 4 API quote→submit→mock callback orders; gateway fake/replay; live Mercari=0
+
+  1) e2e/gz-jp/snap-purchase.spec.ts:19:1 › manual success rejects price increase; failure has confirmation and true refund 
+
+    TimeoutError: locator.click: Timeout 15000ms exceeded.
+    Call log:
+      - waiting for getByTestId('manual-success-99101000052')
+
+
+      22 |   const success = created[0],
+      23 |     fail = created[1];
+    > 24 |   await page.getByTestId(`manual-success-${success.id}`).click();
+         |                                                          ^
+      25 |   await page.getByTestId('snap-txn').fill('SNAP401-success');
+      26 |   await page
+      27 |     .getByTestId('snap-price')
+        at /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/snap-purchase.spec.ts:24:58
+
+    Error: /system/config: {"code":500,"msg":"Repeat submit is not allowed, please try again later","data":null}
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 500
+
+       at gz-jp/snap-purchase-fixtures.ts:29
+
+      27 |   });
+      28 |   const value = await response.json();
+    > 29 |   expect(value.code, `${path}: ${JSON.stringify(value)}`).toBe(200);
+         |                                                           ^
+      30 |   return value;
+      31 | }
+      32 | export async function changeConfig(key: string, value: unknown) {
+        at api (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/snap-purchase-fixtures.ts:29:59)
+        at cleanup (/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/snap-purchase-fixtures.ts:120:30)
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/gz-jp-snap-purchase-manual-84b33-onfirmation-and-true-refund/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/gz-jp-snap-purchase-manual-84b33-onfirmation-and-true-refund/error-context.md
+
+    Error Context: test-results/gz-jp-snap-purchase-manual-84b33-onfirmation-and-true-refund/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/gz-jp-snap-purchase-manual-84b33-onfirmation-and-true-refund/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/gz-jp-snap-purchase-manual-84b33-onfirmation-and-true-refund/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[12/14] e2e/gz-jp/snap-purchase.spec.ts:45:1 › trade cancel confirmation, arrival shipping required, deadline priority, rating and return confirmation
+[13/14] e2e/gz-jp/snap-purchase.spec.ts:84:1 › automatic tasks read real queued task, no write actions; owner routers, reminder badge and denied staff
+(node:67172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[14/14] e2e/gz-jp/snap-term.spec.ts:61:1 › owner real CRUD, unique term, filters, normalization, immediate miniapp changes and deleted-word recreation
+e2e/gz-jp/snap-term.spec.ts:61:1 › owner real CRUD, unique term, filters, normalization, immediate miniapp changes and deleted-word recreation
+404 cleanup: own term removed through API then exact own tombstone cleanup; original dictionary/audit snapshot unchanged; wx-login/live Mercari=0
+
+  1 failed
+    e2e/gz-jp/snap-purchase.spec.ts:19:1 › manual success rejects price increase; failure has confirmation and true refund 
+  2 did not run
+  11 passed (1.7m)

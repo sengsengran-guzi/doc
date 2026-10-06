@@ -1,0 +1,6 @@
+PASS exact pre-QA values and audits gz.jp.snap.pricing
+PASS exact pre-QA values and audits gz.jp.snap.auto
+PASS exact pre-QA values and audits gz.jp.snap.trade
+PASS exact pre-QA values and audits gz.jp.snap.filter
+PASS exact pre-QA values and audits gz.jp.snap.gate
+5/5 independent read-only DB restore assertions

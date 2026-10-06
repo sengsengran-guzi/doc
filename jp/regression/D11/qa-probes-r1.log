@@ -1,0 +1,46 @@
+PASS 1 login gz_owner
+PASS 2 login gz_staff_chengdu
+MENU ANCHOR 14040	14000	snap	NULL		0
+14050	14040	purchase	gz-jp/snap/purchase/index	gz:jp:snap:purchase:query	0
+14051	14050			gz:jp:snap:purchase:query	0
+14052	14050			gz:jp:snap:purchase:manual	0
+14053	14050			gz:jp:snap:purchase:trade	0
+14054	14050			gz:jp:snap:purchase:evidence	0
+14060	14040	account	gz-jp/snap/account/index	gz:jp:snap:account:query	0
+14061	14060			gz:jp:snap:account:query	0
+14062	14060			gz:jp:snap:account:edit	0
+14063	14060			gz:jp:snap:account:switch	0
+14070	14040	term	gz-jp/snap/term/index	gz:jp:snap:term:query	0
+14071	14070			gz:jp:snap:term:query	0
+14072	14070			gz:jp:snap:term:add	0
+14073	14070			gz:jp:snap:term:edit	0
+14074	14070			gz:jp:snap:term:remove	0
+14080	14040	config	gz-jp/snap/config/index	gz:jp:snap:config:query	0
+14081	14080			gz:jp:snap:config:query	0
+14082	14080			gz:jp:snap:config:edit	0
+14083	14080			gz:jp:snap:config:fx	0
+PASS 3 menu nonempty/path/component/parent
+PASS 4 menu 14050 parent
+PASS 5 menu 14060 parent
+PASS 6 menu 14070 parent
+PASS 7 menu 14080 parent
+PASS 8 owner routers code
+PASS 9 router purchase
+PASS 10 router account
+PASS 11 router config
+PASS 12 router term
+PASS 13 staff forbidden GET/account/list
+PASS 14 staff forbidden POST/account/auto-switch/resume
+PASS 15 staff forbidden GET/config/trade
+PASS 16 staff forbidden PUT/config/trade
+PASS 17 staff forbidden POST/fx
+PASS 18 unique word absent
+CONCURRENT TWO CONNECTION RESULTS [{"code": 200, "msg": "操作成功", "data": 6}, {"code": 500, "msg": "中文词已存在，请修改现有词条", "data": null}]
+PASS 19 exactly one successful add; one duplicate rejected
+PASS 20 loser friendly duplicate
+PASS 21 DB exactly one dictionary side effect
+PASS 22 normalize sees committed winner immediately
+PASS 23 API remove own term
+PASS 24 own fixture absent after cleanup
+PASS 25 existing dictionary exact readback unchanged
+TOTAL_ASSERTIONS 25

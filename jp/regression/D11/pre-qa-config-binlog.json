@@ -1,0 +1,92 @@
+{
+  "gz.jp.snap.pricing": {
+    "binlogPosition": 3511992,
+    "timestamp": 1791276855,
+    "before": {
+      "config_id": 14040001,
+      "tenant_id": "1001",
+      "config_name": "代切-报价定价参数",
+      "config_key": "gz.jp.snap.pricing",
+      "config_value": "{\"markupRatio\":null,\"fixedFeeCent\":null,\"estShippingCent\":null,\"quoteTtlSec\":600}",
+      "config_type": "N",
+      "create_dept": null,
+      "create_by": 1,
+      "create_time": "2026-10-05 07:26:36",
+      "update_by": 1,
+      "update_time": "2026-10-06 16:50:24",
+      "remark": "GZ-SNAP-101 报价参数：markupRatio 加价倍率 / fixedFeeCent 固定服务费(分) / estShippingCent 到付预估运费(分) / quoteTtlSec 报价有效秒数。前三项甲方填写（REQ-SNAP-061），未填则拒绝报价"
+    }
+  },
+  "gz.jp.snap.auto": {
+    "binlogPosition": 3514251,
+    "timestamp": 1791276855,
+    "before": {
+      "config_id": 14040004,
+      "tenant_id": "1001",
+      "config_name": "代切-自动下单总开关",
+      "config_key": "gz.jp.snap.auto",
+      "config_value": "{\"enabled\":false,\"pausedReason\":\"未上线\",\"pausedAt\":null}",
+      "config_type": "N",
+      "create_dept": null,
+      "create_by": 1,
+      "create_time": "2026-10-05 07:26:36",
+      "update_by": 1,
+      "update_time": "2026-10-06 16:50:24",
+      "remark": "GZ-SNAP-101 enabled 自动下单总开关（上线前保持 false）/ pausedReason 关闭原因 / pausedAt 关闭时间；探测失败或风控熔断时系统自动关（REQ-SNAP-030/044）"
+    }
+  },
+  "gz.jp.snap.trade": {
+    "binlogPosition": 3516348,
+    "timestamp": 1791276855,
+    "before": {
+      "config_id": 14040005,
+      "tenant_id": "1001",
+      "config_name": "代切-交易跟踪参数",
+      "config_key": "gz.jp.snap.trade",
+      "config_value": "{\"rateDeadlineHours\":24,\"patrolMinutes\":20}",
+      "config_type": "N",
+      "create_dept": null,
+      "create_by": 1,
+      "create_time": "2026-10-05 07:26:36",
+      "update_by": 1,
+      "update_time": "2026-10-06 16:50:24",
+      "remark": "GZ-SNAP-101 rateDeadlineHours 到仓后评价期限(小时，REQ-SNAP-034) / patrolMinutes 交易巡检间隔(分钟)"
+    }
+  },
+  "gz.jp.snap.filter": {
+    "binlogPosition": 3660213,
+    "timestamp": 1791276926,
+    "before": {
+      "config_id": 14040002,
+      "tenant_id": "1001",
+      "config_name": "代切-搜索过滤",
+      "config_key": "gz.jp.snap.filter",
+      "config_value": "{\"keywordBlacklist\": [], \"categoryWhitelist\": [\"745\", \"975\", \"980\"]}",
+      "config_type": "N",
+      "create_dept": null,
+      "create_by": 1,
+      "create_time": "2026-10-05 07:26:36",
+      "update_by": null,
+      "update_time": "2026-10-06 09:54:09",
+      "remark": "GZ-SNAP-101 categoryWhitelist 煤炉分类白名单（REQ-SNAP-019）/ keywordBlacklist 标题黑名单词"
+    }
+  },
+  "gz.jp.snap.gate": {
+    "binlogPosition": 3663230,
+    "timestamp": 1791276927,
+    "before": {
+      "config_id": 14040003,
+      "tenant_id": "1001",
+      "config_name": "代切-准入关键词",
+      "config_key": "gz.jp.snap.gate",
+      "config_value": "{\"blockKeywords\":[\"専用\",\"様専用\",\"さん専用\"],\"proxyRefuseKeywords\":[\"代行業者\",\"代行NG\",\"代行不可\",\"代行お断り\",\"代行禁止\",\"越境\",\"転売業者\",\"業者NG\",\"業者お断り\",\"楽一番\",\"公式パートナー\"],\"manualKeywords\":[\"コメント必須\",\"即購入不可\",\"即購入NG\",\"即購入NO\",\"即購入禁止\",\"購入前コメント\"]}",
+      "config_type": "N",
+      "create_dept": null,
+      "create_by": 1,
+      "create_time": "2026-10-05 07:26:36",
+      "update_by": null,
+      "update_time": null,
+      "remark": "GZ-SNAP-101 blockKeywords 专用品不可购买 / proxyRefuseKeywords 卖家拒代购不可购买 / manualKeywords 需先留言转人工（REQ-SNAP-022/023/048）"
+    }
+  }
+}

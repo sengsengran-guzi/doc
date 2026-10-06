@@ -1,0 +1,13 @@
+{
+  "restoredKeys": [
+    "gz.jp.snap.pricing",
+    "gz.jp.snap.auto",
+    "gz.jp.snap.trade",
+    "gz.jp.snap.filter",
+    "gz.jp.snap.gate"
+  ],
+  "exactDbValueAndAuditReadbacks": 5,
+  "frameworkCacheReadbacks": 5,
+  "source": "FULL binlog pre-QA before-image",
+  "otherColumnsWritten": false
+}
