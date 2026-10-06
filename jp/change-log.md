@@ -65,3 +65,4 @@
 ## 2026-10-06 — 305故障装置卡点修复
 - 本地ThreadingHTTPServer创建时getfqdn反向DNS阻塞，发生在restart/造数前；测试代理改用固定localhost名字并即时输出。首次中断实例已结束后才续跑，不并发造数。
 - 共享restart一次停旧服务后launchd标签消失，等待8080超时；主线程补交同一次启动任务后新JVM启动，脚本增加等待旧标签退出，避免remove/submit重叠。此为本地运行装置修复，无真实煤炉请求。
+- 305隔离fault网关地址未生效的根因是application-dev.yml硬编码8700覆盖环境；同步305 touches并将dev地址接为GZ_JP_GATEWAY_URL可覆盖、默认仍8700，避免只在脚本中绕开真实配置。首次隔离ledger空，严格探针及时失败，已精确恢复；三故障尚未执行。
