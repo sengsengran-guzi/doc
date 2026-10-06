@@ -1,0 +1,18 @@
+[WebServer] (node:53292) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:53303) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:53359) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] e2e/gz-jp/snap-term.spec.ts:61:1 › owner real CRUD, unique term, filters, normalization, immediate miniapp changes and deleted-word recreation
+e2e/gz-jp/snap-term.spec.ts:61:1 › owner real CRUD, unique term, filters, normalization, immediate miniapp changes and deleted-word recreation
+404 cleanup: own term removed through API then exact own tombstone cleanup; original dictionary/audit snapshot unchanged; wx-login/live Mercari=0
+
+  1 passed (12.4s)

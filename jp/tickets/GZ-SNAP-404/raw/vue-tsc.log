@@ -1,0 +1,149 @@
+src/components/DictTag/index.vue(6,18): error TS2367: This comparison appears to be unintentional because the types 'ElTagType' and '"default"' have no overlap.
+src/components/DictTag/index.vue(6,50): error TS2367: This comparison appears to be unintentional because the types 'ElTagType' and '""' have no overlap.
+src/components/FileUpload/index.vue(96,37): error TS2345: Argument of type 'string | Record<string, any>' is not assignable to parameter of type 'string | number'.
+  Type 'Record<string, any>' is not assignable to type 'string | number'.
+src/components/Process/processMeddle.vue(55,24): error TS2307: Cannot find module '@/components/UserSelect' or its corresponding type declarations.
+src/components/Process/processMeddle.vue(75,30): error TS2345: Argument of type '{ id: undefined; createTime: undefined; updateTime: undefined; tenantId: undefined; definitionId: undefined; instanceId: undefined; flowName: undefined; businessId: undefined; nodeCode: undefined; ... 9 more ...; buttonList: undefined[]; }' is not assignable to parameter of type 'FlowTaskVO'.
+  Type '{ id: undefined; createTime: undefined; updateTime: undefined; tenantId: undefined; definitionId: undefined; instanceId: undefined; flowName: undefined; businessId: undefined; nodeCode: undefined; ... 9 more ...; buttonList: undefined[]; }' is missing the following properties from type 'FlowTaskVO': businessCode, businessTitle
+src/components/Process/submitVerify.vue(155,24): error TS2307: Cannot find module '@/components/UserSelect' or its corresponding type declarations.
+src/layout/components/Navbar.vue(112,20): error TS2307: Cannot find module './TopBar' or its corresponding type declarations.
+src/layout/components/Settings/index.vue(45,14): error TS2345: Argument of type '{ class: true; viewBox: string; 'data-icon': string; width: string; height: string; fill: string; 'aria-hidden': "true"; focusable: string; }' is not assignable to parameter of type 'SVGAttributes & ReservedProps & Record<string, unknown>'.
+  Type '{ class: true; viewBox: string; 'data-icon': string; width: string; height: string; fill: string; 'aria-hidden': "true"; focusable: string; }' is not assignable to type 'SVGAttributes'.
+    Types of property 'class' are incompatible.
+      Type 'true' is not assignable to type 'ClassValue'.
+src/layout/components/Settings/index.vue(57,14): error TS2345: Argument of type '{ class: true; viewBox: string; 'data-icon': string; width: string; height: string; fill: string; 'aria-hidden': "true"; focusable: string; }' is not assignable to parameter of type 'SVGAttributes & ReservedProps & Record<string, unknown>'.
+  Type '{ class: true; viewBox: string; 'data-icon': string; width: string; height: string; fill: string; 'aria-hidden': "true"; focusable: string; }' is not assignable to type 'SVGAttributes'.
+    Types of property 'class' are incompatible.
+      Type 'true' is not assignable to type 'ClassValue'.
+src/layout/components/Settings/index.vue(172,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '(val: string) => void' is not assignable to parameter of type 'WatchCallback<() => Ref<NavTypeEnum, NavTypeEnum>, () => Ref<NavTypeEnum, NavTypeEnum>>'.
+      Types of parameters 'val' and 'value' are incompatible.
+        Type '() => globalThis.Ref<NavTypeEnum, NavTypeEnum>' is not assignable to type 'string'.
+src/layout/components/Settings/index.vue(173,13): error TS2551: Property 'value' does not exist on type 'string'. Did you mean 'valueOf'?
+src/layout/components/Settings/index.vue(176,20): error TS2551: Property 'value' does not exist on type 'string'. Did you mean 'valueOf'?
+src/layout/components/Settings/index.vue(179,20): error TS2551: Property 'value' does not exist on type 'string'. Did you mean 'valueOf'?
+src/layout/components/Sidebar/Logo.vue(43,21): error TS2551: Property 'isDark' does not exist on type 'Store<"setting", Pick<{ title: Ref<string, string>; theme: Ref<string, string>; sideTheme: Ref<string, string>; showSettings: Ref<boolean, boolean>; tagsView: Ref<boolean, boolean>; ... 8 more ...; setTitle: (value: string) => void; }, "tagsView" | ... 11 more ... | "dark">, Pick<...>, Pick<...>>'. Did you mean 'dark'?
+src/layout/components/Sidebar/Logo.vue(54,21): error TS2551: Property 'isDark' does not exist on type 'Store<"setting", Pick<{ title: Ref<string, string>; theme: Ref<string, string>; sideTheme: Ref<string, string>; showSettings: Ref<boolean, boolean>; tagsView: Ref<boolean, boolean>; ... 8 more ...; setTitle: (value: string) => void; }, "tagsView" | ... 11 more ... | "dark">, Pick<...>, Pick<...>>'. Did you mean 'dark'?
+src/layout/components/TagsView/index.vue(9,66): error TS2353: Object literal may only specify known properties, and 'fullPath' does not exist in type 'RouteLocationAsPathGeneric'.
+src/layout/components/TagsView/index.vue(183,15): error TS2345: Argument of type 'RouteLocationNormalizedGeneric' is not assignable to parameter of type 'string | RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric'.
+  Type 'RouteLocationNormalizedGeneric' is not assignable to type 'RouteLocationAsPathGeneric'.
+    Property 'path' is optional in type 'RouteLocationNormalizedGeneric' but required in type 'RouteLocationAsPathGeneric'.
+src/layout/components/TagsView/ScrollPane.vue(17,24): error TS2339: Property 'addEventListener' does not exist on type 'unknown'.
+src/layout/components/TagsView/ScrollPane.vue(20,24): error TS2339: Property 'removeEventListener' does not exist on type 'unknown'.
+src/layout/components/TagsView/ScrollPane.vue(26,18): error TS2339: Property 'scrollLeft' does not exist on type 'unknown'.
+src/layout/components/TagsView/ScrollPane.vue(26,46): error TS2339: Property 'scrollLeft' does not exist on type 'unknown'.
+src/layout/components/TagsView/ScrollPane.vue(51,20): error TS2339: Property 'scrollLeft' does not exist on type 'unknown'.
+src/layout/components/TagsView/ScrollPane.vue(53,20): error TS2339: Property 'scrollLeft' does not exist on type 'unknown'.
+src/layout/components/TagsView/ScrollPane.vue(53,48): error TS2339: Property 'scrollWidth' does not exist on type 'unknown'.
+src/layout/components/TagsView/ScrollPane.vue(76,49): error TS2339: Property 'scrollLeft' does not exist on type 'unknown'.
+src/layout/components/TagsView/ScrollPane.vue(77,22): error TS2339: Property 'scrollLeft' does not exist on type 'unknown'.
+src/layout/components/TagsView/ScrollPane.vue(78,57): error TS2339: Property 'scrollLeft' does not exist on type 'unknown'.
+src/layout/components/TagsView/ScrollPane.vue(79,22): error TS2339: Property 'scrollLeft' does not exist on type 'unknown'.
+src/store/modules/settings.ts(10,5): error TS2769: No overload matches this call.
+  Overload 1 of 5, '(key: MaybeRefOrGetter<string>, defaults: MaybeRefOrGetter<LayoutSetting>, storage?: StorageLike, options?: UseStorageOptions<LayoutSetting>): RemovableRef<...>', gave the following error.
+    Object literal may only specify known properties, and 'topNav' does not exist in type 'MaybeRefOrGetter<LayoutSetting>'.
+  Overload 2 of 5, '(key: MaybeRefOrGetter<string>, defaults: MaybeRefOrGetter<null>, storage?: StorageLike, options?: UseStorageOptions<LayoutSetting>): RemovableRef<...>', gave the following error.
+    Object literal may only specify known properties, and 'topNav' does not exist in type 'MaybeRefOrGetter<null>'.
+src/store/modules/settings.ts(10,29): error TS2339: Property 'topNav' does not exist on type 'DefaultSettings'.
+src/store/modules/settings.ts(22,50): error TS2339: Property 'theme' does not exist on type 'string'.
+src/store/modules/settings.ts(23,54): error TS2339: Property 'sideTheme' does not exist on type 'string'.
+src/store/modules/settings.ts(25,54): error TS2339: Property 'tagsView' does not exist on type 'string'.
+src/store/modules/settings.ts(26,54): error TS2339: Property 'tagsIcon' does not exist on type 'string'.
+src/store/modules/settings.ts(27,57): error TS2339: Property 'fixedHeader' does not exist on type 'string'.
+src/store/modules/settings.ts(28,57): error TS2339: Property 'sidebarLogo' does not exist on type 'string'.
+src/store/modules/settings.ts(29,58): error TS2339: Property 'dynamicTitle' does not exist on type 'string'.
+src/store/modules/settings.ts(32,57): error TS2339: Property 'navType' does not exist on type 'string'.
+src/store/modules/settings.ts(33,55): error TS2339: Property 'radiusBase' does not exist on type 'string'.
+src/views/gz-common/oper-log/index.vue(36,17): error TS2322: Type '[DateModelType, DateModelType]' is not assignable to type 'EpPropMergeType<(new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType) | ((new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType))[], unknown, unknown>'.
+  Type '[DateModelType, DateModelType]' is not assignable to type 'Date[]'.
+    Type 'DateModelType' is not assignable to type 'Date'.
+      Type 'string' is not assignable to type 'Date'.
+src/views/monitor/logininfor/index.vue(20,17): error TS2322: Type '[DateModelType, DateModelType]' is not assignable to type 'EpPropMergeType<(new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType) | ((new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType))[], unknown, unknown>'.
+  Type '[DateModelType, DateModelType]' is not assignable to type 'Date[]'.
+    Type 'DateModelType' is not assignable to type 'Date'.
+      Type 'string' is not assignable to type 'Date'.
+src/views/monitor/operlog/index.vue(28,17): error TS2322: Type '[DateModelType, DateModelType]' is not assignable to type 'EpPropMergeType<(new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType) | ((new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType))[], unknown, unknown>'.
+  Type '[DateModelType, DateModelType]' is not assignable to type 'Date[]'.
+    Type 'DateModelType' is not assignable to type 'Date'.
+      Type 'string' is not assignable to type 'Date'.
+src/views/register.vue(140,28): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(message: string | VNode<RendererNode, RendererElement, { [key: string]: any; }> | (() => VNode<RendererNode, RendererElement, { ...; }>), options?: ElMessageBoxOptions, appContext?: AppContext): Promise<...>', gave the following error.
+    Type '"系统提示"' has no properties in common with type 'ElMessageBoxOptions'.
+  Overload 2 of 2, '(message: string | VNode<RendererNode, RendererElement, { [key: string]: any; }> | (() => VNode<RendererNode, RendererElement, { ...; }>), title: string | ElMessageBoxOptions, options?: ElMessageBoxOptions, appContext?: AppContext): Promise<...>', gave the following error.
+    Object literal may only specify known properties, and 'app' does not exist in type 'ElMessageBoxOptions'.
+src/views/system/config/index.vue(20,17): error TS2322: Type '[DateModelType, DateModelType]' is not assignable to type 'EpPropMergeType<(new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType) | ((new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType))[], unknown, unknown>'.
+  Type '[DateModelType, DateModelType]' is not assignable to type 'Date[]'.
+    Type 'DateModelType' is not assignable to type 'Date'.
+      Type 'string' is not assignable to type 'Date'.
+src/views/system/dict/index.vue(24,19): error TS2322: Type '[DateModelType, DateModelType]' is not assignable to type 'EpPropMergeType<(new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType) | ((new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType))[], unknown, unknown>'.
+  Type '[DateModelType, DateModelType]' is not assignable to type 'Date[]'.
+    Type 'DateModelType' is not assignable to type 'Date'.
+      Type 'string' is not assignable to type 'Date'.
+src/views/system/oss/index.vue(18,17): error TS2322: Type '[DateModelType, DateModelType]' is not assignable to type 'EpPropMergeType<(new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType) | ((new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType))[], unknown, unknown>'.
+  Type '[DateModelType, DateModelType]' is not assignable to type 'Date[]'.
+    Type 'DateModelType' is not assignable to type 'Date'.
+      Type 'string' is not assignable to type 'Date'.
+src/views/system/role/authUser.vue(117,29): error TS2345: Argument of type 'RouteLocationNormalizedGeneric' is not assignable to parameter of type 'string | RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric'.
+  Type 'RouteLocationNormalizedGeneric' is not assignable to type 'RouteLocationAsPathGeneric'.
+    Property 'path' is optional in type 'RouteLocationNormalizedGeneric' but required in type 'RouteLocationAsPathGeneric'.
+src/views/system/role/index.vue(20,17): error TS2322: Type '[DateModelType, DateModelType]' is not assignable to type 'EpPropMergeType<(new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType) | ((new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType))[], unknown, unknown>'.
+  Type '[DateModelType, DateModelType]' is not assignable to type 'Date[]'.
+    Type 'DateModelType' is not assignable to type 'Date'.
+      Type 'string' is not assignable to type 'Date'.
+src/views/system/role/index.vue(127,78): error TS2345: Argument of type 'CheckboxValueType' is not assignable to parameter of type 'boolean'.
+  Type 'string' is not assignable to type 'boolean'.
+src/views/system/role/index.vue(168,78): error TS2345: Argument of type 'CheckboxValueType' is not assignable to parameter of type 'boolean'.
+  Type 'string' is not assignable to type 'boolean'.
+src/views/system/user/authRole.vue(114,29): error TS2345: Argument of type 'RouteLocationNormalizedGeneric' is not assignable to parameter of type 'string | RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric'.
+  Type 'RouteLocationNormalizedGeneric' is not assignable to type 'RouteLocationAsPathGeneric'.
+    Property 'path' is optional in type 'RouteLocationNormalizedGeneric' but required in type 'RouteLocationAsPathGeneric'.
+src/views/system/user/index.vue(44,21): error TS2322: Type '[DateModelType, DateModelType]' is not assignable to type 'EpPropMergeType<(new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType) | ((new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType))[], unknown, unknown>'.
+  Type '[DateModelType, DateModelType]' is not assignable to type 'Date[]'.
+    Type 'DateModelType' is not assignable to type 'Date'.
+      Type 'string' is not assignable to type 'Date'.
+src/views/tool/gen/editTable.vue(182,29): error TS2345: Argument of type 'RouteLocationNormalizedGeneric' is not assignable to parameter of type 'string | RouteLocationAsRelativeGeneric | RouteLocationAsPathGeneric'.
+  Type 'RouteLocationNormalizedGeneric' is not assignable to type 'RouteLocationAsPathGeneric'.
+    Property 'path' is optional in type 'RouteLocationNormalizedGeneric' but required in type 'RouteLocationAsPathGeneric'.
+src/views/tool/gen/index.vue(21,17): error TS2322: Type '[DateModelType, DateModelType]' is not assignable to type 'EpPropMergeType<(new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType) | ((new (...args: any[]) => string | number | string[] | Date | number[] | Date[]) | (() => ModelValueType))[], unknown, unknown>'.
+  Type '[DateModelType, DateModelType]' is not assignable to type 'Date[]'.
+    Type 'DateModelType' is not assignable to type 'Date'.
+      Type 'string' is not assignable to type 'Date'.
+src/views/workflow/processDefinition/index.vue(356,5): error TS2322: Type 'string | string[]' is not assignable to type 'string'.
+  Type 'string[]' is not assignable to type 'string'.
+src/views/workflow/processDefinition/index.vue(465,7): error TS2322: Type 'boolean' is not assignable to type 'LocationQueryValueRaw | LocationQueryValueRaw[]'.
+src/views/workflow/processDefinition/index.vue(480,7): error TS2322: Type 'boolean' is not assignable to type 'LocationQueryValueRaw | LocationQueryValueRaw[]'.
+src/views/workflow/processDefinition/index.vue(496,5): error TS2322: Type 'string | number' is not assignable to type 'string'.
+  Type 'number' is not assignable to type 'string'.
+src/views/workflow/processDefinition/index.vue(525,11): error TS2339: Property 'autoPass' does not exist on type '{}'.
+src/views/workflow/processInstance/index.vue(53,126): error TS2322: Type '(row: FlowInstanceVO) => Promise<void>' is not assignable to type '(evt: MouseEvent) => any'.
+  Types of parameters 'row' and 'evt' are incompatible.
+    Type 'MouseEvent' is missing the following properties from type 'FlowInstanceVO': id, definitionId, flowName, flowCode, and 11 more.
+src/views/workflow/processInstance/index.vue(58,35): error TS2322: Type '(data: string) => Promise<void>' is not assignable to type '(pane: { uid: number; getVnode: () => VNode<RendererNode, RendererElement, { [key: string]: any; }>; slots: Readonly<InternalSlots>; ... 5 more ...; isFocusInsidePane: () => boolean; }, ev: Event) => any'.
+  Types of parameters 'data' and 'pane' are incompatible.
+    Type '{ uid: number; getVnode: () => VNode<RendererNode, RendererElement, { [key: string]: any; }>; slots: Readonly<InternalSlots>; ... 5 more ...; isFocusInsidePane: () => boolean; }' is not assignable to type 'string'.
+src/views/workflow/processInstance/index.vue(303,3): error TS2322: Type 'CategoryTreeVO[]' is not assignable to type 'CategoryOption[] | { id: string; categoryName: string; children?: ...[]; }[]'.
+  Type 'CategoryTreeVO[]' is not assignable to type 'CategoryOption[]'.
+    Property 'categoryName' is missing in type 'CategoryTreeVO' but required in type 'CategoryOption'.
+src/views/workflow/processInstance/index.vue(367,26): error TS2339: Property 'paneName' does not exist on type 'string'.
+src/views/workflow/processInstance/index.vue(441,5): error TS2322: Type '(string | number)[]' is not assignable to type 'string[] | number[]'.
+  Type '(string | number)[]' is not assignable to type 'string[]'.
+    Type 'string | number' is not assignable to type 'string'.
+      Type 'number' is not assignable to type 'string'.
+src/views/workflow/task/allTaskWaiting.vue(119,24): error TS2307: Cannot find module '@/components/UserSelect' or its corresponding type declarations.
+src/views/workflow/task/allTaskWaiting.vue(123,27): error TS2307: Cannot find module '@/components/Process/processMeddle' or its corresponding type declarations.
+src/views/workflow/task/allTaskWaiting.vue(124,25): error TS2307: Cannot find module '@/components/Process/MessageType' or its corresponding type declarations.
+src/views/workflow/task/allTaskWaiting.vue(277,5): error TS2322: Type '(string | number)[]' is not assignable to type 'string[] | number[]'.
+  Type '(string | number)[]' is not assignable to type 'string[]'.
+    Type 'string | number' is not assignable to type 'string'.
+      Type 'number' is not assignable to type 'string'.
+src/views/workflow/task/taskFinish.vue(96,24): error TS2307: Cannot find module '@/components/UserSelect' or its corresponding type declarations.
+src/views/workflow/task/taskFinish.vue(180,5): error TS2322: Type '(string | number)[]' is not assignable to type 'string[] | number[]'.
+  Type '(string | number)[]' is not assignable to type 'string[]'.
+    Type 'string | number' is not assignable to type 'string'.
+      Type 'number' is not assignable to type 'string'.
+src/views/workflow/task/taskWaiting.vue(91,24): error TS2307: Cannot find module '@/components/UserSelect' or its corresponding type declarations.
+src/views/workflow/task/taskWaiting.vue(182,5): error TS2322: Type '(string | number)[]' is not assignable to type 'string[] | number[]'.
+  Type '(string | number)[]' is not assignable to type 'string[]'.
+    Type 'string | number' is not assignable to type 'string'.
+      Type 'number' is not assignable to type 'string'.

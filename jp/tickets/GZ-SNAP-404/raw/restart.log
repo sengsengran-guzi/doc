@@ -1,0 +1,4 @@
+BACKEND UP (commit 940ae781b+DIRTY-WORKTREE, branch task/D11)
+[0;39m - Successfully validated 191 migrations (execution time 00:00.145s)
+[0;39m - Migrating schema `ry-vue` to version "202610061635 - GZ-SNAP-404-term-menu" [out of order]
+[0;39m - Successfully applied 1 migration to schema `ry-vue`, now at version v202610061635 (execution time 00:00.010s)
