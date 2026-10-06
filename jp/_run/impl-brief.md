@@ -23,6 +23,7 @@ Kevin 已要求继续到 D12，减少不必要测试，遇到类似样本缺口�
 - **后端 8080 是共享单例**。改了任何 `ruoyi-gz-*` 或加了迁移、需要后端跑新代码时，**只能**用共享脚本重启（带锁、会 clean install、清迁移幽灵副本、等启动成功）：
   `bash /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/doc/jp/_run/restart-backend.sh [模块列表，默认全部 gz-*]`
   不要自己 kill 8080 或另起 spring-boot:run。脚本退出码非 0 = 起不来，看输出。
+- 重启脚本模块参数必须为 Maven reactor 路径，如 `ruoyi-modules/ruoyi-gz-jp`（不能只传 `ruoyi-gz-jp`）。
 - 单测：`mvn test -DskipTests=false -pl ruoyi-modules/ruoyi-gz-<域> -am`（根 pom 默认 skip）。
 - **新增 JUnit 测试类必须加 `@Tag("dev")`**（根 pom surefire `<groups>${profiles.active}</groups>`，不加 = 0 条、无报告 XML、accept 的 grep 必红）。
 - **accept.run 一律用 `bash -c` 跑**（zsh 下 `rm -f *X*` 无匹配会 exit 1）。
