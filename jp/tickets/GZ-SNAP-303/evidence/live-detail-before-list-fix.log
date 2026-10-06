@@ -1,0 +1,17 @@
+ORIGINAL_PRICING detail code200 gate=auto quoteErrorCode4121 purchasable=false
+OWNER_FX_WRITE_DENIED code403
+ADMIN_FX_APPEND/readback tenant1001 source=manual rate4.2673
+LIVE_DETAIL m99000000001 gate=auto goods=3760 fee=200 shipping=0 total=3960 redisTTL=600 boundId/payer/gate/terms=ok privateTermsAbsent
+LIVE_DETAIL m99000000002 gate=manual goods=3765 fee=200 shipping=900 total=4865 redisTTL=600 boundId/payer/gate/terms=ok privateTermsAbsent
+LIVE_DETAIL m99000000003 gate=manual goods=3770 fee=200 shipping=0 total=3970 redisTTL=600 boundId/payer/gate/terms=ok privateTermsAbsent
+LIVE_DETAIL m99000000004 gate=blocked noQuote reason=proxy_refuse:代行業者@title
+LIVE_DETAIL m99000000005 gate=blocked noQuote reason=reserved:専用
+LIVE_DETAIL m99000000007 gate=auto noQuote reason=item_not_on_sale
+LIVE_DETAIL m99000000008 gate=blocked noQuote reason=category_not_allowed
+SHOPS code4117
+RESTORED fullConfigRow/items exactEqual manualFXDeleted quotesDeleted Caffeine+Redis proven original4121
+Traceback (most recent call last):
+  File "/tmp/snap303-live.py", line 98, in <module>
+    assert card['referencePriceCent']==expected,card
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'externalId': 'm99000000001', 'titleJa': '合成テスト 即購入OK', 'titleZh': '[译]合成テスト 即購入OK', 'priceJpy': 801, 'referencePriceCent': None, 'thumbUrl': 'http://127.0.0.1:8700/v1/img/item/detail/orig/photos/m99000000001_1.jpg'}

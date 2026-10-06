@@ -1,0 +1,4 @@
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+10:10:21.856 [main] WARN org.dromara.gz.jp.service.internal.GzJpSnapReadService -- Snap seller intro unavailable for 99000001; using item-only admission
+10:10:21.873 [main] WARN org.dromara.gz.jp.service.internal.GzJpSnapReadService -- Snap detail quote refused for m1: 4121
+10:10:21.887 [main] WARN org.dromara.gz.jp.service.internal.GzJpSnapReadService -- Snap seller intro unavailable for 99000001; using item-only admission
