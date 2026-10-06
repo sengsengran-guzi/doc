@@ -4,6 +4,28 @@
 set -u
 export PATH=/opt/homebrew/bin:$PATH
 ROOT=/Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/RuoYi-Vue-Plus
+# Local dev only: use the existing ignored gateway secret unless the caller supplied one.
+# Parse the one key as data; never source .env as shell code or print credentials.
+if [ -z "${GZ_JP_GATEWAY_SECRET:-}" ] && [ -f "$ROOT/../mercari-gateway/.env" ]; then
+  GZ_JP_GATEWAY_SECRET=$(/opt/homebrew/bin/python3.11 - "$ROOT/../mercari-gateway/.env" <<'PY'
+import sys
+from pathlib import Path
+for line in Path(sys.argv[1]).read_text().splitlines():
+    key, sep, value = line.strip().partition('=')
+    if sep and key == 'GATEWAY_HMAC_SECRET':
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        if len(value) < 16:
+            raise SystemExit('Local gateway secret is missing or too short')
+        print(value)
+        break
+else:
+    raise SystemExit('Local gateway secret key is missing')
+PY
+  ) || exit 2
+  export GZ_JP_GATEWAY_SECRET
+fi
 RUN=/tmp/sensenran-run; mkdir -p $RUN
 LOCK=$RUN/backend.lock.d
 for i in $(seq 1 120); do mkdir "$LOCK" 2>/dev/null && break; echo "waiting backend lock ($i)…"; sleep 5; done
