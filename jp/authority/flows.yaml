@@ -530,8 +530,9 @@ records:
       日本服务不存用户个人信息、不碰钱、不持有过滤 / 准入规则（OWN:snap_runtime_config）。
       驱动模式 GATEWAY_DRIVER：real（真煤炉）/ fake（dev 与 QA：下单 / 对账 / 巡检按脚本返回预设结果，用于 ruoyi 侧开发与故障注入）/
       disabled（技术验证 no-go：下单接口恒返回 503 driver_disabled，ruoyi 侧自动下单总开关保持关闭）。
-      读源 GATEWAY_READ_SOURCE：live（真煤炉匿名读，staging / prod）/ replay（dev 与 QA 默认：search / items / sellers / resolve / img 全部回放录制样本，
-      样本覆盖 包邮 auto / 到付 / コメント必須 / 拒代购 / 専用 / Shops / 已售出 / 白名单外分类 各至少一件，结果确定、不发任何外网请求）。
+      读源 GATEWAY_READ_SOURCE：live（真煤炉匿名读，staging / prod）/ replay（dev 与 QA 默认：search / items / sellers / resolve / img 全部读取本地样本，
+      在一次性录制≤15次预算内采集少量真实响应，缺少的场景与HTML用明确标注的合成夹具补齐；来源清单区分真实/合成及未实测范围。
+      样本覆盖 包邮 auto / 到付 / コメント必須 / 拒代购 / 専用 / Shops / 已售出 / 白名单外分类 各至少一件，结果确定、不发任何外网请求；合成测试不证明真实平台结构已验收）。
       两个开关正交：dev / QA = replay + fake；技术验证与 staging = live + real。
       ★ replay 是为了不让开发与 QA 的反复运行打真煤炉（dev 出口是 Kevin 的个人代理 IP，被拦会影响他本人），也让 E2E 数据确定；
       真煤炉只在显式的 live 测试里读（单次运行 ≤5 次请求）。

@@ -125,7 +125,7 @@ tables:
       - { name: user_id, type: id, nullable: false, comment: "冗余下单用户 id —— 履约看板主视图按客人聚合且跨订单，避免每次 join 订单表" }
       - { name: product_id, type: id, nullable: true, comment: "拼团商品 FK gz_jp_product.id。★ 二期改可空（ADR-0025 §5，新迁移 ALTER）：source=batch 必填 / source=snap 恒空，应用层保证" }
       - { name: snap_item_id, type: id, nullable: true, comment: "★ 二期新增：代切商品 FK gz_jp_snap_item.id。source=snap 必填 / source=batch 恒空" }
-      - { name: product_snapshot_json, type: text, nullable: false, comment: "下单时商品快照（名/图/价/注意事项），商品后续改动不影响已下单。source=snap 时另含 snap 段：externalId / titleJa / titleZh / priceJpy / ratePer100Jpy / markupRatio / fixedFeeCent / estShippingCent / gateResult / gateReason / shippingPayer / conditionText / mainImageId / quoteId / quotedAt（REQ-SNAP-021 锁价凭据）" }
+      - { name: product_snapshot_json, type: text, nullable: false, comment: "下单时商品快照（名/图/价/注意事项），商品后续改动不影响已下单。source=snap 时另含 snap 段：externalId / titleJa / titleZh / priceJpy / ratePer100Jpy / markupRatio / fixedFeeCent / estShippingCent / gateResult / gateReason / shippingPayer / conditionText / mainImageId / mainImageUrl / quoteId / quotedAt（mainImageUrl为转存失败兜底的原图URL，读侧必须改写为备案CDN/自有图片代理地址）（REQ-SNAP-021 锁价凭据）" }
       - { name: qty, type: int, nullable: false, comment: "数量" }
       - { name: unit_price_cent, type: bigint, nullable: false, comment: "下单时单价（分）" }
       - { name: amount_cent, type: bigint, nullable: false, comment: "行金额（分）= unit_price_cent × qty。★ 行级退款按此金额退" }

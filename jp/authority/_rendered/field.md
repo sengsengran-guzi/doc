@@ -216,7 +216,7 @@
 
 **锚 id**：`FIELD:gz_jp_order_item.product_snapshot_json`（ticket 的 blueprint_refs 写这个）
 
-{"comment": "下单时商品快照（名/图/价/注意事项），商品后续改动不影响已下单。source=snap 时另含 snap 段：externalId / titleJa / titleZh / priceJpy / ratePer100Jpy / markupRatio / fixedFeeCent / estShippingCent / gateResult / gateReason / shippingPayer / conditionText / mainImageId / quoteId / quotedAt（REQ-SNAP-021 锁价凭据）", "name": "product_snapshot_json", "nullable": false, "type": "text"}
+{"comment": "下单时商品快照（名/图/价/注意事项），商品后续改动不影响已下单。source=snap 时另含 snap 段：externalId / titleJa / titleZh / priceJpy / ratePer100Jpy / markupRatio / fixedFeeCent / estShippingCent / gateResult / gateReason / shippingPayer / conditionText / mainImageId / mainImageUrl / quoteId / quotedAt（mainImageUrl为转存失败兜底的原图URL，读侧必须改写为备案CDN/自有图片代理地址）（REQ-SNAP-021 锁价凭据）", "name": "product_snapshot_json", "nullable": false, "type": "text"}
 
 ## gz_jp_order_item.qty
 

@@ -16,7 +16,7 @@ blueprint_refs:
   - FLOW:F-JP-05.step3
   - OWN:mercari_item_live
 accept:
-  - name: 搜索 / 详情解析：JSON 接口与无头浏览器两条路径对同一份录制样本解析出相同字段
+  - name: 搜索 / 详情解析：JSON 接口与浏览器两条路径对已标明来源的夹具解析出相同字段，回放覆盖关键场景
     form: DATA
     run: cd code/main/mercari-gateway && .venv/bin/pytest -q tests/test_parse_parity.py tests/test_replay_coverage.py
     counterfeit: 降级路径漏解析 shipping_payer 或 status（两边结果不一致），或回放样本集缺了某一类（如没有拒代购样本，下游 303 / 502 无法测）→ 红
@@ -48,11 +48,11 @@ accept:
 5. `GET /v1/img/{path}`：只代理煤炉静态图域名白名单，`Cache-Control: public, max-age=31536000, immutable`。
 5a. `GET /v1/sellers/{seller_id}`：mercapi `profile` → `{seller_id, intro, num_ratings}`（`FLOW:F-JP-12.step3b`），只读匿名。
 5b. `GET /v1/resolve?url=`：跟随煤炉 App 分享短链（`merc.li` 等）的跳转解析出商品 ID；只跟随煤炉域名白名单内的跳转、最多 3 跳；解析不出 404（`FLOW:F-JP-12.step3`）。
-6. 录制样本：同一商品 / 同一关键词的 JSON 响应与 HTML 各存一份到 `tests/fixtures/`（脱敏卖家信息），解析一致性测试用。
+6. 样本：预算内取得少量真实匿名响应并脱敏保存；JSON / HTML 解析一致性用带来源说明的夹具验证，缺少真实 HTML 时可构造合成 HTML，不冒充网页录制。不要求每件商品两种格式都实际采集。
 6b. **回放样本集** `fixtures/replay/`（dev / QA 默认读源）：2~3 个关键词的搜索结果 + 下列每类至少一件商品的详情与卖家简介——
    包邮 auto、到付（shippingPayerId=1）、「コメント必須」、拒代购（描述含「代行業者は即購入不可」类）、「専用」、Shops、已售出、白名单外分类；
-   再加一个 `merc.li` 短链映射（拿不到真实短链就造一条并在 README 标明）。样本可以取自 `_spike/mercari-probe` 已探测过的商品，
-   录制请求计入 live 预算（本卡总共 ≤15 次真实请求）。卖家昵称等个人信息脱敏。README 写清每件样本的用途，供 302/303/501/502 的测试与 E2E 引用。
+   再加一个 `merc.li` 短链映射。八类覆盖及关键词结果、卖家简介可用明确标注的合成夹具补齐；已有真实响应可复用，不为凑齐类别反复访问煤炉。
+   一次性录制 ≤15 次真实请求，live 单次 ≤5 次；底层网络请求与跳转均计数。卖家昵称等个人信息脱敏。README / 来源清单逐件写清真实或合成、用途与未实测范围，供 302/303/501/502 引用。不得把合成夹具测试作为真实煤炉结构已验收的证据。
 7. live 测试 `tests/test_live_read.py` 打 `@pytest.mark.live`，默认不跑，accept 显式 `-m live`。
 
 ## AC

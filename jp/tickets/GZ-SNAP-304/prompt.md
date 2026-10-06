@@ -16,6 +16,7 @@ blueprint_refs:
   - FLOW:F-JP-06.step5
   - FLOW:F-JP-10.step1
   - FIELD:gz_jp_snap_item.active_order_item_id
+  - FIELD:gz_jp_order_item.product_snapshot_json
   - FIELD:gz_jp_snap_purchase.order_item_id
   - FIELD:gz_jp_snap_purchase.mode
   - FIELD:gz_jp_snap_purchase.purchase_status
@@ -60,7 +61,7 @@ accept:
    **占用者是本人且订单仍 created → 不新建，返回原订单并重新下发支付参数**（原支付单仍 pending 且未过期 → 复用 prepay；已过期 → 新建一笔支付单，旧的已由 GZ-PAY-106 在微信侧过期）（REQ-SNAP-046）；
    占用者是别人 → `SNAP_ITEM_LOCKED`；本人已付款 → `SNAP_ALREADY_BOUGHT`；否则
    建 `gz_jp_order` + 1 行 `gz_jp_order_item`（`source=snap`、`product_id` 空、`snap_item_id`、`qty=1`、`amount_cent=totalCent`）→
-   报价整体写快照 `snap` 段 → 回写 `active_order_item_id`。主图转存 `gz_file_object` 放事务提交后异步做，失败只告警（快照留原 URL）。
+   报价整体写快照 `snap` 段 → 回写 `active_order_item_id`。`snap.mainImageUrl`保存原图兜底；读侧改写为备案CDN/自有代理地址，不直接下发煤炉外网图片URL。主图转存 `gz_file_object` 放事务提交后异步做，失败只告警，成功补`mainImageId`；旧快照缺少新字段时正常读取。
    支付拉起复用一期 jp 支付链路（`business_type='jp'`），不新建支付入口。
 2. 支付回调：jp `onPaid` 里对 `source=snap` 的行同事务插入 `gz_jp_snap_purchase`：
    `mode = (gate=manual 或 auto.enabled=false) ? manual : auto`；manual → `manual_pending` + `manual_reason`（gate:<规则> / auto_paused）；
