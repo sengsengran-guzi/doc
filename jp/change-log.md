@@ -61,3 +61,7 @@
 
 ## 2026-10-06 — 305证据上传接线
 - 现有公共上传只接受图片且缺snap_evidence usage，无法持久化权威已要求的文本/HTML/JSON证据。305范围补gz-common的GzFileUsageType及GzFileServiceImpl两文件，限定该usage的后缀/MIME白名单，文档对象按application/octet-stream供下载，既有admin图片上传限制维持并验证。只补实现与touches，无新增依赖或业务蓝图变化。
+
+## 2026-10-06 — 305故障装置卡点修复
+- 本地ThreadingHTTPServer创建时getfqdn反向DNS阻塞，发生在restart/造数前；测试代理改用固定localhost名字并即时输出。首次中断实例已结束后才续跑，不并发造数。
+- 共享restart一次停旧服务后launchd标签消失，等待8080超时；主线程补交同一次启动任务后新JVM启动，脚本增加等待旧标签退出，避免remove/submit重叠。此为本地运行装置修复，无真实煤炉请求。

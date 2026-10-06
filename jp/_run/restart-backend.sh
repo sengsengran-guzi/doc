@@ -38,7 +38,13 @@ cd $ROOT || exit 2
 mvn -q clean install -DskipTests -pl "$MODS" -am || { echo "INSTALL FAILED"; exit 4; }
 mvn -q clean -pl ruoyi-admin >/dev/null 2>&1   # 清掉 target/classes/db/migration 幽灵副本
 LABEL=dev.sensenran-guzi.jp-snap.backend
-if [ -x /bin/launchctl ]; then /bin/launchctl remove "$LABEL" >/dev/null 2>&1 || true; fi
+if [ -x /bin/launchctl ]; then
+  /bin/launchctl remove "$LABEL" >/dev/null 2>&1 || true
+  for i in $(seq 1 30); do
+    /bin/launchctl list "$LABEL" >/dev/null 2>&1 || break
+    sleep 1
+  done
+fi
 for p in $(lsof -tnP -iTCP:8080 -sTCP:LISTEN 2>/dev/null); do pkill -P $p 2>/dev/null; kill $p; done
 pkill -f 'spring-boot:run -pl ruoyi-admin' 2>/dev/null
 for i in $(seq 1 30); do lsof -tnP -iTCP:8080 -sTCP:LISTEN >/dev/null 2>&1 || break; sleep 1; done
