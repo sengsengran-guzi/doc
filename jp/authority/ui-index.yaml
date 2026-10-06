@@ -280,6 +280,7 @@ records:
       抢购中页面 3s 轮询一次、最多 60s，之后改为手动刷新（REQ-SNAP-038）。
       到付商品退过运费差价时，金额区多一行「运费差价已退 ¥x」（取自 refund_type=shipping_diff 且已退款的退款单）；
       这行不改变商品行的状态展示（商品仍按代切 / 履约状态显示）。
+      mp列表/详情的snap行公共字段：snapStatus=purchasing/purchased/manual_processing/not_purchased/trade_cancelled/inspection_failed（后三态结合既有refundStatus区分已退款或处理中）；snapTradeStatus仅交易枚举白名单；shippingDiffRefundedCent只累计该行refunded的shipping_diff，batch三字段为null。不下发原purchase_status、内部报价参数、采购账号或last_error。
     related_reqs: [REQ-SNAP-004, REQ-SNAP-031, REQ-SNAP-033, REQ-SNAP-036, REQ-SNAP-038]
 
   - id: UI:mp.agreement.snap

@@ -83,3 +83,7 @@
 ## 2026-10-06 — 503确认页读取原报价的只读契约
 - 补认证GET /app/gz/jp/snap/order/quote/{quoteId}，显式公共VO仅商品和原报价三行金额/quoteId/expiresAt；不刷新详情/报价/TTL，不下发内部汇率与加价。同步FLOW:F-JP-06.step2、UI:mp.order_confirm.snap，落实原倒计时和金额语义，不改变经营口径。
 - authority_lint impact反查304/503：304提交/锁价/复查行为无变化、accept仍适用，不重做；503为当前产出方，真接口相同quoteId/期限连续读及模拟器到期/支付验收落实，D12独立QA核对。
+
+## 2026-10-06 — 504订单公共状态投影
+- UI:mp.order_detail.snap补mp列表/详情snap行公共字段契约：snapStatus六个展示态、交易态白名单、仅refunded shipping_diff求和；batch为null，原purchase_status、内部参数、账号/last_error不下发。未退款时不声称已退款，仍结合既有refundStatus显示处理中。纯既定状态展示契约，无金额或经营语义变更。
+- authority_lint impact仅504（当前产出方）；其单测/真实fake引擎与D12独立QA落实，无历史ticket失效。
