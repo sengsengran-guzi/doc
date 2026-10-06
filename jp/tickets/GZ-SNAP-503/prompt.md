@@ -11,6 +11,8 @@ touches:
   - code/main/miniapp-jp/src/api/gz-jp/**
   - code/main/miniapp-jp/src/locale/**
   - code/main/miniapp-jp/test/e2e/flows/**
+  - code/main/miniapp-jp/test/e2e/run.mjs
+  - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-jp/**
 blueprint_refs:
   - UI:mp.order_confirm.snap
   - UI:mp.order_confirm
@@ -33,6 +35,7 @@ accept:
 
 1. GZ-SNAP-304 的提交接口可调；一期 `pages/order/confirm.vue` + `confirm.logic.ts` 的结构。
 2. 读 `UI:mp.order_confirm.snap`、`UI:mp.agreement.snap`；memory「mp 隐私协议合规」：勾选框**默认不勾**。
+3. 确认页展示须绑定详情已签发的 quoteId，不重新报价延长倒计时。若前端上下文不足，可补认证只读的公共报价投影接口；只返回商品及公开三行金额/期限，禁止直接序列化含汇率、加价的内部 QuoteSnapshot。提交金额仍以服务端原报价为准。
 
 ## What
 

@@ -6,12 +6,15 @@ size: M
 req_refs: [REQ-SNAP-016, REQ-SNAP-021, REQ-SNAP-025, REQ-SNAP-035]
 depends_on: [GZ-SNAP-501]
 touches:
+  - code/main/miniapp-jp/pages.config.ts
   - code/main/miniapp-jp/src/pages.json
   - code/main/miniapp-jp/src/pages/snap/**
   - code/main/miniapp-jp/src/api/gz-jp/**
   - code/main/miniapp-jp/src/locale/**
   - code/main/miniapp-jp/src/components/biz/**
   - code/main/miniapp-jp/test/e2e/flows/**
+  - code/main/miniapp-jp/test/e2e/run.mjs
+  - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-jp/**
 blueprint_refs:
   - UI:mp.snap_detail
   - UI:mp.snap_detail.price
@@ -37,6 +40,7 @@ accept:
 
 1. GZ-SNAP-303 的详情接口返回准入三态 + 报价（mp 侧不含 rate / markupRatio）。
 2. 读 `UI:mp.snap_detail` 及三个区块、`mp-snap-detail.md`（方案 A）、`design-options/README.md` 二期设计权威节。
+3. 现有 DetailVO 尚未下发 fetchedAt；允许补只读返回字段，取本次真实快照 fetched_at 并明确时区/时间格式，不能在前端伪造快照时间。保持旧构造/调用兼容，mp仍不含汇率、加价比例。
 
 ## What
 

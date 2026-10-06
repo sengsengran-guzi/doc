@@ -10,6 +10,7 @@ touches:
   - code/main/miniapp-jp/src/api/gz-jp/**
   - code/main/miniapp-jp/src/locale/**
   - code/main/miniapp-jp/test/e2e/flows/**
+  - code/main/miniapp-jp/test/e2e/run.mjs
   - code/main/RuoYi-Vue-Plus/ruoyi-modules/ruoyi-gz-jp/**
 blueprint_refs:
   - UI:mp.order_detail.snap
