@@ -1,0 +1,3 @@
+artifact sha256=ffc6a47f0010d74f2e180178295f2ad74919ce10bb0aa4db8199f4f4e57b4cdf
+list+manual purchase→shipped→arrived→rated + guards all three mixed-batch paths 409; owner read/write403; cancellation1000; pending diff return rolls back; callback replay diff87 + returned913 =1000; released own locks; budget violations0; live Mercari0
+exact fixture rows restored; no shared pricing/FX/account changes

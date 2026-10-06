@@ -1,0 +1,68 @@
+Picked up JAVA_TOOL_OPTIONS: -javaagent:/Users/wkui/.m2/repository/org/mockito/mockito-core/5.17.0/mockito-core-5.17.0.jar
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by lombok.permit.Permit
+WARNING: Please consider reporting this to the maintainers of class lombok.permit.Permit
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Picked up JAVA_TOOL_OPTIONS: -javaagent:/Users/wkui/.m2/repository/org/mockito/mockito-core/5.17.0/mockito-core-5.17.0.jar
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+15:38:26.444 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+15:38:26.511 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=jp_shipped requested=2 advanced=2 skipped=0 rejected=0 operator=1
+15:38:26.517 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+15:38:26.539 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+15:38:26.544 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+15:38:26.548 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+15:38:26.551 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+15:38:26.555 [main] WARN org.dromara.gz.common.pay.service.internal.MockWechatPayClient -- [gz-pay] MockWechatPayClient 已激活（client-mode != real）—— 不连真实微信通道，仅供 dev/单测/商户号未到位降级。
+[状态机] snap await_seller_ship → purchase_failed 允许
+[状态机] batch 49 组与一期逐一相同
+15:38:26.569 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=jp_shipped requested=2 advanced=1 skipped=0 rejected=1 operator=1
+[未支付] 混入未支付订单行 21：advanced=1 rejected=1 reason=订单未支付，不可推进；该行状态仍为 purchasing
+[分支] purchase_failed 可从 5 个非终态进入，进入后不可再出
+[矩阵] 7×7=49 组合：允许 19 / 拒绝 30
+  允许 purchasing → purchase_failed
+  允许 purchasing → await_seller_ship
+  允许 purchasing → jp_shipped
+  允许 purchasing → customs
+  允许 purchasing → cn_sorting
+  允许 await_seller_ship → purchase_failed
+  允许 await_seller_ship → await_seller_ship
+  允许 await_seller_ship → jp_shipped
+  允许 await_seller_ship → customs
+  允许 await_seller_ship → cn_sorting
+  允许 jp_shipped → purchase_failed
+  允许 jp_shipped → jp_shipped
+  允许 jp_shipped → customs
+  允许 jp_shipped → cn_sorting
+  允许 customs → purchase_failed
+  允许 customs → customs
+  允许 customs → cn_sorting
+  允许 cn_sorting → purchase_failed
+  允许 cn_sorting → cn_sorting
+
+15:38:26.573 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=cn_sorting requested=3 advanced=3 skipped=0 rejected=0 operator=1
+[分组] 三种起始状态（purchasing/await_seller_ship/jp_shipped）一次推到 cn_sorting
+[上限] 201 行被拒：单次最多操作 200 行，请分批处理
+[AC2] 跳过中间态允许：purchasing→jp_shipped / purchasing→customs / purchasing→delivered(发货)
+[AC1] 倒退被拒：customs→purchasing / cn_sorting→jp_shipped / customs→await_seller_ship 全部拒绝
+15:38:26.580 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=customs requested=3 advanced=1 skipped=0 rejected=2 operator=1
+15:38:26.581 [main] WARN org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] 订单 1 没有支付流水，跳过发货上报（测试单/代客单？）
+15:38:26.585 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] SHIP carrier=sf trackingNo=SF9999999999 requested=3 advanced=1 rejected=2 operator=1
+[终态] 推进与发货两条路径下，purchase_failed / delivered 行均被拒且数据零变化
+15:38:26.587 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=customs requested=3 advanced=3 skipped=0 rejected=0 operator=1
+[防死锁] 入参 [13,11,12,11,null,13] → 实际加锁顺序 [11, 12, 13]
+15:38:26.589 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=customs requested=2 advanced=1 skipped=0 rejected=1 operator=1
+[发货闸] 任何来源推进到 delivered 一律 SHIP_REQUIRED
+15:38:26.591 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=customs requested=2 advanced=1 skipped=1 rejected=0 operator=1
+15:38:26.591 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=customs requested=2 advanced=0 skipped=2 rejected=0 operator=1
+[幂等] 重复推进同一批：advanced=0 skipped=2，不报错不写库
+[AC3] 终态锁死：delivered / purchase_failed 对任何目标（含再次发货）均返回 TERMINAL
+[4108] 没有可推进的商品行：订单未支付，不可推进（共 2 行被拒）
+15:38:26.597 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=await_seller_ship requested=1 advanced=1 skipped=0 rejected=0 operator=1
+15:38:26.597 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=jp_shipped requested=1 advanced=1 skipped=0 rejected=0 operator=1
+15:38:26.598 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=customs requested=1 advanced=1 skipped=0 rejected=0 operator=1
+15:38:26.598 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=cn_sorting requested=1 advanced=1 skipped=0 rejected=0 operator=1
+15:38:26.598 [main] WARN org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] 订单 1 没有支付流水，跳过发货上报（测试单/代客单？）
+15:38:26.598 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] SHIP carrier=sf trackingNo=SF1234567890 requested=1 advanced=1 rejected=0 operator=1
+[链路] purchasing → await_seller_ship → jp_shipped → customs → cn_sorting → delivered（版本号 6，每步 +1）
+15:38:26.600 [main] INFO org.dromara.gz.jp.service.impl.GzJpFulfillServiceImpl -- [gz-jp-fulfill] ADVANCE target=jp_shipped requested=2 advanced=2 skipped=0 rejected=0 operator=1
+[跳过] purchasing ×2 一次推到 jp_shipped，advanced=2
