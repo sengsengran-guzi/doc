@@ -1,0 +1,46 @@
+
+Running 1 test using 1 worker
+
+(node:34499) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] e2e/gz-jp/snap-account.spec.ts:68:1 › true menu link, account CRUD and Japan date, guarded confirmed switch and pause clearance
+e2e/gz-jp/snap-account.spec.ts:68:1 › true menu link, account CRUD and Japan date, guarded confirmed switch and pause clearance
+402 cleanup: account states and auto config restored exactly; created account removed; main miniapp/wx-login/live Mercari=0
+
+  1) e2e/gz-jp/snap-account.spec.ts:68:1 › true menu link, account CRUD and Japan date, guarded confirmed switch and pause clearance 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      123 |   await expect(page.getByTestId('snap-auto-pause')).toBeVisible();
+      124 |   expect(JSON.parse(sql("SELECT config_value FROM sys_config WHERE tenant_id='1001' AND config_key='gz.jp.snap.auto'")).enabled).toBe(true);
+    > 125 |   expect(JSON.parse((await api('/system/config/configKey/gz.jp.snap.auto')).data).enabled).toBe(true);
+          |                                                                                            ^
+      126 |   await page.getByTestId('snap-auto-pause').click();
+      127 |   await page.locator('.el-message-box input').fill('SNAP402 manual pause');
+      128 |   await confirm(page);
+        at /Users/wkui/Project/profile/project/freelance/projects/sensenran-guzi/code/main/plus-ui/e2e/gz-jp/snap-account.spec.ts:125:92
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/gz-jp-snap-account-true-me-2a744--switch-and-pause-clearance/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/gz-jp-snap-account-true-me-2a744--switch-and-pause-clearance/error-context.md
+
+    Error Context: test-results/gz-jp-snap-account-true-me-2a744--switch-and-pause-clearance/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/gz-jp-snap-account-true-me-2a744--switch-and-pause-clearance/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/gz-jp-snap-account-true-me-2a744--switch-and-pause-clearance/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    e2e/gz-jp/snap-account.spec.ts:68:1 › true menu link, account CRUD and Japan date, guarded confirmed switch and pause clearance 

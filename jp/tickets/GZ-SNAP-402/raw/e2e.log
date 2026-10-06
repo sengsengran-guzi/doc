@@ -1,0 +1,14 @@
+
+Running 1 test using 1 worker
+
+(node:36502) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] e2e/gz-jp/snap-account.spec.ts:68:1 › true menu link, account CRUD and Japan date, guarded confirmed switch and pause clearance
+e2e/gz-jp/snap-account.spec.ts:68:1 › true menu link, account CRUD and Japan date, guarded confirmed switch and pause clearance
+real owner APIs/UI: created edited enabled disabled, limits persisted, Tokyo day reset, challenge/no-account/paused/unconfirmed blocked; resume cancel+confirm; manual pause; anonymous denied
+
+402 cleanup: account states and auto config restored exactly; created account removed; main miniapp/wx-login/live Mercari=0
+
+  1 passed (14.0s)
